@@ -1,36 +1,37 @@
-<h1>YOUTUBE SYSTEM DESIGN<h1>
+<h1 style="display: flex; justify-content: center">YOUTUBE SYSTEM DESIGN<h1>
 
-[Functional Requirements](#deciding-requirements-functional-requirements)
+#### [Functional Requirements](#deciding-requirements-functional-requirements)
 
-[Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+#### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
 
-[DAU-MAU](#capacity-estimation-dau-mau)
+#### [DAU-MAU](#capacity-estimation-dau-mau)
 
-[Throughput](#capacity-estimation-throughput)
+#### [Throughput](#capacity-estimation-throughput)
 
-[Storage](#capacity-estimation-storage)
+#### [Storage](#capacity-estimation-storage)
 
-[Memory](#capacity-estimation-memory)
+#### [Memory](#capacity-estimation-memory)
 
-[Network/Bandwidth Estimation](#capacity-estimation-network-and-bandwidth-estimation)
+#### [Network/Bandwidth Estimation](#capacity-estimation-network-and-bandwidth-estimation)
 
-[API Design-Upload Content](#api-design-upload-content)
+#### [API Design-Upload Content](#api-design-upload-content)
 
-[API Design-Stream Content](#api-design-stream-content)
+#### [API Design-Stream Content](#api-design-stream-content)
 
-[High Level Desgin-Upload content](#high-level-design-upload-content)
+#### [High Level Desgin-Upload content](#high-level-design-upload-content)
 
-[High Level Desgin-Upload content-2](#high-level-design-upload-content-continued)
+#### [High Level Desgin-Upload content-2](#high-level-design-upload-content-continued)
 
-[High Level Desgin-Stream content](#high-level-design-stream-content)
+#### [High Level Desgin-Stream content](#high-level-design-stream-content)
 
-[High Level Desgin-Content Processor Workflow Engine](#high-level-design-content-processor-workflow-engine)
+#### [High Level Desgin-Content Processor Workflow Engine](#high-level-design-content-processor-workflow-engine)
 
-[Deep Dive Insights-Database Selection](#deep-dive-insights-database-selection)
+#### [Deep Dive Insights-Database Selection](#deep-dive-insights-database-selection)
 
-[Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
+#### [Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
 
-[Deep Dive Insights-HLS Encoding](#deep-dive-insights-hls-encoding)
+#### [Deep Dive Insights-HLS Encoding](#deep-dive-insights-hls-encoding)
+
 
 ## DECIDING REQUIREMENTS: Functional Requirements
 
