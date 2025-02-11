@@ -1,5 +1,6 @@
 <h1 style="display: flex; justify-content: center">YOUTUBE SYSTEM DESIGN<h1>
 
+
 #### [Functional Requirements](#deciding-requirements-functional-requirements)
 
 #### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
@@ -31,6 +32,9 @@
 #### [Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
 
 #### [Deep Dive Insights-HLS Encoding](#deep-dive-insights-hls-encoding)
+
+<hr style="border:3px solid gray">
+
 
 
 ## DECIDING REQUIREMENTS: Functional Requirements
@@ -72,10 +76,8 @@ There will be two types of users:
     <td>Content Creators should be able to upload movies/TV shows. After successful upload, they should get a notification.</td>
   </tr>
 </table>
-
 <br><br>
 <hr style="border:3px solid gray">
-<br><br>
 
 ## DECIDING REQUIREMENTS: Non-Functional-Requirements
 
@@ -126,10 +128,8 @@ There will be two types of users:
     <td>The platform should provide reliable storage to ensure the uploaded content is safely stored and remains available without disappearing.</td>
   </tr>
 </table>
-
 <br><br>
 <hr style="border:3px solid gray">
-<br><br>
 
 ## CAPACITY ESTIMATION: DAU-MAU
 
@@ -138,10 +138,8 @@ There will be two types of users:
 - **Daily Active Users (DAU):** 100 million  
 - **Monthly Active Users (MAU):** 2.5 billion
 
-<br><br>
----
----
-<br><br>
+<hr style="border:3px solid gray">
+
 
 ## CAPACITY ESTIMATION: Throughput
 
@@ -156,11 +154,11 @@ Most users are viewers rather than creators. We assume that 1 out of 250 users u
 
 ##### **Calculation:**  
 - **Total Daily Active Users (DAU):** 100 million  
-- **Fraction of Users Uploading Videos:** \( \frac{1}{250} \)  
+- **Fraction of Users Uploading Videos:** (1/250)  
 - **Write Requests per Day:**  
-  \[
-  (1/250) \times 100,000,000 = 0.4 \text{ million write requests per day}
-  \]  
+  
+  (1/250)times 100,000,000 = 0.4 million write requests per day
+  
 
 ---
 
@@ -176,9 +174,9 @@ An average user watches 10 videos per day.
 - **Total Daily Active Users (DAU):** 100 million  
 - **Videos Watched per User:** 10  
 - **Read Requests per Day:**  
-  \[
-  100,000,000 \times 10 = 1 \text{ billion read requests per day}
-  \]  
+
+  100,000,000 * 10 = 1billion read requests per day
+  
 
 ---
 
@@ -201,15 +199,12 @@ An average user watches 10 videos per day.
     <td>1 billion requests/day</td>
   </tr>
 </table>
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## CAPACITY ESTIMATION: Storage
 
----
 
 #### **Video Data**
 
