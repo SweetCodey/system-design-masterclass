@@ -31,10 +31,10 @@
 
 #### [Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
 
-#### [Deep Dive Insights-HLS Encoding](#deep-dive-insights-hls-encoding)
+#### [Deep Dive Insights-HLSEncoding](#deep-dive-insights-hls-encoding)
 
+<br><br>
 <hr style="border:3px solid gray">
-
 
 
 ## DECIDING REQUIREMENTS: Functional Requirements
@@ -81,7 +81,7 @@ There will be two types of users:
 
 ## DECIDING REQUIREMENTS: Non-Functional-Requirements
 
-## For Viewers
+### For Viewers
 
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
@@ -137,8 +137,9 @@ There will be two types of users:
 
 - **Daily Active Users (DAU):** 100 million  
 - **Monthly Active Users (MAU):** 2.5 billion
-
+<br><br>
 <hr style="border:3px solid gray">
+
 
 
 ## CAPACITY ESTIMATION: Throughput
@@ -160,8 +161,6 @@ Most users are viewers rather than creators. We assume that 1 out of 250 users u
   (1/250)times 100,000,000 = 0.4 million write requests per day
   
 
----
-
 #### **2. Read Requests**
 
 ##### **Read Operation:**  
@@ -176,9 +175,7 @@ An average user watches 10 videos per day.
 - **Read Requests per Day:**  
 
   100,000,000 * 10 = 1billion read requests per day
-  
 
----
 
 ##### **Summary**
 
@@ -212,7 +209,7 @@ An average user watches 10 videos per day.
 - **Average Size of a Video:** 600 MB  
 - **Daily Uploads (from throughput estimation):** 0.4 million requests per day  
 
----
+
 
 ##### **Storage Calculations**
 
@@ -222,7 +219,7 @@ An average user watches 10 videos per day.
 2. **10-Year Storage Requirement:**  
    240 TB/day × 365 days × 10 years = **876 PB**
 
----
+
 
 ##### **Summary**
 
@@ -243,25 +240,20 @@ An average user watches 10 videos per day.
     <td>876 PB</td>
   </tr>
 </table>
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## CAPACITY ESTIMATION: Memory
 
----
 
 #### **Overview**
 By memory, we refer to the **cache memory size** required for faster data access.
 
----
 
 #### **Why Cache Memory?**
 Accessing data directly from the database takes time. To speed up data retrieval, cache memory is used.
 
----
 
 #### **Cache Memory Requirement Calculation**
 
@@ -269,24 +261,19 @@ Accessing data directly from the database takes time. To speed up data retrieval
 - **Cache Requirement (1% of Daily Storage):**  
   0.01 × 240 TB = **2.4 TB/day**
 
----
 
 #### **Scalability**
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## CAPACITY ESTIMATION: Network and Bandwidth Estimation
 
----
 
 #### **Overview**
 Network/Bandwidth estimation helps us determine the amount of data flowing in and out of the system per second.
 
----
 
 #### **Data Flow Estimations**
 
@@ -298,7 +285,6 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 - **Result:** Incoming Data Flow = **2.7 GB/s**
 
----
 
 ##### **Egress (Data Flow Out of the System)**
 
@@ -312,7 +298,6 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 - **Result:** Outgoing Data Flow = **7 TB/s**
 
----
 
 #### **Summary**
 
@@ -333,13 +318,9 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
     <td>7 TB/s</td>
   </tr>
 </table>
-
 <br><br>
+<hr style="border:3px solid gray">
 
----
----
----
-<br><br>
 
 ## API-DESIGN Upload Content
 
@@ -392,11 +373,9 @@ This tells the server where to perform that action. We use the session URI provi
 
 #### HTTP Body
 The body of the `PUT` request contains the binary data of the video file.
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## API-DESIGN: Stream Content
 
@@ -449,9 +428,7 @@ The locations in the manifest file are actually the **CDN server locations** whe
 This tells the server what action to perform. Since we are getting video chunks, we use the `GET` action.
 
 #### Endpoint
-This tells the server where to perform that action. Since we are getting the video chunks from respective locations, we use the locations (provided in the manifest) as the endpoint.
-
----
+This tells the server where to perform that action. Since we are getting the video chunks from respective locations, we use the locations (provided in the manifest) as the endpoi
 
 ### HLS Protocol
 We are using something called the **HLS Protocol** for getting video chunks from the CDN. **HLS (HTTP Live Streaming)** is a very popular protocol used for streaming.
@@ -462,13 +439,9 @@ We are using something called the **HLS Protocol** for getting video chunks from
   - **Slow internet:** Video quality drops to prevent buffering, ensuring uninterrupted playback.
 
 ![Streaming Request](https://static.wixstatic.com/media/99fa54_0a3ca4d6306943a6a676aba4664c9747~mv2.png/v1/fill/w_1120,h_420,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_0a3ca4d6306943a6a676aba4664c9747~mv2.png)
-
 <br><br>
+<hr style="border:3px solid gray">
 
----
----
----
-<br><br>
 
 ## HIGH-LEVEL-DESIGN :Upload Content
 
@@ -492,11 +465,9 @@ with a **session URL**.
 ![High Level FLow](https://static.wixstatic.com/media/99fa54_5e2d57019c5c4bd6bfcf31ba32db6eda~mv2.png/v1/fill/w_1120,h_236,al_c,lg_1,q_85,enc_auto/99fa54_5e2d57019c5c4bd6bfcf31ba32db6eda~mv2.png)
 
 This **session URL** is then used to upload the actual video data in chunks. Let's see how that happens next.
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## HIGH LEVEL DESIGN: Upload Content (Continued)
 
@@ -538,11 +509,9 @@ This process ensures the video can be accessed in different formats and qualitie
 
 
 ![Final flow](https://static.wixstatic.com/media/99fa54_adfab2d0e1634369b35d1cf6baaa4131~mv2.png/v1/fill/w_1011,h_536,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_adfab2d0e1634369b35d1cf6baaa4131~mv2.png)
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## HIGH LEVEL DESIGN :Stream Content
 
@@ -590,11 +559,9 @@ A common scenario occurs when the internet connection fluctuates between strong 
 This adaptive behavior ensures a smooth viewing experience. This process is known as **Adaptive streaming**, and the **HLS protocol** supports it very well. This is why HLS is widely used during video streaming.
 
 ![Adaptive Streaming](https://static.wixstatic.com/media/99fa54_914bbbf5efef4d6faa5a2626a4ff787a~mv2.png/v1/fill/w_1043,h_390,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_914bbbf5efef4d6faa5a2626a4ff787a~mv2.png)
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## HIGH LEVEL DESIGN: Content Processor Workflow Engine
 
@@ -605,7 +572,6 @@ Let's dive deeper into the Content Processor (Workflow Engine). As mentioned, th
 - **Quality Converter Service**  
 - **CDN Uploader Service**
 
----
 
 ### Content Chunker Service
 
@@ -689,13 +655,9 @@ This is how the overall flow looks like:
 
 
 ![Overall Flow](https://static.wixstatic.com/media/99fa54_c0138156b7e8407eb3dd0af583000711~mv2.png/v1/fill/w_998,h_741,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_c0138156b7e8407eb3dd0af583000711~mv2.png)
-
 <br><br>
+<hr style="border:3px solid gray">
 
----
----
----
-<br><br>
 
 ## DEEP DIVE INSIGHTS: Database Selection
 
@@ -764,11 +726,9 @@ In order to decide the DB type, here are some general guidelines that you can fo
     </tr>
   </tbody>
 </table>
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## DEEP DIVE INSIGHTS: Data Modeling
 
@@ -783,11 +743,9 @@ In order to decide the DB type, here are some general guidelines that you can fo
 | **Indexing**     | `videoId`                                                                    
  #### Note:
 Because we have this common query to grab video metadata by `videoId`, we create an index on the `videoId` field. This sets a shortcut to quickly find the data by `videoId`. |
+<br><br>
+<hr style="border:3px solid gray">
 
-<br><br>
----
----
-<br><br>
 
 ## DEEP DIVE INSIGHTS: HLS Encoding
 
