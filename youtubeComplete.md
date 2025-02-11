@@ -1,6 +1,4 @@
-<div style="text-align: center; font-size: 32px; font-weight: bold;">
-  Youtube System Design
-</div>
+# YOUTUBE SYSTEM DESIGN
 
 #### [Functional Requirements](#deciding-requirements-functional-requirements)
 
