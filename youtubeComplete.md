@@ -12,7 +12,7 @@ There will be two types of users:
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
     <th>Requirement</th>
-    <th>Description</th>
+    <th>Descsription</th>
   </tr>
   <tr>
     <td>Streaming</td>
