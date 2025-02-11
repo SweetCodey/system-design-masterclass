@@ -1,18 +1,51 @@
-# DECIDING REQUIREMENTS: User Types and Functional Requirements
+<h1>YOUTUBE SYSTEM DESIGN<h1>
+
+[Functional Requirements](#deciding-requirements-functional-requirements)
+
+[Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+
+[DAU-MAU](#capacity-estimation-dau-mau)
+
+[Throughput](#capacity-estimation-throughput)
+
+[Storage](#capacity-estimation-storage)
+
+[Memory](#capacity-estimation-memory)
+
+[Network/Bandwidth Estimation](#capacity-estimation-network-and-bandwidth-estimation)
+
+[API Design-Upload Content](#api-design-upload-content)
+
+[API Design-Stream Content](#api-design-stream-content)
+
+[High Level Desgin-Upload content](#high-level-design-upload-content)
+
+[High Level Desgin-Upload content-2](#high-level-design-upload-content-continued)
+
+[High Level Desgin-Stream content](#high-level-design-stream-content)
+
+[High Level Desgin-Content Processor Workflow Engine](#high-level-design-content-processor-workflow-engine)
+
+[Deep Dive Insights-Database Selection](#deep-dive-insights-database-selection)
+
+[Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
+
+[Deep Dive Insights-HLS Encoding](#deep-dive-insights-hls-encoding)
+
+## DECIDING REQUIREMENTS: Functional Requirements
 
 There will be two types of users:
 
 1. **Viewers:** One who consumes the content.  
 2. **Content Creators:** One who creates the content.
 
----
 
-## **Functional Requirements for Viewers**
+### **Functional Requirements for Viewers**
 
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
     <th>Requirement</th>
-    <th>Descsription</th>
+    <th>Description</th>
   </tr>
   <tr>
     <td>Streaming</td>
@@ -24,9 +57,9 @@ There will be two types of users:
   </tr>
 </table>
 
----
 
-## **Functional Requirements for Content Creators**
+
+### **Functional Requirements for Content Creators**
 
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
@@ -40,11 +73,10 @@ There will be two types of users:
 </table>
 
 <br><br>
----
----
+<hr style="border:3px solid gray">
 <br><br>
 
-# DECIDING REQUIREMENTS: Non-Functional Requirements
+## DECIDING REQUIREMENTS: Non-Functional-Requirements
 
 ## For Viewers
 
@@ -71,9 +103,9 @@ There will be two types of users:
   </tr>
 </table>
 
----
 
-## For Content Creators
+
+### For Content Creators
 
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
@@ -95,15 +127,12 @@ There will be two types of users:
 </table>
 
 <br><br>
-
----
----
----
+<hr style="border:3px solid gray">
 <br><br>
 
-# CAPACITY ESTIMATION: DAU-MAU
+## CAPACITY ESTIMATION: DAU-MAU
 
-### **How many users will be using your software?**
+#### **How many users will be using your software?**
 
 - **Daily Active Users (DAU):** 100 million  
 - **Monthly Active Users (MAU):** 2.5 billion
@@ -113,18 +142,18 @@ There will be two types of users:
 ---
 <br><br>
 
-# CAPACITY ESTIMATION: Throughput
+## CAPACITY ESTIMATION: Throughput
 
 
-### **1. Write Requests**  
+#### **1. Write Requests**  
 
-#### **Write Operation:**  
+##### **Write Operation:**  
 Uploading videos is the only way to write (add data) to the system.
 
-#### **Assumption:**  
+##### **Assumption:**  
 Most users are viewers rather than creators. We assume that 1 out of 250 users uploads a video daily.
 
-#### **Calculation:**  
+##### **Calculation:**  
 - **Total Daily Active Users (DAU):** 100 million  
 - **Fraction of Users Uploading Videos:** \( \frac{1}{250} \)  
 - **Write Requests per Day:**  
@@ -134,15 +163,15 @@ Most users are viewers rather than creators. We assume that 1 out of 250 users u
 
 ---
 
-### **2. Read Requests**
+#### **2. Read Requests**
 
-#### **Read Operation:**  
+##### **Read Operation:**  
 Watching videos is the primary way to read data from the system.
 
-#### **Assumption:**  
+##### **Assumption:**  
 An average user watches 10 videos per day.
 
-#### **Calculation:**  
+##### **Calculation:**  
 - **Total Daily Active Users (DAU):** 100 million  
 - **Videos Watched per User:** 10  
 - **Read Requests per Day:**  
@@ -152,7 +181,7 @@ An average user watches 10 videos per day.
 
 ---
 
-#### **Summary**
+##### **Summary**
 
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
@@ -177,19 +206,19 @@ An average user watches 10 videos per day.
 ---
 <br><br>
 
-# CAPACITY ESTIMATION: Storage Requirements
+## CAPACITY ESTIMATION: Storage
 
 ---
 
-### **Video Data**
+#### **Video Data**
 
-#### **Assumptions**  
+##### **Assumptions**  
 - **Average Size of a Video:** 600 MB  
 - **Daily Uploads (from throughput estimation):** 0.4 million requests per day  
 
 ---
 
-#### **Storage Calculations**
+##### **Storage Calculations**
 
 1. **Daily Storage Requirement:**  
    600 MB × 0.4 million requests/day = **240 TB/day**
@@ -199,7 +228,7 @@ An average user watches 10 videos per day.
 
 ---
 
-#### **Summary**
+##### **Summary**
 
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
@@ -224,21 +253,21 @@ An average user watches 10 videos per day.
 ---
 <br><br>
 
-# CAPACITY ESTIMATION: Memory
+## CAPACITY ESTIMATION: Memory
 
 ---
 
-### **Overview**
+#### **Overview**
 By memory, we refer to the **cache memory size** required for faster data access.
 
 ---
 
-### **Why Cache Memory?**
+#### **Why Cache Memory?**
 Accessing data directly from the database takes time. To speed up data retrieval, cache memory is used.
 
 ---
 
-### **Cache Memory Requirement Calculation**
+#### **Cache Memory Requirement Calculation**
 
 - **Daily Storage Requirement:** 240 TB/day  
 - **Cache Requirement (1% of Daily Storage):**  
@@ -246,7 +275,7 @@ Accessing data directly from the database takes time. To speed up data retrieval
 
 ---
 
-### **Scalability**
+#### **Scalability**
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
 
 <br><br>
@@ -254,18 +283,18 @@ The memory size should scale as the system grows to accommodate increasing stora
 ---
 <br><br>
 
-# CAPACITY ESTIMATION: Network/Bandwidth Estimation
+## CAPACITY ESTIMATION: Network and Bandwidth Estimation
 
 ---
 
-### **Overview**
+#### **Overview**
 Network/Bandwidth estimation helps us determine the amount of data flowing in and out of the system per second.
 
 ---
 
-### **Data Flow Estimations**
+#### **Data Flow Estimations**
 
-#### **Ingress (Data Flow Into the System)**
+##### **Ingress (Data Flow Into the System)**
 
 - **Data Stored per Day:** 240 TB/day  
 - **Calculation:**  
@@ -275,7 +304,7 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 ---
 
-#### **Egress (Data Flow Out of the System)**
+##### **Egress (Data Flow Out of the System)**
 
 - **Total Read Requests per Day:** 1 billion  
 - **Average Video Size:** 600 MB  
@@ -289,7 +318,7 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 ---
 
-### **Summary**
+#### **Summary**
 
 <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr>
@@ -316,7 +345,7 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 ---
 <br><br>
 
-# API-DESIGN: Upload Content
+## API-DESIGN Upload Content
 
 Let's understand how a client (content creator) uploads content to YouTube and what APIs are involved.
 
@@ -329,18 +358,18 @@ When we press the upload button, initially a request is sent to add the metadata
 ![Initial Request](https://static.wixstatic.com/media/99fa54_5b0a11ae16cf4e349538b15c6f55fead~mv2.png/v1/fill/w_1120,h_454,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_5b0a11ae16cf4e349538b15c6f55fead~mv2.png)
 
 
-## Initial Request (Add Video Metadata)
+### Initial Request (Add Video Metadata)
 
-### HTTP Method
+#### HTTP Method
 This tells the server what action to perform. Since we want to create something new on the server (metadata for the new video), we use the `POST` action.
 
-### Endpoint
+#### Endpoint
 This tells the server where to perform that action. Since we are creating video metadata, we use the `/v1/videos` endpoint of the server.
 
-### Note
+#### Note
 Since we also need to upload the actual video after the metadata, we include `uploadType=resumable` in our endpoint. This indicates that we are uploading a large media file chunk by chunk. It is useful because if the connection drops while uploading this large file, we should be able to resume the upload from that point. In summary, `uploadType=resumable` tells the server to provide a "resumable" URL back that we can use to upload as well as resume the upload, if needed.
 
-### HTTP Body
+#### HTTP Body
 We tell the server to create metadata for the video, but we haven't provided the details of the metadata yet. This information is sent in the request body.
 
 ```json
@@ -355,17 +384,17 @@ In response to this request, YouTube's server provides us with a resumable URL. 
 
 When we upload the actual video, we use this same session URL. Here are the details of the actual upload request:
 
-## Final Request (Upload Video)
+### Final Request (Upload Video)
 
 ![Initial Request](https://static.wixstatic.com/media/99fa54_772e23c8476f4b0e90542d008c98d52f~mv2.png/v1/fill/w_1120,h_689,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_772e23c8476f4b0e90542d008c98d52f~mv2.png)
 
-### HTTP Method
+#### HTTP Method
 This tells the server what action to perform. We use the `PUT` action to upload the actual video data to the given session URL.
 
-### Endpoint
+#### Endpoint
 This tells the server where to perform that action. We use the session URI provided by the server in the response to the first request. The `uploadId` in the URI helps the server identify which video's session it is, even when resuming the upload.
 
-### HTTP Body
+#### HTTP Body
 The body of the `PUT` request contains the binary data of the video file.
 
 <br><br>
@@ -373,7 +402,7 @@ The body of the `PUT` request contains the binary data of the video file.
 ---
 <br><br>
 
-# API-DESIGN: Stream Content
+## API-DESIGN: Stream Content
 
 Let's understand how a client streams content on YouTube and what APIs are involved.
 
@@ -381,7 +410,7 @@ Since videos can be very large (could be 10 minutes or even 2 hours), it's not f
 
 To stream the entire video, the client needs to know these locations. All these locations are saved in a file called a **manifest file**. So when the client first requests to watch a video, the server sends the manifest file. Once the client gets the manifest file, it uses it to fetch the different chunks from the server (this is streaming).
 
-## Flow Overview
+### Flow Overview
 
 Here's how the flow looks:
 
@@ -400,12 +429,12 @@ Here's how the flow looks:
 
 When we open a video, the first request that goes to the server is a **watch request**, telling the server that the client wants to watch the video. The server responds with the manifest file. Here are the details about the request.
 
-## Initial Watch Request
+### Initial Watch Request
 
-### HTTP Method
+#### HTTP Method
 This tells the server what action to perform. Since we want to watch (get) a video, we use the `GET` action.
 
-### Endpoint
+#### Endpoint
 This tells the server where to perform that action. We use the `/v1/watch` endpoint to tell the server we want to watch a video. The server sends the manifest file back.
 
 Now the client has the manifest file which contains the locations of the video chunks. The client uses these locations to start streaming the video chunk by chunk. This is how the overall flow looks with the streaming request.
@@ -416,22 +445,22 @@ Now the client has the manifest file which contains the locations of the video c
 
 
 
-## Streaming Request
+### Streaming Request
 
 The locations in the manifest file are actually the **CDN server locations** where the chunks are stored. Simply put, a **CDN** is a server that makes it easy to load large assets (like videos and media).
 
-### HTTP Method
+#### HTTP Method
 This tells the server what action to perform. Since we are getting video chunks, we use the `GET` action.
 
-### Endpoint
+#### Endpoint
 This tells the server where to perform that action. Since we are getting the video chunks from respective locations, we use the locations (provided in the manifest) as the endpoint.
 
 ---
 
-## HLS Protocol
+### HLS Protocol
 We are using something called the **HLS Protocol** for getting video chunks from the CDN. **HLS (HTTP Live Streaming)** is a very popular protocol used for streaming.
 
-### Benefits of HLS
+#### Benefits of HLS
 - **Adaptive Streaming:** The quality of the video can adjust based on the user's internet speed.
   - **Fast internet:** High-quality video chunks are streamed.
   - **Slow internet:** Video quality drops to prevent buffering, ensuring uninterrupted playback.
@@ -445,13 +474,13 @@ We are using something called the **HLS Protocol** for getting video chunks from
 ---
 <br><br>
 
-# HIGH-LEVEL-DESIGN : Upload Content
+## HIGH-LEVEL-DESIGN :Upload Content
 
 As we saw in the API design, the video upload process involves two main steps. The first request uploads the video metadata, and the server responds with a session URL.
 
 ![First Request](https://static.wixstatic.com/media/99fa54_d054024ed2144868a2b495fd2d3eb961~mv2.png/v1/fill/w_1120,h_431,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_d054024ed2144868a2b495fd2d3eb961~mv2.png)
 
-## High-Level Process
+### High-Level Process
 
 Let’s understand this with a high-level diagram. Refer to the steps in the diagram.
 
@@ -473,7 +502,7 @@ This **session URL** is then used to upload the actual video data in chunks. Let
 ---
 <br><br>
 
-# HIGH LEVEL DESIGN: Upload Content (Continued)
+## HIGH LEVEL DESIGN: Upload Content (Continued)
 
 Once we have the session URL, we start uploading the video using that URL. Here's how the flow works (refer to the steps in the diagram):
 
@@ -519,7 +548,7 @@ This process ensures the video can be accessed in different formats and qualitie
 ---
 <br><br>
 
-# HIGH LEVEL DESIGN :Stream Content
+## HIGH LEVEL DESIGN :Stream Content
 
 As we discussed during the API design, video streaming involves three main steps:
 
@@ -549,7 +578,7 @@ Different devices support different video formats:
 - When a client requests **MP4** format, it receives MP4 chunks.
 - When a client requests **MOV** format, it receives MOV chunks.
 
-## Adaptive Quality Based on Network Strength
+### Adaptive Quality Based on Network Strength
 
 - **Weak Connection:** The client requests lower-quality chunks (e.g., **240P**).
 - **Strong Connection:** The client requests higher-quality chunks (e.g., **4K**).
@@ -571,7 +600,7 @@ This adaptive behavior ensures a smooth viewing experience. This process is know
 ---
 <br><br>
 
-# HIGH LEVEL DESIGN: Content Processor Workflow Engine
+## HIGH LEVEL DESIGN: Content Processor Workflow Engine
 
 Let's dive deeper into the Content Processor (Workflow Engine). As mentioned, this is a workflow engine that runs a series of steps. Here are the steps:
 
@@ -582,14 +611,14 @@ Let's dive deeper into the Content Processor (Workflow Engine). As mentioned, th
 
 ---
 
-## Content Chunker Service
+### Content Chunker Service
 
 As we saw earlier, in the 4th step, an event is added to the Message Queue with the video ID. The Content Chunker Service grabs this video using the ID and breaks it into smaller chunks. This is necessary because it breaks the video into smaller chunks that can be processed in parallel. Also, it will make streaming efficient.
 
 ![Content chunker](https://static.wixstatic.com/media/99fa54_8982770a4e4749bc9c3faf5f177aef80~mv2.png/v1/fill/w_1064,h_400,al_c,q_90,enc_auto/99fa54_8982770a4e4749bc9c3faf5f177aef80~mv2.png)
 
 
-### Here are the 4 precise steps:
+#### Here are the 4 precise steps:
 
 1. **Retrieve the event from the Message Queue.**  
 2. **Use the video ID from the event to get the video from Object Storage and break it into smaller chunks.**  
@@ -597,14 +626,14 @@ As we saw earlier, in the 4th step, an event is added to the Message Queue with 
 4. **For each uploaded chunk, create an event with the chunk ID and add it to the Message Queue.**
 
 
-## Format Converter Service
+### Format Converter Service
 
 After chunking, the **Format Converter Service** converts these chunks into different formats. This is necessary because converting the chunks into different formats ensures compatibility with various devices and platforms.
 
 ![Format Converter](https://static.wixstatic.com/media/99fa54_bf3b1082d46c4f8bab8115923f21180e~mv2.png/v1/fill/w_1120,h_294,al_c,lg_1,q_85,enc_auto/99fa54_bf3b1082d46c4f8bab8115923f21180e~mv2.png)
 
 
-### Steps Involved
+#### Steps Involved
 
 1. **Retrieve the event from the Message Queue.**
 
@@ -616,7 +645,7 @@ After chunking, the **Format Converter Service** converts these chunks into diff
 4. **For each uploaded chunk, create an event with the chunk ID and add it to the Message Queue.**
 
 
-## Quality Converter Service
+### Quality Converter Service
 
 After converting to different formats, the Quality Converter Service converts these chunks into different quality levels. This is necessary because converting the chunks into different quality levels provides a smooth viewing experience as per the user's internet speed. 
 
@@ -626,7 +655,7 @@ After converting to different formats, the Quality Converter Service converts th
 
 ![Quality Converter](https://static.wixstatic.com/media/99fa54_126633faf6814f77a59c07531363af1c~mv2.png/v1/fill/w_1120,h_294,al_c,lg_1,q_85,enc_auto/99fa54_126633faf6814f77a59c07531363af1c~mv2.png)
 
-### Steps Involved
+#### Steps Involved
 
 1. **Retrieve the event from the Message Queue.**
 
@@ -645,7 +674,7 @@ The steps above, when visualized, look like this:
 ![Quality Converter](https://static.wixstatic.com/media/99fa54_e9c940542f18431982d4cbc8499d2378~mv2.png/v1/fill/w_1050,h_701,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_e9c940542f18431982d4cbc8499d2378~mv2.png)
 
 
-## CDN Uploader Service
+### CDN Uploader Service
 
 Finally, the CDN Uploader Service comes into play.
 
@@ -672,7 +701,7 @@ This is how the overall flow looks like:
 ---
 <br><br>
 
-# DEEP DIVE INSIGHTS: Database Selection
+## DEEP DIVE INSIGHTS: Database Selection
 
 In order to decide the DB type, here are some general guidelines that you can follow. However, it’s not always black and white — a lot depends on the project needs.
 
@@ -717,7 +746,7 @@ In order to decide the DB type, here are some general guidelines that you can fo
 
 ---
 
-## Database Decision Table
+### Database Decision Table
 
 <table>
   <thead>
@@ -745,9 +774,9 @@ In order to decide the DB type, here are some general guidelines that you can fo
 ---
 <br><br>
 
-# DEEP DIVE INSIGHTS: Data Modeling
+## DEEP DIVE INSIGHTS: Data Modeling
 
-### VideosDB Schema
+#### VideosDB Schema
 
 ![videosDB](https://static.wixstatic.com/media/99fa54_ca6ccb7560a8455c8d8c5622668b1569~mv2.png/v1/fill/w_732,h_577,al_c,lg_1,q_90,enc_auto/99fa54_ca6ccb7560a8455c8d8c5622668b1569~mv2.png)
 
@@ -756,7 +785,7 @@ In order to decide the DB type, here are some general guidelines that you can fo
 | **Database Type**| NoSQL                                                                        |
 | **Common Queries**| Reading video metadata by `videoId`. This occurs when the user clicks on a video to watch the content, and the server returns back the video metadata along with the manifest file. |
 | **Indexing**     | `videoId`                                                                    
- ### Note: ###
+ #### Note:
 Because we have this common query to grab video metadata by `videoId`, we create an index on the `videoId` field. This sets a shortcut to quickly find the data by `videoId`. |
 
 <br><br>
@@ -764,7 +793,7 @@ Because we have this common query to grab video metadata by `videoId`, we create
 ---
 <br><br>
 
-# DEEP DIVE INSIGHTS: HLS Encoding
+## DEEP DIVE INSIGHTS: HLS Encoding
 
  **Workflow Engine Steps:**  Our Content Processor consists of four main steps: 
 
@@ -777,19 +806,19 @@ Because we have this common query to grab video metadata by `videoId`, we create
 
 We also learned about HLS and how it enables adaptive streaming, which allows streaming different formats for different devices and different qualities based on internet speed.
 
-## Encoding for HLS
+### Encoding for HLS
 
 Another thing to know about HLS: whenever we are streaming videos with HLS, the video chunks need to be encoded in a certain way.
 
-### What is Encoding?
+#### What is Encoding?
 Encoding simply means turning the video into a stream of 0s and 1s. There are different ways to do this, and each way creates a different version (version = different representation of 0s and 1s) of the same video. 
 
 For HLS to work, the video needs to be encoded using specific standards like `H.264` or `H.265`.
 
-## Current Workflow Problem
+### Current Workflow Problem
 But have we ever included encoding in our process? Our current workflow doesn't have an encoding step. So, how should we tackle this problem?
 
-### Solution
+#### Solution
 By introducing the encoding step in the workflow engine. Here’s how we can do it:
 
 1. **Content Chunking**
