@@ -1,5 +1,6 @@
-<h1 style="display: flex; justify-content: center">YOUTUBE SYSTEM DESIGN<h1>
-
+<div style="text-align: center; font-size: 32px; font-weight: bold;">
+  Youtube System Design
+</div>
 
 #### [Functional Requirements](#deciding-requirements-functional-requirements)
 
