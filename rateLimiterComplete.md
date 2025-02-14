@@ -1,45 +1,46 @@
 # RATE LIMITER SYSTEM DESIGN
 
-#### [Anlogy           ](#deciding-requirements-functional-requirements)
+- [1.Anlogy](#introduction-analogy)
 
-#### [Functional Requirements](#deciding-requirements-functional-requirements)
+- [2.What is  a Rate Limite](#introduction-what-is-a-rate-limiter)
 
-#### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+- [3.Why do we need a Rate Limite](#introduction-why-do-we-need-a-rate-limiter)
 
-#### [DAU-MAU](#capacity-estimation-dau-mau)
+- [4.Functional Requirements](#functional-requirements)
 
-#### [Throughput](#capacity-estimation-throughput)
+- [5.Non Functional Requirements](#non-functional-requirements)
 
-#### [Storage and Memory](#capacity-estimation-storage-and-memory)
+- [6.DAU-MAU](#dau-mau)
 
-#### [Network and Bandwidth Estimation](#capacity-estimation-network-and-bandwidth)
+- [7.Throughput](#throughput)
 
-#### [HIGH LEVEL DESIGN:Placemet of a Ratelimiter](#high-level-design-placement-of-a-ratelimiter)
+- [8.Storage and Memory](#storage-and-memory)
 
-#### [HIGH LEVEL DESIGN:Basic High Level Flow](#high-level-design-basic-high-level-flow)
+- [9.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-#### [HIGH LEVEL DESIGN:Storing Request Counters](#high-level-design-storing-request-counters)
+- [10.HIGH LEVEL DESIGN:Placemet of a Ratelimiter](#high-level-design-placement-of-a-ratelimiter)
 
-#### [HIGH LEVEL DESIGN:Storing Ratelimiter Rules](#high-level-design-storing-ratelimiter-rules)
+- [11.HIGH LEVEL DESIGN:Basic High Level Flow](#high-level-design-basic-high-level-flow)
 
-#### [Deep Dive Insights:Tocken Bucket Algorithm](#deep-dive-insights-token-bucket-algorithm)
+- [12.HIGH LEVEL DESIGN:Storing Request Counters](#high-level-design-storing-request-counters)
 
-#### [Deep Dive Insights:Leaky Bucket Algorithm](#deep-dive-insights-leaky-bucket-algorithm)
+- [13.HIGH LEVEL DESIGN:Storing Ratelimiter Rules](#high-level-design-storing-ratelimiter-rules)
 
-#### [Deep Dive Insights:Fixed Window Counter Algorithm](#deep-dive-insights-fixed-window-counter-algorithm)
+- [14.Deep Dive Insights:Tocken Bucket Algorithm](#deep-dive-insights-token-bucket-algorithm)
 
-#### [Deep Dive Insights:Sliding Window Log Algorithm](#deep-dive-insights-sliding-window-log-algorithm)
+- [15.Deep Dive Insights:Leaky Bucket Algorithm](#deep-dive-insights-leaky-bucket-algorithm)
 
-#### [Deep Dive Insights:Sliding Window Counter Algorithm](#deep-dive-insights-sliding-window-counter-algorithm)
+- [16.Deep Dive Insights:Fixed Window Counter Algorithm](#deep-dive-insights-fixed-window-counter-algorithm)
 
-#### [Deep Dive Insights:Handling Race Condition](#deep-dive-insights-handling-race-condition)
+- [17.Deep Dive Insights:Sliding Window Log Algorithm](#deep-dive-insights-sliding-window-log-algorithm)
 
+- [18.Deep Dive Insights:Sliding Window Counter Algorithm](#deep-dive-insights-sliding-window-counter-algorithm)
 
-<br><br>
-<hr style="border:3px solid gray">
+- [19.Deep Dive Insights:Handling Race Condition](#deep-dive-insights-handling-race-condition)
 
+<hr style="border:2px solid gray">
 
-# INTRODUCTION :Analogy
+# Analogy
 
 Imagine you're at an amusement park with a special roller coaster that everyone wants to ride.
 
@@ -53,10 +54,9 @@ This rule, enforced by the security guard, is like a real-life example of a **ra
 
 ![analogy](https://static.wixstatic.com/media/99fa54_bfa39f5735ea4344a6b4d0d1df3767fe~mv2.png/v1/fill/w_704,h_509,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/99fa54_bfa39f5735ea4344a6b4d0d1df3767fe~mv2.png)
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## INTRODUCTION :What is a Rate Limiter?
+## What is a Rate Limiter
 
 In system design, a rate limiter works like that security guard.
 
@@ -70,10 +70,9 @@ Let's say on Instagram, no user can post more than **100 times a day**.
 
 This prevents any one user from overwhelming the system and helps keep everything running smoothly.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## INTRODUCTION :Why do we need a Rate Limiter
+## Why do we need a Rate Limiter
 
 Rate-Limiter plays a critical role because of the following reasons:  
 
@@ -88,11 +87,9 @@ An overwhelming amount of requests also means an overwhelming amount of costs to
 
 ![Why do we need Rate Limiter](https://static.wixstatic.com/media/99fa54_7dda0ecca40f48fdb97b4512e816ca17~mv2.png/v1/fill/w_745,h_508,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_7dda0ecca40f48fdb97b4512e816ca17~mv2.png)
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-
-## DECIDING REQUIREMENTS :Functional Requirements
+## Functional Requirements
 <table>
   <tr>
     <th>Requirement</th>
@@ -111,7 +108,7 @@ An overwhelming amount of requests also means an overwhelming amount of costs to
 <br><br>
 <hr style="border:3px solid gray">
 
-## DECIDING REQUIREMENTS :Non Functional Requirements
+## Non Functional Requirements
 
 <table border="1">
     <thead>
@@ -136,10 +133,9 @@ An overwhelming amount of requests also means an overwhelming amount of costs to
     </tbody>
   </table>
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION :DAU MAU
+## DAU MAU
 
 <strong>How many users will be using your software?</strong>
   <table border="1" cellpadding="5" cellspacing="0">
@@ -157,10 +153,9 @@ An overwhelming amount of requests also means an overwhelming amount of costs to
     </tr>
   </table>
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION :Throughput
+## Throughput
 
 Let's calculate how many rate-limited requests we need to handle.
 
@@ -180,10 +175,9 @@ Assume each user makes an average of **100 API requests per day**.
         <td>50 billion</td>
     </tr>
 </table>
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION :Storage and Memory
+## Storage and Memory
 
 For Rate-Limiting, we mainly store:
 
@@ -232,7 +226,7 @@ Since the latency requirement is low and the storage size is **2.5 TB** (managea
 <br><br>
 <hr style="border:3px solid gray">
 
-# CAPACITY ESTIMATION :Network and Bandwidth
+# Network and Bandwidth
 
 Network / Bandwidth estimation tells us how much data flows in and out of our system per second.
 
@@ -256,8 +250,8 @@ To estimate bandwidth, we need to consider the data transfer for requests and re
         <td>50 TB/day / 24 hours / 3600 seconds ≈ 579 GB/hour ≈ 161 MB/s</td>
     </tr>
 </table>
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
+
 
 ## HIGH LEVEL DESIGN :Placement of a RateLimiter
 
@@ -297,8 +291,8 @@ Choose based on your **tech stack and resources**:
 - For **granular control and no central failure point**, use **server-side rate limiting**.
 
 For our further discussion, we will be **placing our rate limiter before the API servers**.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
+
 
 ## HIGH LEVEL DESIGN :Basic High level flow
 
@@ -319,8 +313,7 @@ A client sends a request.
 ### 🔹 Fun Fact
 When a request exceeds the rate limit, the **Rate Limiter** sends an **HTTP 429 (Too Many Requests)** response back to the client.  
 This status code indicates that the user has sent too many requests in a given amount of time and should **try again later**.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Storing Request Counters
 
@@ -344,8 +337,7 @@ Storing this count efficiently is crucial. Here’s why:
 
 
 By using **Redis**, we ensure efficient and real-time request counting, enabling the rate limiter to perform effectively.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Storing RateLimiter Rules
 
@@ -364,8 +356,7 @@ By checking that the request count has not crossed the limit. We know that the c
 5. **If the request count exceeds the limit**, the request is denied.
 
 ![RateLimiter Rules2](https://static.wixstatic.com/media/99fa54_a178d842377a49afa7baa3124b2368b4~mv2.png/v1/fill/w_893,h_894,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_a178d842377a49afa7baa3124b2368b4~mv2.png)
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 # DEEP DIVE INSIGHTS :Token Bucket Algorithm
 
@@ -423,7 +414,7 @@ The following diagram explains how the algorithm works. Follow the diagram chron
     <td></td>
   </tr>
 </table>
-
+<hr style="border:2px solid gray">
 ## DEEP DIVE INSIGHTS :Leaky Bucket Algorithm
 
 The most intuitive way to understand the Leaky Bucket Algorithm is to visualize a leaky bucket.
@@ -452,9 +443,7 @@ Now, refer to the following diagram to understand the algorithm better:
   - **Processing rate** = **4 requests per 60 sec**.  
 
 ![Leaky Bucket3](https://static.wixstatic.com/media/99fa54_ff79aa503ee84f1f844602b03705f98f~mv2.png/v1/fill/w_946,h_730,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_ff79aa503ee84f1f844602b03705f98f~mv2.png)  
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Fixed Window Counter Algorithm
 
@@ -477,6 +466,7 @@ At the start of each new minute, the counter **resets to 0**.
 - If **> 5 requests** arrive, the extra requests are **dropped** (unlike the Leaky Bucket Algorithm, where requests might be queued).
 
 This ensures **efficient rate limiting** without carrying over excess traffic.
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Sliding Window Log Algorithm
 
@@ -511,6 +501,7 @@ At **t = 59 sec**, the window's capacity exceeds **3**, so the **59 sec request 
 ```
 The Sliding Window Log Algorithm is precise but uses more memory since even rejected requests' logs (timestamps) are stored.
 ```
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Sliding Window Counter Algorithm
 
@@ -528,7 +519,8 @@ Consider the following scenario:
 
 - **Max allowed requests** = 6 per minute.
 
-![Sliding Window Counter1](https://static.wixstatic.com/media/99fa54_b005278ff79748ad8b2908af4060e8c4~mv2.png/v1/fill/w_1060,h_521,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_b005278ff79748ad8b2908af4060e8c4~mv2.png) 
+![Sliding Window Counter1](https://static.wixstatic.com/media/99fa54_b005278ff79748ad8b2908af4060e8c4~mv2.png/v1/fill/w_1060,h_521,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_b005278ff79748ad8b2908af4060e8c4~mv2.png)
+
 
 ### Fixed Window Algorithm
 

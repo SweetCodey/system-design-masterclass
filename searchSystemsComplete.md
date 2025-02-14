@@ -1,43 +1,42 @@
 # DESIGN SEARCH SYSTEMS
 
-#### [Functional Requirements](#deciding-requirements-functional-requirements)
+- [1.Functional Requirements](#functional-requirements)
 
-#### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+- [2.Non Functional Requirements](#non-functional-requirements)
 
-#### [DAU-MAU](#capacity-estimation-dau-mau)
+- [3.DAU-MAU](#dau-mau)
 
-#### [Throughput](#capacity-estimation-throughput)
+- [4.Throughput](#throughput)
 
-#### [Storage](#capacity-estimation-storage)
+- [5.Storage](#storage)
 
-#### [Memory](#capacity-estimation-memory)
+- [6.Memory](#memory)
 
-#### [Network and Bandwidth Estimation](#capacity-estimation-network-and-bandwidth)
+- [7.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-#### [API Design:Search](#api-design-search)
+- [8.API Design:Search](#api-design-search)
 
-#### [HIGH LEVEL DESIGN:Search Suboptimal](#high-level-design-search-suboptimal)
+- [9.HIGH LEVEL DESIGN:Search Suboptimal](#high-level-design-search-suboptimal)
 
-#### [HIGH LEVEL DESIGN:Search Indexing](#high-level-design-search-indexing)
+- [10.HIGH LEVEL DESIGN:Search Indexing](#high-level-design-search-indexing)
 
-#### [HIGH LEVEL DESIGN:How to support Fuzzy Search](#high-level-design-how-to-support-fuzzy-search)
+- [11.HIGH LEVEL DESIGN:How to support Fuzzy Search](#high-level-design-how-to-support-fuzzy-search)
 
-#### [HIGH LEVEL DESIGN:Ranking](#high-level-design-ranking)
+- [12.HIGH LEVEL DESIGN:Ranking](#high-level-design-ranking)
 
-#### [HIGH LEVEL DESIGN:Search Final Design](#high-level-design-search-final-design)
+- [13.HIGH LEVEL DESIGN:Search Final Design](#high-level-design-search-final-design)
 
-#### [Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+- [14.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
 
-#### [Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+- [15.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
 
-#### [Deep Dive Insights:Into Query Correction Service](#deep-dive-insights-into-query-correction-service)
+- [16.Deep Dive Insights:Into Query Correction Service](#deep-dive-insights-into-query-correction-service)
 
-#### [Deep Dive Insights:Elastic Search](#deep-dive-insights-elastic-search)
+- [17.Deep Dive Insights:Elastic Search](#deep-dive-insights-elastic-search)
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## DECIDING REQUIREMENTS :Functional Requirements
+## Functional Requirements
 
 | Requirement      | Description |
 |-----------------|------------|
@@ -56,10 +55,9 @@ User misspells and searches for "quantom computing" instead. Still he sees the c
 
 ![Quantum Computing](https://static.wixstatic.com/media/99fa54_2219517c462d492fa5bc6595b204791f~mv2.png/v1/fill/w_1005,h_1480,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_2219517c462d492fa5bc6595b204791f~mv2.png)
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## DECIDING REQUIREMENTS :Non Functional Requirements
+## Non Functional Requirements
 
 <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
   <tr>
@@ -79,11 +77,9 @@ User misspells and searches for "quantom computing" instead. Still he sees the c
     <td>The user base of the platform is expected to grow with time. The system should be able to scale up in the future smoothly.</td>
   </tr>
 </table>
+<hr style="border:2px solid gray">
 
-<br><br>
-<hr style="border:3px solid gray">
-
-## CAPACITY ESTIMATION :DAU MAU
+## DAU MAU
 <table border="1" style="border-collapse: collapse;">
   <tr>
     <th>Metric</th>
@@ -98,11 +94,9 @@ User misspells and searches for "quantom computing" instead. Still he sees the c
     <td>400 million</td>
   </tr>
 </table>
+<hr style="border:2px solid gray">
 
-<br><br>
-<hr style="border:3px solid gray">
-
-## CAPACITY ESTIMATION :Throughput
+## Throughput
 
 Since we are designing the search functionality on Twitter, we will calculate the throughput only for search operations. Every search operation reads some information (searches) from our system.
 
@@ -122,10 +116,9 @@ DAU × 5 searches per day<br><br>
 **Searches per second:**
 =500 Million searches/(24 × 60 × 60) seconds per day
 ≈ 5,787 searches per second
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION :Storage
+## Storage
 
 ### Designing Twitter Search Functionality
 
@@ -149,13 +142,9 @@ Total storage per day<br><br>
 #### Total storage in 10 years
 = 20 GB/day × 365 days/year × 10 years = 73,000 GB
 = **73 TB.**
+<hr style="border:2px solid gray">
 
-<br><br>
-<hr style="border:3px solid gray">
-
-## CAPACITY ESTIMATION :Memory
-
-
+## Memory
 By memory, we mean cache memory size.
 
 Accessing data from a database takes a long time, but if we want to access it faster, we use cache.
@@ -166,11 +155,9 @@ This means the memory required for cache:
 =**0.05 × 20 GB = 1 GB/day**
 
 ### ***The memory size should also scale as our system grows.***
+<hr style="border:2px solid gray">
 
-<br><br>
-<hr style="border:3px solid gray">
-
-## CAPACITY ESTIMATION :Network and Bandwidth
+## Network and Bandwidth
 
 Network / Bandwidth estimation tells us how much data flows in and out of our system per second.
 
@@ -182,9 +169,8 @@ Incoming data in a day is ultimately saved in the storage.
 - Therefore, **incoming data in a day** = **20 GB/day**  
 - Hence, **incoming data per second**:
 
-  \[
-  20 \,GB \, (24 \times 60 \times 60) \approx 231 \,KB/sec
-  \]
+  20GB/(24 * 60 * 60) =approx ***231KB/sec
+ 
 
 ### Data Flow Out of Our System (Egress)
 
@@ -202,9 +188,7 @@ Outgoing data represents the data read or searched from our system.
 - Hence, **outgoing data per second**:
 = 1000 GB/(24 * 60 *60)
 =approx **11.5 MB/sec**
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## API DESIGN :Search
 
@@ -235,9 +219,7 @@ To avoid this confusion:
 - We convert the space to `%20` in the URL.  
 - This process is technically called **encoding**, where we convert special characters that might cause issues, like spaces, into a format that won't confuse the server.  
 - The backend understands this encoding well and converts them back into their original characters, a process known as **decoding**.
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Search Suboptimal
 
@@ -266,9 +248,7 @@ You might have guessed that this approach would work, but it is very **unoptimiz
 
 
 Let's now try to optimize this.
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Search Indexing
 
@@ -307,9 +287,7 @@ This **'magic list'** is what we call an **Index DB**. When John searches for *"
 
 
 With this optimized approach, searching becomes much faster, eliminating the need to scan every tweet in the database.
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :How to support Fuzzy Search
 
@@ -357,6 +335,7 @@ Let's understand from the diagram below how the server corrects the incorrect wo
 
 ![Fuzzy Search](https://static.wixstatic.com/media/99fa54_125356b59dad4809a3e14eff226f3f38~mv2.png/v1/fill/w_1120,h_739,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_125356b59dad4809a3e14eff226f3f38~mv2.png)
 This process ensures that even if users make spelling errors in their search queries, they still get relevant results using **Fuzzy Search**.
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Ranking
 
@@ -413,7 +392,7 @@ Let's understand this step-by-step. Most of the flow is the same as a standard s
 ![Ranking](https://static.wixstatic.com/media/99fa54_81da243452b147628a7a3a377430fb48~mv2.png/v1/fill/w_1120,h_738,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_81da243452b147628a7a3a377430fb48~mv2.png)
 
 By structuring the system this way, Twitter ensures **efficient, accurate, and scalable** tweet searches while keeping components flexible for future improvements.
-
+<hr style="border:2px solid gray">
 ## HIGH LEVEL DESIGN :Search Final Design
 
 Let's take a look at the final design diagram for the search, including all the components—**Fuzzy Search**, **Ranking**, and **Caches** next to both databases to store frequently accessed data.
@@ -458,8 +437,7 @@ John opens Twitter and searches for **"quantum computing."** As soon as he does 
 
 ![Final Design](https://static.wixstatic.com/media/99fa54_befe1fa8149b42dd9bb7441a3e2af73a~mv2.png/v1/fill/w_1120,h_674,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_befe1fa8149b42dd9bb7441a3e2af73a~mv2.png)
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS: Database Selection
 
@@ -514,8 +492,7 @@ The table below provides a high-level comparison of when to use **SQL** vs **NoS
     </tbody>
   </table>
 
-<br><br>
-<hr style="border:3px solid gray">  
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS: Data Modeling
 
@@ -544,9 +521,7 @@ Because we have this common query to find the tweet by tweet ID, we create an in
 
 **Note:**  
 Because we have this common query to grab all the tweet IDs for a keyword, we create an index on the keyword field. This sets a shortcut to quickly find the data by keyword.
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Into Query Correction Service
 
@@ -603,9 +578,7 @@ The Query Correction Service does something similar:
 2. It chooses the one with the **minimum distance**.
 
 This is the most likely option that John intended to type.
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Elastic Search
 

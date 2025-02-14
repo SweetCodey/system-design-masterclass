@@ -1,55 +1,54 @@
 # TINYURL SYSTEM DESIGN
 
-#### [What is a Tiny URL](#introduction-what-is-a-tiny-url-service)
+- [1.What is a Tiny URL](#what-is-a-tiny-url-service)
 
-#### [Why do we need a Tiny URL Service](#introduction-why-do-we-need-a-tiny-url-service)
+- [2.Why do we need a Tiny URL Service](#why-do-we-need-a-tiny-url-service)
 
-#### [Functional Requirements](#deciding-requirements-functional-requirements)
+- [3.Functional Requirements](#functional-requirements)
 
-#### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+- [4.Non Functional Requirements](#non-functional-requirements)
 
-#### [DAU-MAU](#capacity-estimation-dau-mau)
+- [5.DAU-MAU](#dau-mau)
 
-#### [Throughput](#capacity-estimation-throughput)
+- [6.Throughput](#throughput)
 
-#### [Storage](#capacity-estimation-storage)
+- [7.Storage](#storage)
 
-#### [Memory](#capacity-estimation-memory)
+- [8.Memory](#memory)
 
-#### [Network and Bandwidth Estimation](#capacity-estimation-network-and-bandwidth)
+- [9.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-#### [API Design:Generate a Short URL](#api-design-generate-a-short-url)
+- [10.API Design:Generate a Short URL](#api-design-generate-a-short-url)
 
-#### [API Design:Get long URL](#api-design-get-long-url)
+- [11.API Design:Get long URL](#api-design-get-long-url)
 
-#### [HIGH LEVEL Design:Generate short URL](#high-level-design-generate-short-url)
+- [12.HIGH LEVEL Design:Generate short URL](#high-level-design-generate-short-url)
 
-#### [HIGH LEVEL Design:Problem Collisions](#high-level-design-problem-collisions)
+- [13.HIGH LEVEL Design:Problem Collisions](#high-level-design-problem-collisions)
 
-#### [HIGH LEVEL Design:Approach 2 Random String Generation using LongURL](#high-level-design-approach-2-random-string-generation-using-longurl)
+- [14.HIGH LEVEL Design:Approach 2 Random String Generation using LongURL](#high-level-design-approach-2-random-string-generation-using-longurl)
 
-#### [HIGH LEVEL Design:Approach 3 Check DB for Collisions](#high-level-design-approach-3-check-db-for-collisions)
+- [15.HIGH LEVEL Design:Approach 3 Check DB for Collisions](#high-level-design-approach-3-check-db-for-collisions)
 
-#### [HIGH LEVEL Design:Approach 4 Let us keep Counters](#high-level-design-approach-4-let-us-keep-counters)
+- [16.HIGH LEVEL Design:Approach 4 Let us keep Counters](#high-level-design-approach-4-let-us-keep-counters)
 
+- [17.HIGH LEVEL Design:Approach 4 Continued Zookeper](#high-level-design-approach-4-continued-zookeeper)
 
-#### [HIGH LEVEL Design:Approach 4 Continued Zookeper](#high-level-design-approach-4-continued-zookeeper)
+- [18.HIGH LEVEL Design:Approach 4 Base 62 Encoding](#high-level-design-approach-4-base-62-encoding)
 
+- [19.HIGH LEVEL Design:Approach 4 Final Design Diagram](#high-level-design-approach-4-final-design-diagram)
 
-#### [HIGH LEVEL Design:Approach 4 Base 62 Encoding](#high-level-design-approach-4-base-62-encoding)
+- [20.HIGH LEVEL Design:Get Long URL](#high-level-design-get-long-url)
 
-#### [HIGH LEVEL Design:Approach 4 Final Design Diagram](#high-level-design-approach-4-final-design-diagram)
+- [21.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
 
-#### [HIGH LEVEL Design:Get Long URL](#high-level-design-get-long-url)
+- [22.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
 
-#### [Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+- [23.Deep Dive Insights:Redirection from short URL](#deep-dive-insights-redirection-from-short-url)
 
-#### [Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+<hr style="border:2px solid gray">
 
-#### [Deep Dive Insights:Redirection from short URL](#deep-dive-insights-redirection-from-short-url)
-
-
-## INTRODUCTION :What is a Tiny URL Service
+## What is a Tiny URL Service
 Before designing the Tiny URL Service, let's first understand what exactly it is.
 
 A **Tiny URL Service**, also known as a **URL Shortener Service**, helps shorten long URLs.
@@ -61,10 +60,9 @@ A **Tiny URL Service**, also known as a **URL Shortener Service**, helps shorten
 
 ![tinyUrl](https://static.wixstatic.com/media/99fa54_966d0d9626d14f5897118fe822059ce2~mv2.png/v1/fill/w_1120,h_364,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_966d0d9626d14f5897118fe822059ce2~mv2.png)
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## INTRODUCTION: Why Do We Need a Tiny URL Service?
+## Why Do We Need a Tiny URL Service?
 
 ### Why Do We Need to Shorten URLs?
 
@@ -78,8 +76,6 @@ A **Tiny URL Service**, also known as a **URL Shortener Service**, helps shorten
 
 Imagine trying to share the long URL above on social media. It’s cumbersome and prone to errors. A short URL, on the other hand, is simple to share and remember.
 
-
-
 #### 2. Character Limits
 
 **Long URL Tweet:**  
@@ -90,7 +86,6 @@ Imagine trying to share the long URL above on social media. It’s cumbersome an
 
 Platforms like Twitter have character limits. Short URLs save space, so you can write more.
 
----
 
 #### 3. Clean and Professional
 
@@ -98,11 +93,12 @@ Platforms like Twitter have character limits. Short URLs save space, so you can 
 
 Hello Team,
 
+```
 Please check the report here: https://www.example.com/reports/2024/Q1/financials/summary?format=pdf&source=email.
+```
 
 Best,
 John
-
 
 
 **Short URL Email:**  
@@ -117,10 +113,9 @@ John
 
 The short URL looks cleaner and more professional in emails or documents, improving the overall presentation and readability.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## DECIDING REQUIREMENTS: Functional Requirements
+## Functional Requirements
 
 
 #### **Generate a Short URL**
@@ -129,12 +124,11 @@ The short URL looks cleaner and more professional in emails or documents, improv
 #### **Get Long URL**
 - The service takes a short URL as input and returns the original long URL.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## DECIDING REQUIREMENTS: Non-Functional Requirements
+## Non-Functional Requirements
 
-<details>
+
   <table border="1" style="width:100%; border-collapse: collapse;">
     <thead>
       <tr>
@@ -161,22 +155,20 @@ The short URL looks cleaner and more professional in emails or documents, improv
       </tr>
     </tbody>
   </table>
-</details>
 
-<br><br>
-<hr style="border:3px solid gray">
 
-## CAPACITY ESTIMATION: DAU MAU
+<hr style="border:2px solid gray">
+
+## DAU MAU
 
 #### How many users will be using your software?
 
 - **Daily Active Users (DAU)**: 300 million  
 - **Monthly Active Users (MAU)**: 1 billion
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: Throughput
+## Throughput
 
 #### Write Operations
 
@@ -210,11 +202,9 @@ There is only one way to read data from the system:
 
 ##### **Calculations:**
 300 million DAU × 20 requests per user per day = 6 billion get long URL requests per day
+<hr style="border:2px solid gray">
 
-<br><br>
-<hr style="border:3px solid gray">
-
-## CAPACITY ESTIMATION: Storage
+## Storage
 
 ### URL Mappings Data
 
@@ -235,19 +225,18 @@ From throughput estimation, we know there are **150 million 'create short URL' r
 #### **Storage Requirements Calculation**
 
 - **Total storage per day:**  
-  \(150 million requests \times 200 bytes = 30 GB/day\)
+  (150 million requests * 200 bytes = 30 GB/day)
 
 - **Total storage for 10 years:**  
-  \(30 GB/day \times 365 \times 10 = 109.5 TB\)
+  (30 GB/day * 365 * 10 = 109.5 TB)
 
 #### **Summary**
 - **Daily Storage Requirement:** 30 GB/day  
 - **10-Year Storage Requirement:** 109.5 TB  
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: Memory
+## Memory
 
 By memory, we mean **cache memory size**.
 
@@ -261,10 +250,9 @@ Accessing data from the database takes a long time. However, if we want to acces
 #### Scalability
 The memory size should also scale as our system grows to accommodate increasing storage needs efficiently.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: Network and Bandwidth
+## Network and Bandwidth
 
 Network/Bandwidth estimation tells us how much data flows in and out of our system per second.
 
@@ -302,8 +290,7 @@ Outgoing data refers to the data read from our system.
 #### **Result:**  
 - **Egress Data Flow = 13.8 MB/s**
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## API DESIGN :Generate a Short URL
 
@@ -343,8 +330,7 @@ We have told the server to shorten the long URL, but we haven't specified which 
   "longUrl": "Your long URL here"
 }
 ```
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## API DESIGN :Get Long URL
 
@@ -364,8 +350,7 @@ This tells the server where to perform the action. We are fetching long url reco
 ### Note
 `GET` requests do not include a body because they are used to **fetch information**, not to **send data**.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Generate Short URL
 
@@ -388,8 +373,7 @@ Let's look at the end-to-end flow for generating a short URL for a long URL. The
 5. **Response:**  
    The generated short URL is returned back to the client.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Problem Collisions
 
@@ -406,8 +390,7 @@ It happens when two different long URLs get the same short URL.
 
 Collisions can cause problems because the system will get confused about which original URL to open when someone clicks on the short URL.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN: Approach 1-Random String Generation
 
@@ -431,8 +414,7 @@ However, when we run the same random string algorithm on two different servers i
 
 So, we can't use this approach to avoid collisions.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN: Approach 2 Random String Generation using LongURL
 
@@ -447,7 +429,6 @@ To solve this, we can use an algorithm that generates unique random strings, eve
 - So, if we run MD5 on two different long URLs, it will produce two unique short URLs with no collisions.
 
 ![APPROCH2-01](https://static.wixstatic.com/media/99fa54_1f378f2a9ffa4f1b96d349c2b878ef03~mv2.png/v1/fill/w_1110,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/99fa54_1f378f2a9ffa4f1b96d349c2b878ef03~mv2.png)
-
 
 
 It seems like we solved the problem, right? Actually, no. The output string of MD5 is very long (more than 20 characters). We need a short URL, and more than 20 characters is too long, so this doesn't solve our short URL problem.
@@ -465,8 +446,7 @@ One idea is to take, let's say, the first 7 characters from the MD5 output. Will
 #### Conclusion
 Therefore, we can't use this approach either.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Approach 3 Check DB for Collisions
 
@@ -495,8 +475,7 @@ This solves the problem but introduces another issue.
 
 Since we need **low latency** (as per our non-functional requirements), we can't use this approach.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Approach 4 Let us Keep Counters
 
@@ -530,8 +509,7 @@ However, when we run this algorithm independently on different servers, the same
 
 #### ZooKeeper solves this exact problem. Interested in learning how? Let's explore this next. ###
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Approach 4 Continued :ZooKeeper
 
@@ -553,8 +531,7 @@ ZooKeeper helps coordinate between all the servers to make sure there are no col
 
 #### This way, ZooKeeper brings coordination among all servers and solves the collision problem completely.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Approach 4 Base 62 Encoding
 
@@ -611,9 +588,7 @@ In fact, with **7 characters**, we can generate:
 This is more than enough for our scale.
 
 Therefore, by using **Base 62**, we can generate a large number of short URLs efficiently.
-
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Approach 4 :Final Design Diagram
 
@@ -637,8 +612,7 @@ The final flow looks as follows. The following steps occur corresponding to the 
 
 6. The generated short URL is returned back to the client.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN: Get Long URL
 
@@ -661,8 +635,7 @@ Let's look at the end-to-end flow for getting the long URL. The following steps 
 5. **Response to User**  
    The `GetLongURL` Service returns the long URL (e.g., `www.google.com`) to the API Gateway, which then sends it back to the user.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS: Database Selection
 
@@ -711,8 +684,7 @@ In order to decide the DB type, here are some general guidelines to follow. Howe
   </tbody>
 </table>
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS: Data Modeling
 
@@ -732,8 +704,7 @@ In order to decide the DB type, here are some general guidelines to follow. Howe
 - The database is **automatically indexed on the key**, which is the short URL.  
 - This allows for **fast lookups and retrievals**.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Redirection from Short URL
 

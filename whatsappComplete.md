@@ -1,52 +1,52 @@
 # WHATSAPP SYSTEM DESIGN
 
-#### [Functional Requirements](#deciding-requirements-functional-requirements)
+- [1.Functional Requirements](#functional-requirements)
 
-#### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+- [2.Non Functional Requirements](#non-functional-requirements)
 
-#### [DAU-MAU](#capacity-estimation-dau-mau)
+- [3.DAU-MAU](#dau-mau)
 
-#### [Throughput](#capacity-estimation-throughput)
+- [4.Throughput](#throughput)
 
-#### [Storage](#capacity-estimation-storage)
+- [5.Storage](#storage)
 
-#### [Memory](#capacity-estimation-memory)
+- [6.Memory](#memory)
 
-#### [Network and Bandwidth Estimation](#capacity-estimation-network-and-bandwidth-estimation)
+- [7.Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
 
-#### [API Design:One-One-Messaging](#api-design-one-one-messaging)
+- [8.API Design:One-One-Messaging](#api-design-one-one-messaging)
 
-#### [API Design:Message Status](#api-design-message-status)
+- [9.API Design:Message Status](#api-design-message-status)
 
-#### [API Design:Online Status](#api-design-online-status)
+- [10.API Design:Online Status](#api-design-online-status)
 
-#### [API Design:Group Messaging](#api-design-group-messaging)
+- [11.API Design:Group Messaging](#api-design-group-messaging)
 
-#### [HIGH LEVEL DESIGN:How is WebSocket Connection Established](#high-level-design-how-is-websocket-connection-established)
+- [12.HIGH LEVEL DESIGN:How is WebSocket Connection Established](#high-level-design-how-is-websocket-connection-established)
 
-#### [HIGH LEVEL DESIGN:One One Messaging](#high-level-design-one-one-messaging)
+- [13.HIGH LEVEL DESIGN:One One Messaging](#high-level-design-one-one-messaging)
 
-#### [HIGH LEVEL DESIGN:One One Messaging Offline Client](#high-level-design-one-one-messaging-offline-client)
+- [14.HIGH LEVEL DESIGN:One One Messaging Offline Client](#high-level-design-one-one-messaging-offline-client)
 
-#### [HIGH LEVEL DESIGN:One One Messaging Final Design](#high-level-design-one-one-messaging-final-design)
+- [15.HIGH LEVEL DESIGN:One One Messaging Final Design](#high-level-design-one-one-messaging-final-design)
 
-#### [HIGH LEVEL DESIGN:One One Messaging Image Video Document](#high-level-design-one-one-messaging-image-video-document)
+- [16.HIGH LEVEL DESIGN:One One Messaging Image Video Document](#high-level-design-one-one-messaging-image-video-document)
 
-#### [HIGH LEVEL DESIGN:Message Status](#high-level-design-message-status)
+- [17.HIGH LEVEL DESIGN:Message Status](#high-level-design-message-status)
 
-#### [HIGH LEVEL DESIGN:Online Status](#high-level-design-online-status)
+- [18.HIGH LEVEL DESIGN:Online Status](#high-level-design-online-status)
 
-#### [HIGH LEVEL DESIGN:Group Messages](#high-level-design-group-messages)
+- [19.HIGH LEVEL DESIGN:Group Messages](#high-level-design-group-messages)
 
-#### [Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+- [20.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
 
-#### [Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+- [21.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
 
-#### [Deep Dive Insights:End to End Encryption](#deep-dive-insights-end-to-end-encryption)
+- [22.Deep Dive Insights:End to End Encryption](#deep-dive-insights-end-to-end-encryption)
 
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## DECIDING REQUIREMENTS: Functional Requirements
+## Functional Requirements
 
 ####  One-to-One Messaging
 Users should be able to send messages directly to each other. The messages must be delivered instantly, in real-time. The app must support not only text messages but also images, videos, and other attachments.
@@ -64,12 +64,11 @@ After sending a message, users can see its status:
 
 ####  Groups
 The app will also support group chats.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
 
-## DECIDING REQUIREMENTS: Non-Functional Requirements
+## Non-Functional Requirements
 
 | **Requirement** | **Description** |
 |-----------------|-----------------|
@@ -77,10 +76,9 @@ The app will also support group chats.
 | ***Low Latency*** | Messages should send quickly without delays. The system should feel instant, like real-time conversation. |
 | ***Scalability*** | Our system must handle a very large number of users, potentially millions, at the same time. As more users join, the system should easily manage the increasing load. |
 | ***Security*** | Messages should be end-to-end encrypted. This means that only the sender and receiver can read the messages. Nobody else can see them, not even the people who run the app. |
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: DAU MAU
+## DAU MAU
 
 ### How many users will be using your software in a single day?
 
@@ -89,10 +87,9 @@ The app will also support group chats.
 
 ####  Monthly Active Users (MAU)
 2 billion
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: Throughput
+## Throughput
 
 Let's calculate how many reads and writes we do to the system.
 
@@ -137,10 +134,9 @@ Let's assume a user sends 10 messages in a day.
   `DAU X 10 messages per day X 3 reads per message`  
   `= 1 Billion X 10 X 3 = 30 Billion messages/day`  
   `= 0.34 million read requests per second`
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: Storage
+## Storage
 
 Text messages are usually around 100 Bytes.
 
@@ -162,11 +158,9 @@ From throughput estimation, we know there are 30 Billion write requests per day.
 
 - **Total storage in 10 years**  
   `(78 TB/day × 365 × 10) = 284 PB`
+<hr style="border:2px solid gray">
 
-<br><br>
-<hr style="border:3px solid gray">
-
-## CAPACITY ESTIMATION: Memory
+## Memory
 
 By memory, we mean cache memory size.
 
@@ -180,10 +174,9 @@ The amount of cache memory required every day can simply be taken as:
 
 
 ####  The memory size should also scale as our system grows.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: Network and Bandwidth Estimation
+## Network and Bandwidth Estimation
 
 Network / Bandwidth estimation tells us how much data flows in and out of our system per second.
 
@@ -198,8 +191,7 @@ Incoming data in a day is ultimately saved in the storage.
 We have seen in the throughput section that in our system, the number of reads and writes per day are roughly the same. This means the data going out each day matches the data coming in.
 
 - **Therefore:** Outgoing data per second ≈ Incoming data per second ≈ **950 MB/sec**
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
 ## API DESIGN :One One Messaging
@@ -278,8 +270,7 @@ This makes communication faster.
 
 ###  Important Note
 WebSockets maintain a **continuous, open connection** that allows direct data exchanges without the traditional HTTP request-response model. Therefore, there is **no need for specific API design details** like HTTP methods (`GET`, `POST`, `PUT`, `DELETE`), endpoints, or bodies. Both the client and server can directly send data to each other.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## API DESIGN :Message Status
 
@@ -299,8 +290,7 @@ When a message travels from the sender to the receiver, it goes through three st
 
 
 WhatsApp Servers inform the client about the message status (Sent, Delivered, Read) using the same WebSocket connection that was established. As the status changes— **Sent → Delivered → Read**—the server sends the updates to the client. The app then displays the appropriate ticks.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## API DESIGN :Online Status
 
@@ -318,8 +308,7 @@ As shown in the example, **Emily's phone (Client)** continuously updates the **W
 When **Max asks** - "When was Emily last active?", the server provides this information. This communication also occurs over the **WebSocket connection** established between Max and the WhatsApp Server.
 
 ![online status](https://static.wixstatic.com/media/99fa54_8e384081b63c4bbab53a64790885d3c9~mv2.png/v1/fill/w_1013,h_720,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_8e384081b63c4bbab53a64790885d3c9~mv2.png)
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## API DESIGN :Group Messaging
 
@@ -336,8 +325,7 @@ As you can see in the image below, Max, Amanda, and Mike are in a WhatsApp group
 2. The **WhatsApp Server** then relays this message to the other group members (Amanda and Mike), again using their respective **WebSocket connections**.
 
 ![Group Messaging Example](https://static.wixstatic.com/media/99fa54_b4a5ab4b1e144f118f14f8a493ae11c1~mv2.png/v1/fill/w_1051,h_848,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_b4a5ab4b1e144f118f14f8a493ae11c1~mv2.png)
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :How is WebSocket Connection Established?
 
@@ -395,8 +383,7 @@ These mappings are created by the **WebSocket Connections Manager Service** at t
 - Multiple clients can connect to the same WebSocket Handler.
 - Additionally, these WebSocket Handlers are interconnected and communicate with each other using WebSockets.
 - Managing numerous open and persistent connections is a complex task, which is why WebSocket Handlers aren't assigned any other major responsibility.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :One One Messaging
 
@@ -436,8 +423,7 @@ Imagine just after step 4, as WebSocket Handler 2 is about to send the message t
 ### Solution
 What can we do to avoid this situation?  
 The solution is simpler than you might think. Take a minute to think about it.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :One One Messaging Offline Client
 
@@ -495,8 +481,7 @@ Here's what happens next:
    - Message Service finds one such message ("Hi Emily") and returns it to **WebSocket Handler 2**.
 
 4. **Step 8:** WebSocket Handler 2 sends **"Hi Emily"** to Emily.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :One One Messaging Final Design
 
@@ -531,8 +516,7 @@ After adding the **Message Service** and **Messages DB**, the overall 1:1 messag
    Ultimately, **WebSocket Handler 2** sends this message to **Emily**.
 
 ![one-one messaging problem](https://static.wixstatic.com/media/99fa54_37fb3cce4869490580d1f6019466e480~mv2.png/v1/fill/w_1120,h_659,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_37fb3cce4869490580d1f6019466e480~mv2.png)
-<br><br>
-<hr style="border:3px solid gray"> 
+<hr style="border:2px solid gray">
 
 
 ## HIGH LEVEL DESIGN :One One Messaging Image Video Document
@@ -563,8 +547,7 @@ This flow is conceptually very similar to text messaging, but the difference her
 - **...**  
 - **Step 7:** Emily receives the **URL** of the uploaded image.  
 - **Step 8:** At this step, she actually downloads the image from the **CDN**.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Message Status
 
@@ -612,8 +595,7 @@ The flow is very similar to the 'Delivered' status, with a small change. This ti
 - **Step 19:** The Connections Manager checks the cache and finds that it's connected to **WebSocket Handler 1.**  
 - **Step 20:** Therefore, WebSocket Handler 2 informs WebSocket Handler 1 that Max's **"Hi Emily"** message has been read.  
 - **Step 21:** WebSocket Handler 1 then notifies Max about this. Now, Max sees a **double blue tick (![alt text](image-2.png))** on that message.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Online Status
 
@@ -677,8 +659,7 @@ Every time the app is open or in an active state in the foreground, it sends a s
 3. The Last Seen Service checks the **Last Seen DB** for the last active time of Max.
   
 4. WebSocket Handler 2 informs Emily that Max was last online on **August 4th, 2024, at 13:09:00**.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Group Messages
 
@@ -728,8 +709,7 @@ Conceptually, this flow is very similar to 1:1 messaging, but there are a few nu
 
 10. **Final delivery:**  
    The WebSocket Handlers deliver the message to the respective users.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Database Selection
 
@@ -754,8 +734,7 @@ In order to decide the DB type, here are some general guidelines that you can fo
 | **MessagesDB** | <ul><li>Messages can be of different types: text, images, videos, and documents, so they don't have a fixed structure.</li><li>High scale: storing messages for billions of users daily.</li><li>Super-fast reads and writes for real-time message delivery.</li></ul> | **NoSQL**    |
 | **GroupsDB**   | <ul><li>Fast access: group messages need to be delivered in real-time with low latency.</li><li>Simple query pattern: retrieve users in a group using key-value pairs (GroupId → List of UserIds).</li></ul> | **NoSQL**    |
 | **Last Seen DB**| <ul><li>High scale: billions of users making frequent updates.</li><li>Fast access: last seen time should display instantly.</li><li>Simple query pattern: retrieve the last seen time for a given userId.</li></ul> | **NoSQL**    |
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :Data Modeling
 
@@ -794,8 +773,7 @@ In order to decide the DB type, here are some general guidelines that you can fo
 - **Indexing:** `clientId`  
 
 **Note:** Because we have this common query to grab the last seen time for a client, we create an index on this field. This will set a shortcut to quickly find the data by `clientId`.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS :End to End Encryption
 
