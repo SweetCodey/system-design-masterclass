@@ -1,49 +1,48 @@
 # AIRBNB SYSTEM DESIGN
 
-#### [Functional Requirements](#deciding-requirements-functional-requirements)
+- [1.Functional Requirements](#functional-requirements)
 
-#### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+- [2.Non Functional Requirements](#non-functional-requirements)
 
-#### [DAU-MAU](#capacity-estimation-dau-mau)
+- [3.DAU-MAU](#dau-mau)
 
-#### [Throughput](#capacity-estimation-throughput)
+- [4.Throughput](#throughput)
 
-#### [Storage](#capacity-estimation-storage)
+- [5.Storage](#storage)
 
-#### [Memory](#capacity-estimation-memory)
+- [6.Memory](#memory)
 
-#### [Network and Bandwidth Estimation](#capacity-estimation-network-and-bandwidth)
+- [7.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-#### [API Design:Add Property](#api-design-add-property)
+- [8.API Design:Add Property](#api-design-add-property)
 
-#### [API Design:View Bookings](#api-design-view-bookings)
+- [9.API Design:View Bookings](#api-design-view-bookings)
 
-#### [API Design:Search Properties](#api-design-search-properties)
+- [10.API Design:Search Properties](#api-design-search-properties)
 
-#### [API Design:View Property](#api-design-view-property)
+- [11.API Design:View Property](#api-design-view-property)
 
-#### [API Design:Book Property](#api-design-book-property)
+- [12.API Design:Book Property](#api-design-book-property)
 
-#### [HIGH LEVEL Design:Add Property](#high-level-design-add-property)
+- [13.HIGH LEVEL Design:Add Property](#high-level-design-add-property)
 
-#### [HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
+- [14.HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
 
-#### [HIGH LEVEL Design:Search Properties](#high-level-design-search-properties)
+- [15.HIGH LEVEL Design:Search Properties](#high-level-design-search-properties)
 
-#### [HIGH LEVEL Design:View Property](#high-level-design-view-property)
+- [16.HIGH LEVEL Design:View Property](#high-level-design-view-property)
 
-#### [HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
+- [17.HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
 
-#### [Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+- [18.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
 
-#### [Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+- [19.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
 
-#### [Deep Dive Insights:Handling Concurrent Booking Updates](#deep-dive-insights-handling-concurrent-booking-updates)
+- [20.Deep Dive Insights:Handling Concurrent Booking Updates](#deep-dive-insights-handling-concurrent-booking-updates)
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-##  DECIDING REQUIREMENTS: Functional Requirements
+## Functional Requirements
 
 There will be two types of users:
 
@@ -101,10 +100,9 @@ There will be two types of users:
   </tbody>
 </table>
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## DECIDING REQUIREMENTS :Non-Functional Requirements
+## Non-Functional Requirements
 
 ###   Non-Functional Requirements for Property Owners
 
@@ -128,7 +126,7 @@ There will be two types of users:
 </table>
 
 
-###   DECIDING REQUIREMENTS: Non-Functional Requirements for Guests
+## Non-Functional Requirements for Guests
 
 <table border="1" cellspacing="0" cellpadding="8">
   <thead>
@@ -153,10 +151,9 @@ There will be two types of users:
   </tbody>
 </table>
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-##  CAPACITY ESTIMATION: DAU MAU
+## DAU MAU
 
 How many users will be using your software in a single day?
 
@@ -183,10 +180,9 @@ How many users will be using your software in a single day?
   </tbody>
 </table>
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-##  CAPACITY ESTIMATION: Throughput
+## Throughput
 
 ###   **Writes**  
 If we look at the functional requirements, there are only two main ways to write data into the system:
@@ -240,10 +236,9 @@ We know that the platform has **10 million Daily Active Users (DAU)**:
   </tbody>
 </table>
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-##  CAPACITY ESTIMATION: Storage
+## Storage
 
 ####    Property Data
 
@@ -288,10 +283,9 @@ From our throughput estimation, we know there are **326,667** booking requests p
   - Property Data: **52.15 TB**  
   - Booking Data: **1.19 TB**
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-##  CAPACITY ESTIMATION: Memory
+## Memory
 
 ####    Definition
 By **memory**, we mean **cache memory size**.
@@ -310,10 +304,9 @@ Let’s assume we need to cache **5% of the daily data**:
 
 The memory size should also **scale as the system grows** to meet the increasing data demands.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-##  CAPACITY ESTIMATION: Network and Bandwidth
+## Network and Bandwidth
 
 ###   Data Flow Into the System (Ingress)
 
@@ -364,8 +357,7 @@ Total data read for viewing properties = 5.88 million × 500 KB = **2.94 TB/day*
 
 - Total outgoing data per second (Egress) = **17.64 TB ÷ (24 × 60 × 60) ≈ 204.2 MB/s**
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  API DESIGN :Add Property
 
@@ -397,8 +389,7 @@ We’ve told the server we want to create a property listing, but we haven’t y
 - `images`: The associated images of that property  
 - `...`
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  API DESIGN :View Bookings
 
@@ -429,8 +420,7 @@ After sending the request, the server processes it and returns a list of booking
 - **total_price:** Total cost of the booking.  
 - **status:** The status of the booking (e.g., confirmed).  
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  API DESIGN :Search Properties
 When a guest wants to search for available properties, they send an API request to Airbnb’s servers.
@@ -459,8 +449,7 @@ This tells the server where to perform that action. Here, the guest wants to sea
 
 After sending the request, the server processes it and returns a list of available properties based on the search criteria.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  API DESIGN: View Property
 
@@ -481,8 +470,7 @@ This tells the server where to perform that action. The guest wants to view deta
 
 After sending the request, the server processes it and returns the full details of the property.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## API DESIGN :Book Property
 
@@ -561,8 +549,7 @@ Since we are creating the actual booking this time, we send the request to the `
 ####    HTTP Body
 Here, we send all the necessary details about the booking—such as which property, the guest making the booking, how many guests, and the stay dates. Along with this, we also send the payment token as proof of payment.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  HIGH LEVEL DESIGN :Add Property
 
@@ -646,8 +633,7 @@ Here’s what happens: When the property owner selects images from their device 
 ####    10. **Database Update**
 - The image URLs are now stored in the **images** column of the property table.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  HIGH LEVEL DESIGN :Search Properties
 
@@ -736,8 +722,7 @@ Basically, we are preparing the search data in advance (**proactively** & NOT **
 
 This process is called **Search Data Pre-Processing**, as it ensures the data is ready before any search happens, making it quicker to serve search results.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  HIGH LEVEL DESIGN :View Property
 
@@ -758,8 +743,7 @@ Let’s now understand how the flow works when a guest clicks on a property from
 
 This way, all the information, including images, is quickly shown to the guest.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Book Property
 
@@ -806,8 +790,7 @@ Three services pull this event from the **Message Queue**:
 - **Search Ingestion Service:**  
   Uses the Check-In & Check-Out dates from the event to update the availability of the property in the search data in the **Elastic Search Cluster**. This ensures the property won’t show up in searches for the dates it’s already booked.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  HIGH LEVEL DESIGN :View Bookings
 
@@ -824,8 +807,7 @@ Let's break down how the system works when a guest views their bookings. The sam
 
 4. Finally, the bookings are sent back to the **Guest** (or **Property Owner**) for viewing.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  DEEP DIVE INSIGHTS: Database Selection
 
@@ -924,10 +906,8 @@ In order to decide the DB type, here are some general guidelines that you can fo
 </table>
 
 </details>
-<br><br>
+
 <hr style="border:3px solid gray">
-
-
 
 ##  DEEP DIVE INSIGHTS: Data Modeling
 
@@ -953,8 +933,7 @@ Since we fetch property details by `PropertyID`, indexing this field will make i
 ####    Note
 Indexing `GuestID` and `OwnerID` allows quick access to booking history for both guests and owners.
 
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 ##  DEEP DIVE INSIGHTS :Handling Concurrent Booking Updates
 
@@ -1039,7 +1018,7 @@ When it comes to conflicting requests—like in the case of Bob and Smith both t
 3. **Efficient Handling of Requests:**  
    - Non-conflicting requests don’t have to wait unnecessarily; they proceed without issues.
 
----
+
 
 ####    Why Optimistic Locking?
 - **Higher Throughput:**  

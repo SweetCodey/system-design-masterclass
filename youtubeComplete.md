@@ -1,42 +1,39 @@
 # YOUTUBE SYSTEM DESIGN
 
-#### [Functional Requirements](#deciding-requirements-functional-requirements)
+- [1.Functional Requirements](#functional-requirements)
 
-#### [Non Functional Requirements](#deciding-requirements-non-functional-requirements)
+- [2.Non Functional Requirements](#non-functional-requirements)
 
-#### [DAU-MAU](#capacity-estimation-dau-mau)
+- [3.DAU-MAU](#dau-mau)
 
-#### [Throughput](#capacity-estimation-throughput)
+- [4.Throughput](#throughput)
 
-#### [Storage](#capacity-estimation-storage)
+- [5.Storage](#storage)
 
-#### [Memory](#capacity-estimation-memory)
+- [6.Memory](#memory)
 
-#### [Network/Bandwidth Estimation](#capacity-estimation-network-and-bandwidth-estimation)
+- [7.Network/Bandwidth Estimation](#network-and-bandwidth-estimation)
 
-#### [API Design-Upload Content](#api-design-upload-content)
+- [8.API Design-Upload Content](#api-design-upload-content)
 
-#### [API Design-Stream Content](#api-design-stream-content)
+- [9.API Design-Stream Content](#api-design-stream-content)
 
-#### [High Level Desgin-Upload content](#high-level-design-upload-content)
+- [10.High Level Desgin-Upload content](#high-level-design-upload-content)
 
-#### [High Level Desgin-Upload content-2](#high-level-design-upload-content-continued)
+- [11.High Level Desgin-Upload content-2](#high-level-design-upload-content-continued)
 
-#### [High Level Desgin-Stream content](#high-level-design-stream-content)
+- [12.High Level Desgin-Stream content](#high-level-design-stream-content)
 
-#### [High Level Desgin-Content Processor Workflow Engine](#high-level-design-content-processor-workflow-engine)
+- [13.High Level Desgin-Content Processor Workflow Engine](#high-level-design-content-processor-workflow-engine)
 
-#### [Deep Dive Insights-Database Selection](#deep-dive-insights-database-selection)
+- [14.Deep Dive Insights-Database Selection](#deep-dive-insights-database-selection)
 
-#### [Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
+- [15.Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
 
-#### [Deep Dive Insights-HLSEncoding](#deep-dive-insights-hls-encoding)
+- [16.Deep Dive Insights-HLSEncoding](#deep-dive-insights-hls-encoding)
+<hr style="border:2px solid gray">
 
-<br><br>
-<hr style="border:3px solid gray">
-
-
-## DECIDING REQUIREMENTS: Functional Requirements
+## Functional Requirements
 
 There will be two types of users:
 
@@ -75,10 +72,9 @@ There will be two types of users:
     <td>Content Creators should be able to upload movies/TV shows. After successful upload, they should get a notification.</td>
   </tr>
 </table>
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## DECIDING REQUIREMENTS: Non-Functional-Requirements
+## Non-Functional-Requirements
 
 ### For Viewers
 
@@ -127,22 +123,17 @@ There will be two types of users:
     <td>The platform should provide reliable storage to ensure the uploaded content is safely stored and remains available without disappearing.</td>
   </tr>
 </table>
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-## CAPACITY ESTIMATION: DAU-MAU
+## DAU-MAU
 
 #### **How many users will be using your software?**
 
 - **Daily Active Users (DAU):** 100 million  
 - **Monthly Active Users (MAU):** 2.5 billion
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-
-
-## CAPACITY ESTIMATION: Throughput
-
+## Throughput
 
 #### **1. Write Requests**  
 
@@ -196,10 +187,10 @@ An average user watches 10 videos per day.
   </tr>
 </table>
 <br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
-## CAPACITY ESTIMATION: Storage
+## Storage
 
 
 #### **Video Data**
@@ -239,12 +230,9 @@ An average user watches 10 videos per day.
     <td>876 PB</td>
   </tr>
 </table>
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-
-## CAPACITY ESTIMATION: Memory
-
+## Memory
 
 #### **Overview**
 By memory, we refer to the **cache memory size** required for faster data access.
@@ -263,16 +251,12 @@ Accessing data directly from the database takes time. To speed up data retrieval
 
 #### **Scalability**
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
-
-## CAPACITY ESTIMATION: Network and Bandwidth Estimation
-
+## Network and Bandwidth Estimation
 
 #### **Overview**
 Network/Bandwidth estimation helps us determine the amount of data flowing in and out of the system per second.
-
 
 #### **Data Flow Estimations**
 
@@ -317,8 +301,7 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
     <td>7 TB/s</td>
   </tr>
 </table>
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
 ## API-DESIGN Upload Content
@@ -372,9 +355,7 @@ This tells the server where to perform that action. We use the session URI provi
 
 #### HTTP Body
 The body of the `PUT` request contains the binary data of the video file.
-<br><br>
-<hr style="border:3px solid gray">
-
+<hr style="border:2px solid gray">
 
 ## API-DESIGN: Stream Content
 
@@ -438,8 +419,7 @@ We are using something called the **HLS Protocol** for getting video chunks from
   - **Slow internet:** Video quality drops to prevent buffering, ensuring uninterrupted playback.
 
 ![Streaming Request](https://static.wixstatic.com/media/99fa54_0a3ca4d6306943a6a676aba4664c9747~mv2.png/v1/fill/w_1120,h_420,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_0a3ca4d6306943a6a676aba4664c9747~mv2.png)
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
 ## HIGH-LEVEL-DESIGN :Upload Content
@@ -464,9 +444,7 @@ with a **session URL**.
 ![High Level FLow](https://static.wixstatic.com/media/99fa54_5e2d57019c5c4bd6bfcf31ba32db6eda~mv2.png/v1/fill/w_1120,h_236,al_c,lg_1,q_85,enc_auto/99fa54_5e2d57019c5c4bd6bfcf31ba32db6eda~mv2.png)
 
 This **session URL** is then used to upload the actual video data in chunks. Let's see how that happens next.
-<br><br>
-<hr style="border:3px solid gray">
-
+<hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN: Upload Content (Continued)
 
@@ -508,8 +486,7 @@ This process ensures the video can be accessed in different formats and qualitie
 
 
 ![Final flow](https://static.wixstatic.com/media/99fa54_adfab2d0e1634369b35d1cf6baaa4131~mv2.png/v1/fill/w_1011,h_536,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_adfab2d0e1634369b35d1cf6baaa4131~mv2.png)
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
 ## HIGH LEVEL DESIGN :Stream Content
@@ -558,8 +535,7 @@ A common scenario occurs when the internet connection fluctuates between strong 
 This adaptive behavior ensures a smooth viewing experience. This process is known as **Adaptive streaming**, and the **HLS protocol** supports it very well. This is why HLS is widely used during video streaming.
 
 ![Adaptive Streaming](https://static.wixstatic.com/media/99fa54_914bbbf5efef4d6faa5a2626a4ff787a~mv2.png/v1/fill/w_1043,h_390,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_914bbbf5efef4d6faa5a2626a4ff787a~mv2.png)
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
 ## HIGH LEVEL DESIGN: Content Processor Workflow Engine
@@ -654,8 +630,7 @@ This is how the overall flow looks like:
 
 
 ![Overall Flow](https://static.wixstatic.com/media/99fa54_c0138156b7e8407eb3dd0af583000711~mv2.png/v1/fill/w_998,h_741,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_c0138156b7e8407eb3dd0af583000711~mv2.png)
-<br><br>
-<hr style="border:3px solid gray">
+<hr style="border:2px solid gray">
 
 
 ## DEEP DIVE INSIGHTS: Database Selection
@@ -725,9 +700,7 @@ In order to decide the DB type, here are some general guidelines that you can fo
     </tr>
   </tbody>
 </table>
-<br><br>
-<hr style="border:3px solid gray">
-
+<hr style="border:2px solid gray">
 
 ## DEEP DIVE INSIGHTS: Data Modeling
 
@@ -742,9 +715,7 @@ In order to decide the DB type, here are some general guidelines that you can fo
 | **Indexing**     | `videoId`                                                                    
  #### Note:
 Because we have this common query to grab video metadata by `videoId`, we create an index on the `videoId` field. This sets a shortcut to quickly find the data by `videoId`. |
-<br><br>
 <hr style="border:3px solid gray">
-
 
 ## DEEP DIVE INSIGHTS: HLS Encoding
 
