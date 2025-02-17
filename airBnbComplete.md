@@ -41,6 +41,8 @@
 
   - [17.HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
 
+- [DEEP DIVE INSIGHTS](#deep-dive-insights)  
+
   - [18.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
 
   - [19.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
