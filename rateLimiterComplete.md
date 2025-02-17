@@ -1,44 +1,56 @@
 # RATE LIMITER SYSTEM DESIGN
 
-- [1.Anlogy](#introduction-analogy)
+- [INTRODUCTION](#introduction)
 
-- [2.What is  a Rate Limite](#introduction-what-is-a-rate-limiter)
+  - [1.Anlogy](#introduction-analogy)
 
-- [3.Why do we need a Rate Limite](#introduction-why-do-we-need-a-rate-limiter)
+  - [2.What is  a Rate Limite](#introduction-what-is-a-rate-limiter)
 
-- [4.Functional Requirements](#functional-requirements)
+  - [3.Why do we need a Rate Limite](#introduction-why-do-we-need-a-rate-limiter)
 
-- [5.Non Functional Requirements](#non-functional-requirements)
+- [DECIDING REQUIREMENTS](#deciding-requirements)
 
-- [6.DAU-MAU](#dau-mau)
+  - [4.Functional Requirements](#functional-requirements)
 
-- [7.Throughput](#throughput)
+  - [5.Non Functional Requirements](#non-functional-requirements)
 
-- [8.Storage and Memory](#storage-and-memory)
+- [CAPACITY ESTIMATION](#capacity-estimation)
 
-- [9.Network and Bandwidth Estimation](#network-and-bandwidth)
+  - [6.DAU-MAU](#dau-mau)
 
-- [10.HIGH LEVEL DESIGN:Placemet of a Ratelimiter](#high-level-design-placement-of-a-ratelimiter)
+  - [7.Throughput](#throughput)
 
-- [11.HIGH LEVEL DESIGN:Basic High Level Flow](#high-level-design-basic-high-level-flow)
+  - [8.Storage and Memory](#storage-and-memory)
 
-- [12.HIGH LEVEL DESIGN:Storing Request Counters](#high-level-design-storing-request-counters)
+  - [9.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-- [13.HIGH LEVEL DESIGN:Storing Ratelimiter Rules](#high-level-design-storing-ratelimiter-rules)
+- [HIGH LEVEL DESIGN](#high-level-design)
 
-- [14.Deep Dive Insights:Tocken Bucket Algorithm](#deep-dive-insights-token-bucket-algorithm)
+  - [10.HIGH LEVEL DESIGN:Placemet of a Ratelimiter](#high-level-design-placement-of-a-ratelimiter)
 
-- [15.Deep Dive Insights:Leaky Bucket Algorithm](#deep-dive-insights-leaky-bucket-algorithm)
+  - [11.HIGH LEVEL DESIGN:Basic High Level Flow](#high-level-design-basic-high-level-flow)
 
-- [16.Deep Dive Insights:Fixed Window Counter Algorithm](#deep-dive-insights-fixed-window-counter-algorithm)
+  - [12.HIGH LEVEL DESIGN:Storing Request Counters](#high-level-design-storing-request-counters)
 
-- [17.Deep Dive Insights:Sliding Window Log Algorithm](#deep-dive-insights-sliding-window-log-algorithm)
+  - [13.HIGH LEVEL DESIGN:Storing Ratelimiter Rules](#high-level-design-storing-ratelimiter-rules)
 
-- [18.Deep Dive Insights:Sliding Window Counter Algorithm](#deep-dive-insights-sliding-window-counter-algorithm)
+- [DEEP DIVE INSIGHTS](#deep-dive-insights)
 
-- [19.Deep Dive Insights:Handling Race Condition](#deep-dive-insights-handling-race-condition)
+  - [14.Deep Dive Insights:Tocken Bucket Algorithm](#deep-dive-insights-token-bucket-algorithm)
+
+  - [15.Deep Dive Insights:Leaky Bucket Algorithm](#deep-dive-insights-leaky-bucket-algorithm)
+
+  - [16.Deep Dive Insights:Fixed Window Counter Algorithm](#deep-dive-insights-fixed-window-counter-algorithm)
+
+  - [17.Deep Dive Insights:Sliding Window Log Algorithm](#deep-dive-insights-sliding-window-log-algorithm)
+
+  - [18.Deep Dive Insights:Sliding Window Counter Algorithm](#deep-dive-insights-sliding-window-counter-algorithm)
+
+  - [19.Deep Dive Insights:Handling Race Condition](#deep-dive-insights-handling-race-condition)
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">INTRODUCTION</p>
 
 # Analogy
 
@@ -89,6 +101,9 @@ An overwhelming amount of requests also means an overwhelming amount of costs to
 
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
+
+
 ## Functional Requirements
 <table>
   <tr>
@@ -134,6 +149,8 @@ An overwhelming amount of requests also means an overwhelming amount of costs to
   </table>
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU
 
@@ -252,6 +269,8 @@ To estimate bandwidth, we need to consider the data transfer for requests and re
 </table>
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN</p>
+
 
 ## HIGH LEVEL DESIGN :Placement of a RateLimiter
 
@@ -358,7 +377,9 @@ By checking that the request count has not crossed the limit. We know that the c
 ![RateLimiter Rules2](https://static.wixstatic.com/media/99fa54_a178d842377a49afa7baa3124b2368b4~mv2.png/v1/fill/w_893,h_894,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_a178d842377a49afa7baa3124b2368b4~mv2.png)
 <hr style="border:2px solid gray">
 
-# DEEP DIVE INSIGHTS :Token Bucket Algorithm
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS</p>
+
+## DEEP DIVE INSIGHTS :Token Bucket Algorithm
 
 The Token Bucket Algorithm is very simple to understand and also effective. It is used by popular companies such as Amazon while implementing their rate-limiting systems.
 
@@ -415,6 +436,7 @@ The following diagram explains how the algorithm works. Follow the diagram chron
   </tr>
 </table>
 <hr style="border:2px solid gray">
+
 ## DEEP DIVE INSIGHTS :Leaky Bucket Algorithm
 
 The most intuitive way to understand the Leaky Bucket Algorithm is to visualize a leaky bucket.
