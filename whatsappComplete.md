@@ -1,50 +1,62 @@
 # WHATSAPP SYSTEM DESIGN
 
-- [1.Functional Requirements](#functional-requirements)
+- [DECIDING REQUIREMENTS](#deciding-requirements)
 
-- [2.Non Functional Requirements](#non-functional-requirements)
+  - [1.Functional Requirements](#functional-requirements)
 
-- [3.DAU-MAU](#dau-mau)
+  - [2.Non Functional Requirements](#non-functional-requirements)
 
-- [4.Throughput](#throughput)
+- [CAPACITY ESTIMATION](#capacity-estimation)
 
-- [5.Storage](#storage)
+  - [3.DAU-MAU](#dau-mau)
 
-- [6.Memory](#memory)
+  - [4.Throughput](#throughput)
 
-- [7.Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
+  - [5.Storage](#storage)
 
-- [8.API Design:One-One-Messaging](#api-design-one-one-messaging)
+  - [6.Memory](#memory)
 
-- [9.API Design:Message Status](#api-design-message-status)
+  - [7.Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
 
-- [10.API Design:Online Status](#api-design-online-status)
+- [API DESIGN](#api-design)  
 
-- [11.API Design:Group Messaging](#api-design-group-messaging)
+  - [8.API Design:One-One-Messaging](#api-design-one-one-messaging)
 
-- [12.HIGH LEVEL DESIGN:How is WebSocket Connection Established](#high-level-design-how-is-websocket-connection-established)
+  - [9.API Design:Message Status](#api-design-message-status)
 
-- [13.HIGH LEVEL DESIGN:One One Messaging](#high-level-design-one-one-messaging)
+  - [10.API Design:Online Status](#api-design-online-status)
 
-- [14.HIGH LEVEL DESIGN:One One Messaging Offline Client](#high-level-design-one-one-messaging-offline-client)
+  - [11.API Design:Group Messaging](#api-design-group-messaging)
 
-- [15.HIGH LEVEL DESIGN:One One Messaging Final Design](#high-level-design-one-one-messaging-final-design)
+- [HIGH LEVEL DESIGN](#high-level-design)
 
-- [16.HIGH LEVEL DESIGN:One One Messaging Image Video Document](#high-level-design-one-one-messaging-image-video-document)
+  - [12.HIGH LEVEL DESIGN:How is WebSocket Connection Established](#high-level-design-how-is-websocket-connection-established)
 
-- [17.HIGH LEVEL DESIGN:Message Status](#high-level-design-message-status)
+  - [13.HIGH LEVEL DESIGN:One One Messaging](#high-level-design-one-one-messaging)
 
-- [18.HIGH LEVEL DESIGN:Online Status](#high-level-design-online-status)
+  - [14.HIGH LEVEL DESIGN:One One Messaging Offline Client](#high-level-design-one-one-messaging-offline-client)
 
-- [19.HIGH LEVEL DESIGN:Group Messages](#high-level-design-group-messages)
+  - [15.HIGH LEVEL DESIGN:One One Messaging Final Design](#high-level-design-one-one-messaging-final-design)
 
-- [20.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+  - [16.HIGH LEVEL DESIGN:One One Messaging Image Video Document](#high-level-design-one-one-messaging-image-video-document)
 
-- [21.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+  - [17.HIGH LEVEL DESIGN:Message Status](#high-level-design-message-status)
 
-- [22.Deep Dive Insights:End to End Encryption](#deep-dive-insights-end-to-end-encryption)
+  - [18.HIGH LEVEL DESIGN:Online Status](#high-level-design-online-status)
+
+  - [19.HIGH LEVEL DESIGN:Group Messages](#high-level-design-group-messages)
+
+- [DEEP DIVE INSIGHTS](#deep-dive-insights) 
+
+  - [20.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+
+  - [21.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+
+  - [22.Deep Dive Insights:End to End Encryption](#deep-dive-insights-end-to-end-encryption)
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
 
 ## Functional Requirements
 
@@ -77,6 +89,8 @@ The app will also support group chats.
 | ***Scalability*** | Our system must handle a very large number of users, potentially millions, at the same time. As more users join, the system should easily manage the increasing load. |
 | ***Security*** | Messages should be end-to-end encrypted. This means that only the sender and receiver can read the messages. Nobody else can see them, not even the people who run the app. |
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU
 
@@ -193,6 +207,7 @@ We have seen in the throughput section that in our system, the number of reads a
 - **Therefore:** Outgoing data per second ≈ Incoming data per second ≈ **950 MB/sec**
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">API DESIGN</p>
 
 ## API DESIGN :One One Messaging
 
@@ -326,6 +341,8 @@ As you can see in the image below, Max, Amanda, and Mike are in a WhatsApp group
 
 ![Group Messaging Example](https://static.wixstatic.com/media/99fa54_b4a5ab4b1e144f118f14f8a493ae11c1~mv2.png/v1/fill/w_1051,h_848,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_b4a5ab4b1e144f118f14f8a493ae11c1~mv2.png)
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN</p>
 
 ## HIGH LEVEL DESIGN :How is WebSocket Connection Established?
 
@@ -710,6 +727,8 @@ Conceptually, this flow is very similar to 1:1 messaging, but there are a few nu
 10. **Final delivery:**  
    The WebSocket Handlers deliver the message to the respective users.
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS</p>
 
 ## DEEP DIVE INSIGHTS :Database Selection
 

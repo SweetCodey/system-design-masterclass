@@ -1,37 +1,47 @@
 # YOUTUBE SYSTEM DESIGN
+- [DECIDING REQUIREMENTS](#deciding-requirements)
+   - [1.Functional Requirements](#functional-requirements)
 
-- [1.Functional Requirements](#functional-requirements)
+  - [2.Non Functional Requirements](#non-functional-requirements)
 
-- [2.Non Functional Requirements](#non-functional-requirements)
+- [CAPACITY ESTIMATION](#capacity-estimation)
 
-- [3.DAU-MAU](#dau-mau)
+  - [3.DAU-MAU](#dau-mau)
 
-- [4.Throughput](#throughput)
+  - [4.Throughput](#throughput)
 
-- [5.Storage](#storage)
+  - [5.Storage](#storage)
 
-- [6.Memory](#memory)
+  - [6.Memory](#memory)
 
-- [7.Network/Bandwidth Estimation](#network-and-bandwidth-estimation)
+  - [7.Network/Bandwidth Estimation](#network-and-bandwidth-estimation)
 
-- [8.API Design-Upload Content](#api-design-upload-content)
+- [API DESIGN](#api-design)
 
-- [9.API Design-Stream Content](#api-design-stream-content)
+  - [8.API Design-Upload Content](#api-design-upload-content)
 
-- [10.High Level Desgin-Upload content](#high-level-design-upload-content)
+  - [9.API Design-Stream Content](#api-design-stream-content)
 
-- [11.High Level Desgin-Upload content-2](#high-level-design-upload-content-continued)
+- [HIGH LEVEL DESIGN](#high-level-design)
 
-- [12.High Level Desgin-Stream content](#high-level-design-stream-content)
+  - [10.High Level Desgin-Upload content](#high-level-design-upload-content)
 
-- [13.High Level Desgin-Content Processor Workflow Engine](#high-level-design-content-processor-workflow-engine)
+  - [11.High Level Desgin-Upload content-2](#high-level-design-upload-content-continued)
 
-- [14.Deep Dive Insights-Database Selection](#deep-dive-insights-database-selection)
+  - [12.High Level Desgin-Stream content](#high-level-design-stream-content)
 
-- [15.Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
+  - [13.High Level Desgin-Content Processor Workflow Engine](#high-level-design-content-processor-workflow-engine)
 
-- [16.Deep Dive Insights-HLSEncoding](#deep-dive-insights-hls-encoding)
+- [DEEP DIVE INSIGHTS](#deep-dive-insights)  
+
+  - [14.Deep Dive Insights-Database Selection](#deep-dive-insights-database-selection)
+
+  - [15.Deep Dive Insights-Database Modeling](#deep-dive-insights-data-modeling)
+
+  - [16.Deep Dive Insights-HLSEncoding](#deep-dive-insights-hls-encoding)
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS:</p>
 
 ## Functional Requirements
 
@@ -124,6 +134,8 @@ There will be two types of users:
   </tr>
 </table>
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION:</p>
 
 ## DAU-MAU
 
@@ -303,6 +315,7 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 </table>
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">API DESIGN:</p>
 
 ## API-DESIGN Upload Content
 
@@ -421,6 +434,7 @@ We are using something called the **HLS Protocol** for getting video chunks from
 ![Streaming Request](https://static.wixstatic.com/media/99fa54_0a3ca4d6306943a6a676aba4664c9747~mv2.png/v1/fill/w_1120,h_420,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_0a3ca4d6306943a6a676aba4664c9747~mv2.png)
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN:</p>
 
 ## HIGH-LEVEL-DESIGN :Upload Content
 
@@ -632,6 +646,7 @@ This is how the overall flow looks like:
 ![Overall Flow](https://static.wixstatic.com/media/99fa54_c0138156b7e8407eb3dd0af583000711~mv2.png/v1/fill/w_998,h_741,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_c0138156b7e8407eb3dd0af583000711~mv2.png)
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS:</p>
 
 ## DEEP DIVE INSIGHTS: Database Selection
 
@@ -646,7 +661,7 @@ In order to decide the DB type, here are some general guidelines that you can fo
   </thead>
   <tbody>
     <tr>
-      <td>When you need fast data access</td>
+      <td>When you need fast data access</td> 
       <td>Prefer NoSQL</td>
     </tr>
     <tr>

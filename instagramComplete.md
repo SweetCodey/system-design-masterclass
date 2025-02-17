@@ -1,52 +1,63 @@
 # TINYURL SYSTEM DESIGN
 
-- [1.Functional Requirements](#functional-requirements)
+- [DECIDING REQUIREMENTS](#deciding-requirements)
+  - [1.Functional Requirements](#functional-requirements)
 
-- [2.Non Functional Requirements](#non-functional-requirements)
+  - [2.Non Functional Requirements](#non-functional-requirements)
 
-- [3.DAU-MAU](#dau-mau-estimation)
+- [CAPACITY ESTIMATION](#capacity-estimation)
 
-- [4.Throughput](#throughput-estimation)
+  - [3.DAU-MAU](#dau-mau-estimation)
 
-- [5.Storage](#storage-estimation)
+  - [4.Throughput](#throughput-estimation)
 
-- [6.Memory](#memory-estimation)
+  - [5.Storage](#storage-estimation)
 
-- [7.Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
+  - [6.Memory](#memory-estimation)
 
-- [8.API Design:Create a Text Post](#api-design-create-a-text-post)
+  - [7.Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
 
-- [9.API Design:Create a Image or Video Post](#api-design-create-a-image-or-video-post)
+- [API DESIGN](#api-design)
 
-- [10.API Design:Like or Comment on a Post](#api-design-like-or-comment-on-a-post)
+  - [8.API Design:Create a Text Post](#api-design-create-a-text-post)
 
-- [11.API Design:Follow or Unfollow User](#api-design-follow-or-unfollow-user)
+  - [9.API Design:Create a Image or Video Post](#api-design-create-a-image-or-video-post)
 
-- [12.API Design:Read Newsfeed aka Timeline](#api-design-read-newsfeed-aka-timeline)
+  - [10.API Design:Like or Comment on a Post](#api-design-like-or-comment-on-a-post)
 
-- [13.HIGH LEVEL Design:Follow or Unfollow User](#high-level-design-follow-or-unfollow-user)
+  - [11.API Design:Follow or Unfollow User](#api-design-follow-or-unfollow-user)
 
-- [14.HIGH LEVEL Design:Create Text Post](#high-level-design-create-text-post)
+  - [12.API Design:Read Newsfeed aka Timeline](#api-design-read-newsfeed-aka-timeline)
 
-- [15.HIGH LEVEL Design:Create Text Post 2](#high-level-design-create-text-post-2)
+- [HIGH LEVEL DESIGN](#high-level-design)
 
-- [16.HIGH LEVEL Design:Create Image or Video Post](#high-level-design-create-image-or-video-post)
+  - [13.HIGH LEVEL Design:Follow or Unfollow User](#high-level-design-follow-or-unfollow-user)
 
-- [17.HIGH LEVEL Design:Read Newsfeed aka timeline](#high-level-design-read-newsfeed-aka-timeline)
+  - [14.HIGH LEVEL Design:Create Text Post](#high-level-design-create-text-post)
 
-- [18.HIGH LEVEL Design:Comment on a Post](#high-level-design-comment-on-a-post)
+  - [15.HIGH LEVEL Design:Create Text Post 2](#high-level-design-create-text-post-2)
 
-- [19.HIGH LEVEL Design:Like on a Post](#high-level-design-like-on-a-post)
+  - [16.HIGH LEVEL Design:Create Image or Video Post](#high-level-design-create-image-or-video-post)
 
-- [20.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+  - [17.HIGH LEVEL Design:Read Newsfeed aka timeline](#high-level-design-read-newsfeed-aka-timeline)
 
-- [21.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+  - [18.HIGH LEVEL Design:Comment on a Post](#high-level-design-comment-on-a-post)
 
-- [22.Deep Dive Insights:Media Processing](#deep-dive-insights-media-processing)
+  - [19.HIGH LEVEL Design:Like on a Post](#high-level-design-like-on-a-post)
 
-- [23.Deep Dive Insights:Pre Signed URLs](#deep-dive-insights-pre-signed-urls)
+- [DEEP DIVE INSIGHTS](#deep-dive-insights)  
+
+  - [20.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+
+  - [21.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+
+  - [22.Deep Dive Insights:Media Processing](#deep-dive-insights-media-processing)
+
+  - [23.Deep Dive Insights:Pre Signed URLs](#deep-dive-insights-pre-signed-urls)
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
 
 ## Functional Requirements
 
@@ -121,6 +132,8 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
 </table>
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU Estimation
 
@@ -249,6 +262,8 @@ Outgoing data refers to the data read from our system.
   **216 PB ÷ 86,400 = 2.5 TB/s**
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">API DESIGN</p>
 
 ## API DESIGN :Create a Text Post
 
@@ -392,6 +407,8 @@ This tells the server where to perform the action. Since we are fetching the use
 `GET` requests do not include a body because they are used to fetch information, not to send data.
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN</p>
 
 ## HIGH LEVEL DESIGN :Follow or Unfollow User
 
@@ -678,6 +695,8 @@ When the user likes a post, the following steps are involved, corresponding to t
 As you observed, we updated the **Likes Cache** so that the number of likes can be displayed efficiently in the news feed. However, we haven't shown how the **Likes Cache** is actually used in the **read news feed** flow, so let's add that (Step - 3b).
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS</p>
 
 ## DEEP DIVE INSIGHTS :Database Selection
 
