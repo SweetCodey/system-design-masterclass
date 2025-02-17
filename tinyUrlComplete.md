@@ -1,52 +1,66 @@
 # TINYURL SYSTEM DESIGN
 
-- [1.What is a Tiny URL](#what-is-a-tiny-url-service)
+[INTRODUCTION](#introduction)
 
-- [2.Why do we need a Tiny URL Service](#why-do-we-need-a-tiny-url-service)
+  - [1.What is a Tiny URL](#what-is-a-tiny-url-service)
 
-- [3.Functional Requirements](#functional-requirements)
+  - [2.Why do we need a Tiny URL Service](#why-do-we-need-a-tiny-url-service)
 
-- [4.Non Functional Requirements](#non-functional-requirements)
+- [DECIDING REQUIREMENTS](#deciding-requirements)
 
-- [5.DAU-MAU](#dau-mau)
+  - [3.Functional Requirements](#functional-requirements)
 
-- [6.Throughput](#throughput)
+  - [4.Non Functional Requirements](#non-functional-requirements)
 
-- [7.Storage](#storage)
+- [CAPACITY ESTIMATION](#capacity-estimation)
 
-- [8.Memory](#memory)
+  - [5.DAU-MAU](#dau-mau)
 
-- [9.Network and Bandwidth Estimation](#network-and-bandwidth)
+  - [6.Throughput](#throughput)
 
-- [10.API Design:Generate a Short URL](#api-design-generate-a-short-url)
+  - [7.Storage](#storage)
 
-- [11.API Design:Get long URL](#api-design-get-long-url)
+  - [8.Memory](#memory)
 
-- [12.HIGH LEVEL Design:Generate short URL](#high-level-design-generate-short-url)
+  - [9.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-- [13.HIGH LEVEL Design:Problem Collisions](#high-level-design-problem-collisions)
+- [API DESIGN](#api-design)  
 
-- [14.HIGH LEVEL Design:Approach 2 Random String Generation using LongURL](#high-level-design-approach-2-random-string-generation-using-longurl)
+  - [10.API Design:Generate a Short URL](#api-design-generate-a-short-url)
 
-- [15.HIGH LEVEL Design:Approach 3 Check DB for Collisions](#high-level-design-approach-3-check-db-for-collisions)
+  - [11.API Design:Get long URL](#api-design-get-long-url)
 
-- [16.HIGH LEVEL Design:Approach 4 Let us keep Counters](#high-level-design-approach-4-let-us-keep-counters)
+- [HIGH LEVEL DESIGN](#high-level-design)
 
-- [17.HIGH LEVEL Design:Approach 4 Continued Zookeper](#high-level-design-approach-4-continued-zookeeper)
+  - [12.HIGH LEVEL Design:Generate short URL](#high-level-design-generate-short-url)
 
-- [18.HIGH LEVEL Design:Approach 4 Base 62 Encoding](#high-level-design-approach-4-base-62-encoding)
+  - [13.HIGH LEVEL Design:Problem Collisions](#high-level-design-problem-collisions)
 
-- [19.HIGH LEVEL Design:Approach 4 Final Design Diagram](#high-level-design-approach-4-final-design-diagram)
+  - [14.HIGH LEVEL Design:Approach 2 Random String Generation using LongURL](#high-level-design-approach-2-random-string-generation-using-longurl)
 
-- [20.HIGH LEVEL Design:Get Long URL](#high-level-design-get-long-url)
+  - [15.HIGH LEVEL Design:Approach 3 Check DB for Collisions](#high-level-design-approach-3-check-db-for-collisions)
 
-- [21.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+  - [16.HIGH LEVEL Design:Approach 4 Let us keep Counters](#high-level-design-approach-4-let-us-keep-counters)
 
-- [22.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+  - [17.HIGH LEVEL Design:Approach 4 Continued Zookeper](#high-level-design-approach-4-continued-zookeeper)
 
-- [23.Deep Dive Insights:Redirection from short URL](#deep-dive-insights-redirection-from-short-url)
+  - [18.HIGH LEVEL Design:Approach 4 Base 62 Encoding](#high-level-design-approach-4-base-62-encoding)
+
+  - [19.HIGH LEVEL Design:Approach 4 Final Design Diagram](#high-level-design-approach-4-final-design-diagram)
+
+  - [20.HIGH LEVEL Design:Get Long URL](#high-level-design-get-long-url)
+
+- [DEEP DIVE INSIGHTS](#deep-dive-insights)
+
+  - [21.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+
+  - [22.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+
+  - [23.Deep Dive Insights:Redirection from short URL](#deep-dive-insights-redirection-from-short-url)
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">INTRODUCTION</p>
 
 ## What is a Tiny URL Service
 Before designing the Tiny URL Service, let's first understand what exactly it is.
@@ -115,6 +129,8 @@ The short URL looks cleaner and more professional in emails or documents, improv
 
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
+
 ## Functional Requirements
 
 
@@ -158,6 +174,8 @@ The short URL looks cleaner and more professional in emails or documents, improv
 
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU
 
@@ -292,6 +310,8 @@ Outgoing data refers to the data read from our system.
 
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">API DESIGN:</p>
+
 ## API DESIGN :Generate a Short URL
 
 Let's zoom into the 'communication' for creating a shortened URL from a long URL.
@@ -351,6 +371,8 @@ This tells the server where to perform the action. We are fetching long url reco
 `GET` requests do not include a body because they are used to **fetch information**, not to **send data**.
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN</p>
 
 ## HIGH LEVEL DESIGN :Generate Short URL
 
@@ -636,6 +658,8 @@ Let's look at the end-to-end flow for getting the long URL. The following steps 
    The `GetLongURL` Service returns the long URL (e.g., `www.google.com`) to the API Gateway, which then sends it back to the user.
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS</p>
 
 ## DEEP DIVE INSIGHTS: Database Selection
 

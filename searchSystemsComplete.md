@@ -1,40 +1,50 @@
 # DESIGN SEARCH SYSTEMS
+- [DECIDING REQUIREMENTS](#deciding-requirements)
+  - [1.Functional Requirements](#functional-requirements)
 
-- [1.Functional Requirements](#functional-requirements)
+  - [2.Non Functional Requirements](#non-functional-requirements)
 
-- [2.Non Functional Requirements](#non-functional-requirements)
+- [CAPACITY ESTIMATION](#capacity-estimation)
 
-- [3.DAU-MAU](#dau-mau)
+  - [3.DAU-MAU](#dau-mau)
 
-- [4.Throughput](#throughput)
+  - [4.Throughput](#throughput)
 
-- [5.Storage](#storage)
+  - [5.Storage](#storage)
 
-- [6.Memory](#memory)
+  - [6.Memory](#memory)
 
-- [7.Network and Bandwidth Estimation](#network-and-bandwidth)
+  - [7.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-- [8.API Design:Search](#api-design-search)
+- [API DESIGN](#api-design)   
 
-- [9.HIGH LEVEL DESIGN:Search Suboptimal](#high-level-design-search-suboptimal)
+  - [8.API Design:Search](#api-design-search)
 
-- [10.HIGH LEVEL DESIGN:Search Indexing](#high-level-design-search-indexing)
+- [HIGH LEVEL DESIGN](#high-level-design) 
 
-- [11.HIGH LEVEL DESIGN:How to support Fuzzy Search](#high-level-design-how-to-support-fuzzy-search)
+  - [9.HIGH LEVEL DESIGN:Search Suboptimal](#high-level-design-search-suboptimal)
 
-- [12.HIGH LEVEL DESIGN:Ranking](#high-level-design-ranking)
+  - [10.HIGH LEVEL DESIGN:Search Indexing](#high-level-design-search-indexing)
 
-- [13.HIGH LEVEL DESIGN:Search Final Design](#high-level-design-search-final-design)
+  - [11.HIGH LEVEL DESIGN:How to support Fuzzy Search](#high-level-design-how-to-support-fuzzy-search)
 
-- [14.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+  - [12.HIGH LEVEL DESIGN:Ranking](#high-level-design-ranking)
 
-- [15.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+  - [13.HIGH LEVEL DESIGN:Search Final Design](#high-level-design-search-final-design)
 
-- [16.Deep Dive Insights:Into Query Correction Service](#deep-dive-insights-into-query-correction-service)
+- [DEEP DIVE INSIGHTS](#deep-dive-insights)  
 
-- [17.Deep Dive Insights:Elastic Search](#deep-dive-insights-elastic-search)
+  - [14.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+
+  - [15.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+
+  - [16.Deep Dive Insights:Into Query Correction Service](#deep-dive-insights-into-query-correction-service)
+
+  - [17.Deep Dive Insights:Elastic Search](#deep-dive-insights-elastic-search)
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
 
 ## Functional Requirements
 
@@ -78,6 +88,8 @@ User misspells and searches for "quantom computing" instead. Still he sees the c
   </tr>
 </table>
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU
 <table border="1" style="border-collapse: collapse;">
@@ -190,6 +202,8 @@ Outgoing data represents the data read or searched from our system.
 =approx **11.5 MB/sec**
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">API DESIGN</p>
+
 ## API DESIGN :Search
 
 Let's understand what kind of API call goes to Twitter's servers when a user enters a keyword in the search bar and hits the search button.
@@ -220,6 +234,8 @@ To avoid this confusion:
 - This process is technically called **encoding**, where we convert special characters that might cause issues, like spaces, into a format that won't confuse the server.  
 - The backend understands this encoding well and converts them back into their original characters, a process known as **decoding**.
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN</p>
 
 ## HIGH LEVEL DESIGN :Search Suboptimal
 
@@ -438,6 +454,8 @@ John opens Twitter and searches for **"quantum computing."** As soon as he does 
 ![Final Design](https://static.wixstatic.com/media/99fa54_befe1fa8149b42dd9bb7441a3e2af73a~mv2.png/v1/fill/w_1120,h_674,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_befe1fa8149b42dd9bb7441a3e2af73a~mv2.png)
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS</p>
 
 ## DEEP DIVE INSIGHTS: Database Selection
 

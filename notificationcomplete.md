@@ -1,48 +1,61 @@
 # NOTIFICATION SYSTEM DESIGN
+- [INTRODUCTION](#introduction)
 
-- [1.What is a Notification System](#what-is-a-notification-system)
+  - [1.What is a Notification System](#what-is-a-notification-system)
 
-- [2.Why do we need a Notification System](#why-do-we-need-a-notification-system)
+  - [2.Why do we need a Notification System](#why-do-we-need-a-notification-system)
 
-- [3.Functional Requirements](#functional-requirements)
+- [DECIDING REQUIREMENTS](#deciding-requirements)  
 
-- [4.Non Functional Requirements](#non-functional-requirements)
+  - [3.Functional Requirements](#functional-requirements)
 
-- [5.DAU MAU](#dau-mau-estimation)
+  - [4.Non Functional Requirements](#non-functional-requirements)
 
-- [6.Throughput](#throughput-estimation)
+- [CAPACITY ESTIMATION](#capacity-estimation)  
 
-- [7.Storage](#storage-estimation)
+  - [5.DAU MAU](#dau-mau-estimation)
 
-- [8.Memory](#memory-estimation)
+  - [6.Throughput](#throughput-estimation)
 
-- [9.Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
+  - [7.Storage](#storage-estimation)
 
-- [8.API Design Send Notification](#api-design-send-notification)
+  - [8.Memory](#memory-estimation)
 
-- [9.HIGH LEVEL Design:Basic High Level Flow](#high-level-design-basic-high-level-flow)
+  - [9.Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
 
-- [10.HIGH LEVEL Design:Problems with Basic High Level Design](#high-level-design-problems-with-basic-high-level-design)
+- [API DESIGN](#api-design)    
 
-- [11.HIGH LEVEL Design:Validation and Prioritization](#high-level-design-validation-and-prioritization)
+  - [8.API Design Send Notification](#api-design-send-notification)
 
-- [12.HIGH LEVEL Design:Rate Limiting Notifaications](#high-level-design-rate-limiting-notifications)
+- [HIGH LEVEL DESIGN](#high-level-design)  
 
-- [13.HIGH LEVEL Design:User Preferences](#high-level-design-user-preferences)
+  - [9.HIGH LEVEL Design:Basic High Level Flow](#high-level-design-basic-high-level-flow)
 
-- [14.HIGH LEVEL Design:Handling different types of Notifications](#high-level-design-handling-different-types-of-notifications)
+  - [10.HIGH LEVEL Design:Problems with Basic High Level Design](#high-level-design-problems-with-basic-high-level-design)
 
-- [15.HIGH LEVEL Design:Reorganizing Services](#high-level-design-reorganizing-services)
+  - [11.HIGH LEVEL Design:Validation and Prioritization](#high-level-design-validation-and-prioritization)
 
-- [16.HIGH LEVEL Design:Decoupling and Optimizing Design](#high-level-design-decoupling-and-optimizing-design)
+  - [12.HIGH LEVEL Design:Rate Limiting Notifaications](#high-level-design-rate-limiting-notifications)
 
-- [17.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+  - [13.HIGH LEVEL Design:User Preferences](#high-level-design-user-preferences)
 
-- [18.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+  - [14.HIGH LEVEL Design:Handling different types of Notifications](#high-level-design-handling-different-types-of-notifications)
 
-- [19.Deep Dive Insights:Notifications Overall Flow](#deep-dive-insights-notifications-overall-flow)
+  - [15.HIGH LEVEL Design:Reorganizing Services](#high-level-design-reorganizing-services)
+
+  - [16.HIGH LEVEL Design:Decoupling and Optimizing Design](#high-level-design-decoupling-and-optimizing-design)
+
+- [DEEP DIVE INSIGHTS](#deep-dive-insights)  
+
+  - [17.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+
+  - [18.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+
+  - [19.Deep Dive Insights:Notifications Overall Flow](#deep-dive-insights-notifications-overall-flow)
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">INTRODUCTION</p>
 
 ## What is a Notification System?
 
@@ -79,6 +92,8 @@ A Notification System is crucial because of the following reasons:
 </table>
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
 
 ## Functional Requirements
 
@@ -148,6 +163,8 @@ Clients are the apps or services that want to send notifications (like a social 
 </table>
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU Estimation
 
@@ -284,6 +301,8 @@ Assuming **15%** of notifications are filtered out, **85%** are delivered to use
 
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">API DESIGN</p>
+
 ## API DESIGN :Send Notification  
 
 Let's dive into the **communication** process when clients send a notification and understand exactly what's happening.
@@ -330,6 +349,8 @@ We have told the Notification System to send a notification, but we haven't prov
 }
 ```
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN</p>
 
 ## HIGH LEVEL DESIGN :Basic High Level Flow
 
@@ -769,9 +790,9 @@ By introducing message queues, the system becomes **scalable, resilient, and eff
 
 <hr style="border:2px solid gray">
 
-## DEEP DIVE INSIGHTS :Database Selection
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS</p>
 
-# Database Selection Guidelines
+## DEEP DIVE INSIGHTS :Database Selection
 
 In order to decide the DB type, here are some *general* guidelines that you can follow, but **DO REMEMBER** it’s not always black and white. A lot depends on the project needs.
 

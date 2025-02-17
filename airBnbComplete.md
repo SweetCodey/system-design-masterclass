@@ -1,46 +1,56 @@
 # AIRBNB SYSTEM DESIGN
 
-- [1.Functional Requirements](#functional-requirements)
+- [DECIDING REQUIREMENTS](#deciding-requirements)
+  - [1.Functional Requirements](#functional-requirements)
 
-- [2.Non Functional Requirements](#non-functional-requirements)
+  - [2.Non Functional Requirements](#non-functional-requirements)
 
-- [3.DAU-MAU](#dau-mau)
+- [CAPACITY ESTIMATION](#capacity-estimation)
 
-- [4.Throughput](#throughput)
+  - [3.DAU-MAU](#dau-mau)
 
-- [5.Storage](#storage)
+  - [4.Throughput](#throughput)
 
-- [6.Memory](#memory)
+  - [5.Storage](#storage)
 
-- [7.Network and Bandwidth Estimation](#network-and-bandwidth)
+  - [6.Memory](#memory)
 
-- [8.API Design:Add Property](#api-design-add-property)
+  - [7.Network and Bandwidth Estimation](#network-and-bandwidth)
 
-- [9.API Design:View Bookings](#api-design-view-bookings)
+- [API DESIGN](#api-design)    
 
-- [10.API Design:Search Properties](#api-design-search-properties)
+  - [8.API Design:Add Property](#api-design-add-property)
 
-- [11.API Design:View Property](#api-design-view-property)
+  - [9.API Design:View Bookings](#api-design-view-bookings)
 
-- [12.API Design:Book Property](#api-design-book-property)
+  - [10.API Design:Search Properties](#api-design-search-properties)
 
-- [13.HIGH LEVEL Design:Add Property](#high-level-design-add-property)
+  - [11.API Design:View Property](#api-design-view-property)
 
-- [14.HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
+  - [12.API Design:Book Property](#api-design-book-property)
 
-- [15.HIGH LEVEL Design:Search Properties](#high-level-design-search-properties)
+- [HIGH LEVEL DESIGN](#high-level-design)  
 
-- [16.HIGH LEVEL Design:View Property](#high-level-design-view-property)
+  - [13.HIGH LEVEL Design:Add Property](#high-level-design-add-property)
 
-- [17.HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
+  - [14.HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
 
-- [18.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+  - [15.HIGH LEVEL Design:Search Properties](#high-level-design-search-properties)
 
-- [19.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+  - [16.HIGH LEVEL Design:View Property](#high-level-design-view-property)
 
-- [20.Deep Dive Insights:Handling Concurrent Booking Updates](#deep-dive-insights-handling-concurrent-booking-updates)
+  - [17.HIGH LEVEL Design:View Bookings](#high-level-design-view-bookings)
+
+  - [18.Deep Dive Insights:Database Selection](#deep-dive-insights-database-selection)
+
+  - [19.Deep Dive Insights:Data Modeling](#deep-dive-insights-data-modeling)
+
+  - [20.Deep Dive Insights:Handling Concurrent Booking Updates](#deep-dive-insights-handling-concurrent-booking-updates)
 
 <hr style="border:2px solid gray">
+
+
+### <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
 
 ## Functional Requirements
 
@@ -152,6 +162,8 @@ There will be two types of users:
 </table>
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU
 
@@ -359,6 +371,8 @@ Total data read for viewing properties = 5.88 million × 500 KB = **2.94 TB/day*
 
 <hr style="border:2px solid gray">
 
+### <p style="font-size: 24px; font-style: italic; color:red">API DESIGN</p>
+
 ##  API DESIGN :Add Property
 
 When the property owner asks the server to create a new property listing on the website, he uses an API call.
@@ -550,6 +564,8 @@ Since we are creating the actual booking this time, we send the request to the `
 Here, we send all the necessary details about the booking—such as which property, the guest making the booking, how many guests, and the stay dates. Along with this, we also send the payment token as proof of payment.
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">HIGH LEVEL DESIGN</p>
 
 ##  HIGH LEVEL DESIGN :Add Property
 
@@ -808,6 +824,8 @@ Let's break down how the system works when a guest views their bookings. The sam
 4. Finally, the bookings are sent back to the **Guest** (or **Property Owner**) for viewing.
 
 <hr style="border:2px solid gray">
+
+### <p style="font-size: 24px; font-style: italic; color:red">DEEP DIVE INSIGHTS</p>
 
 ##  DEEP DIVE INSIGHTS: Database Selection
 
