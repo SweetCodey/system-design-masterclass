@@ -45,7 +45,7 @@ The MasterClass is divided into the following modules, each with its own directo
 - API gateway integration
 - Handling edge cases and abuse prevention
 
-### [06 - WhatsApp System Design 💬](./6.%20Design%20WhatsApp)
+### [06 - WhatsApp System Design 💬](./6.%20Design%20Whatsapp)
 
 - Real-time messaging architecture
 - End-to-end encryption implementation
