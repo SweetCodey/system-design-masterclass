@@ -38,34 +38,34 @@ The MasterClass is divided into the following modules, each with its own directo
 - Redirection mechanisms and latency optimization
 - Analytics and tracking capabilities
 
-### [05 - Rate Limiter Design 🚦](./5.%20Rate%20Limiter%20Design)
+### [05 - Rate Limiter Design 🚦](./5.%20Design%20Rate%20Limiter)
 
 - Rate limiting algorithms (token bucket, leaky bucket)
 - Distributed rate limiting approaches
 - API gateway integration
 - Handling edge cases and abuse prevention
 
-### [06 - WhatsApp System Design 💬](./6.%20WhatsApp%20System%20Design)
+### [06 - WhatsApp System Design 💬](./6.%20Design%20WhatsApp)
 
 - Real-time messaging architecture
 - End-to-end encryption implementation
 - Presence indicators and online status management
 - Message delivery guarantees and synchronization
 
-### [07 - Search System Design 🔍](./7.%20Search%20System%20Design)
+### [07 - Search System Design 🔍](./7.%20Design%20Search%20System)
 
 - Inverted index construction and optimization
 - Relevance ranking algorithms
 - Query parsing and processing
 - Search result caching strategies
 
-### [08 - Airbnb System Design 🏠](./8.%20Airbnb%20System%20Design)
+### [08 - Airbnb System Design 🏠](./8.%20Design%20Airbnb)
 
 - Marketplace platform architecture
 - Search and recommendation systems
 - Booking and payment processing
 
-### [09 - Notification System Design 🔔](./9.%20Notification%20System%20Design)
+### [09 - Notification System Design 🔔](./9.%20Design%20Notification%20System)
 
 - Multi-channel notification delivery (push, email, SMS)
 - Notification prioritization and batching
