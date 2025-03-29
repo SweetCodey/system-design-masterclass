@@ -1,4 +1,4 @@
-# TINYURL SYSTEM DESIGN
+# INSTAGRAM NEWSFEED DESIGN
 
 - [DECIDING REQUIREMENTS](#deciding-requirements)
   - [1.Functional Requirements](#functional-requirements)
