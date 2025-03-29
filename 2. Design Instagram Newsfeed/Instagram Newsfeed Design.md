@@ -1,4 +1,4 @@
-# TINYURL SYSTEM DESIGN
+# INSTAGRAM NEWSFEED DESIGN
 
 - [DECIDING REQUIREMENTS](#deciding-requirements)
   - [1.Functional Requirements](#functional-requirements)
@@ -667,7 +667,7 @@ When the user comments on a post, the following steps are involved, correspondin
 
 When the user likes a post, the following steps are involved, corresponding to the numbers in the diagram. Most of the flow is very similar to the "Comment on a Post" flow.
 
-![Like on a post](https://static.wixstatic.com/media/99fa54_229231cf6f21460998996288e88516c8~mv2.png/v1/fill/w_1120,h_623,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_229231cf6f21460998996288e88516c8~mv2.png)
+![Like on a post](https://static.wixstatic.com/media/99fa54_363f1846c7984165af10364e0bb7d92d~mv2.png/v1/fill/w_1120,h_623,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_363f1846c7984165af10364e0bb7d92d~mv2.png)
 
 ### Steps Involved
 
