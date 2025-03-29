@@ -1,4 +1,4 @@
-# 🎨 Design System MasterClass
+# 🎨 System Design MasterClass
 
 ---
 
