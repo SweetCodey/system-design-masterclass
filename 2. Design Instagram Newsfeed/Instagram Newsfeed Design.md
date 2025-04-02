@@ -776,7 +776,8 @@ In order to decide the DB type, here are some **general** guidelines that you ca
   <tr>
     <td><b>LikesDB</b></td>
     <td>
-      Extremely high scale and throughput - 1.5 billion activities/day.<br>
+      Extremely high scale and throughput - 8.5 billion activities/day.<br>
+      Reels Activity- Every day, Instagram Reels are reshared more than 4.5 billion times.<br>
       No fixed schema - Data may evolve in future to include like 'types' aka reactions (funny, wow, sad, love, ...).<br>
       Simple query pattern - We only do either of the things:<br>
       - Calculate # of likes and put in the Likes cache.<br>
