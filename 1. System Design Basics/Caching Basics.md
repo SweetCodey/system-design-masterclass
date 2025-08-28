@@ -62,7 +62,7 @@ This is called **"Read Through"** because we are reading the data **through the 
 
 ### *RTS Pros:*
 - **No Stale Data (with Write-Through):**  
-  If we pair the Read-Through strategy with [Write-Through](#write-through-strategy-wts), data in the cache stays fresh. Every update (like a change in `user4`’s address) is written to both the cache and database at the same time. So, whenever we read data from the cache, it’s guaranteed to be up-to-date.
+  If we pair the Read-Through strategy with Write-Through, data in the cache stays fresh. Every update (like a change in `user4`’s address) is written to both the cache and database at the same time. So, whenever we read data from the cache, it’s guaranteed to be up-to-date.
 
 ### *RTS Cons:*
 - **Cache Failure Causes Downtime:**  
