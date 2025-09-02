@@ -1,21 +1,21 @@
 # CACHING STRATEGIES
 
 - [1.Caching Strategies:Read](#caching-strategies-read)
-  - [1.1.Cache Aside Strategy-CAS](#cache-aside-strategy-cas)
+  - [1.1.Cache Aside Strategy (CAS)](#cache-aside-strategy-cas)
     - [1.1.1.CAS Pros](#cas-pros)
     - [1.1.2.CAS Cons](#cas-cons)
-  - [1.2.Read Through Strategy-RTS](#read-through-strategy-rts)
+  - [1.2.Read Through Strategy (RTS)](#read-through-strategy-rts)
     - [1.2.1.RTS Pros](#rts-pros)
     - [1.2.2.RTS Cons](#rts-cons)
 
 - [2.Caching Strategies:Write](#caching-strategies-write)
-  - [2.1.Write Aside Strategy-WAS](#write-aside-strategy-was)
+  - [2.1.Write Aside Strategy (WAS)](#write-aside-strategy-was)
     - [2.1.1.WAS Pros](#was-pros)
     - [2.1.2.WAS Cons](#was-cons)
-  - [2.2.Write Through Strategy-WTS](#write-through-strategy-wts)
+  - [2.2.Write Through Strategy (WTS)](#write-through-strategy-wts)
     - [2.2.1.WTS Pros](#wts-pros)
     - [2.2.2.WTS Cons](#wts-cons)
-  - [2.3.Write Behind Strategy-WBS](#write-behind-strategy-wbs)
+  - [2.3.Write Behind Strategy (WBS)](#write-behind-strategy-wbs)
     - [2.3.1.WBS Pros](#wbs-pros)
     - [2.3.2.WBS Cons](#wbs-cons)
 
@@ -25,7 +25,7 @@
 
 Here are two common methods to read data from a cache:
 
-### *Cache Aside Strategy-CAS*
+### *Cache Aside Strategy (CAS)*
 - When data is requested, we first look in the cache.
 - If it's not there, we retrieve it from the database.
 - The retrieved data is then saved in the cache for future requests.
@@ -51,7 +51,7 @@ Here are two common methods to read data from a cache:
 
 <hr style="border:2px solid gray">
 
-### *Read Through Strategy-RTS*
+### *Read Through Strategy (RTS)*
 - When data is requested, we first look in the cache.
 - If it’s not there, the cache itself fetches the data from the database.
 - The cache then saves the data for future requests.
@@ -77,7 +77,7 @@ This is called **"Read Through"** because we are reading the data **through the 
 
 Here are the three common strategies to write the data in the cache:
 
-### *Write Aside Strategy-WAS*
+### *Write Aside Strategy (WAS)*
 
 ![Write Aside Strategy](https://static.wixstatic.com/media/99fa54_7f8ee752c26847949940018b0ed0c853~mv2.png/v1/fill/w_783,h_357,al_c,lg_1,q_85,enc_auto/99fa54_7f8ee752c26847949940018b0ed0c853~mv2.png)
 
@@ -97,7 +97,7 @@ Basically, the cache gets updated reactively (on-demand) rather than proactively
 
 <hr style="border:2px solid gray">
 
-### *Write Through Strategy-WTS*
+### *Write Through Strategy (WTS)*
 
 ![Write Through](https://static.wixstatic.com/media/99fa54_f777481de61b47a6887692975078031f~mv2.png/v1/fill/w_781,h_277,al_c,lg_1,q_85,enc_auto/99fa54_f777481de61b47a6887692975078031f~mv2.png)
 
@@ -115,7 +115,7 @@ This process happens **synchronously**—meaning that only after the database is
 
 <hr style="border:2px solid gray">
 
-### *Write Behind Strategy-WBS*
+### *Write Behind Strategy (WBS)*
 
 ![Write Behind](https://static.wixstatic.com/media/99fa54_9c246cc0fac243f2be735a862948a163~mv2.png/v1/fill/w_781,h_268,al_c,lg_1,q_85,enc_auto/99fa54_9c246cc0fac243f2be735a862948a163~mv2.png)
 

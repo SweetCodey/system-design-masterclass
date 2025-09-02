@@ -20,7 +20,7 @@ Based on *how* computers are talking to each other, we can classify the APIs. He
 
 1. **REST APIs** - Representational State Transfer (REST) APIs follow a stateless, client-server architecture and use standard HTTP methods.
 2. **GraphQL APIs** - GraphQL APIs provide flexible data querying capabilities, allowing clients to request only the data they need.
-3. **gRPC APIs** - gRPC APIs provide Remote Procedure Call framework that uses HTTP/2 and protocol buffers to provide features like bidirectional streaming, authentication e.t.c.
+3. **gRPC APIs** - Remote Procedure Call (gRPC) APIs provide efficient communication using data format called proto buffer.
 4. **SOAP APIs** - Simple Object Access Protocol (SOAP) APIs follow a strict protocol using XML messaging for communication.
 
 ![API](https://static.wixstatic.com/media/99fa54_7747fcfaf5504c1aa436b263448611a7~mv2.png/v1/fill/w_855,h_575,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_7747fcfaf5504c1aa436b263448611a7~mv2.png)
