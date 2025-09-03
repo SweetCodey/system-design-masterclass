@@ -22,15 +22,100 @@
 
 <hr style="border:2px solid gray">
 
-# DECIDING REQUIREMENTS
+# <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
 
 ## Functional Requirements
+
+Below is a structured table displaying various requirements and their descriptions.
+
+### User Functional Requirements
+
+<table>
+    <tr>
+        <th>Requirement</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>User registration</td>
+        <td>User should be able to register using a uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Book a cab</td>
+        <td>User should be able to book a Uber cab using a uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Track the trip</td>
+        <td>User should be able to track his journey from source to destination using a uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Pay for the trip</td>
+        <td>User should be able to pay for his journey after the ride using payment gateway in uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Rate for the trip</td>
+        <td>User should be able to rate for his journey after the ride using a uber mobile application</td>
+    </tr>
+</table>
+
+### Cab Driver Functional Requirements
+
+<table>
+    <tr>
+        <th>Requirement</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>Cab Driver registration</td>
+        <td>Cab driver should be able to register using a uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Accept/decline the booking request</td>
+        <td>Cab driver should be able to accept/decline a user booking request using a uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Track the trip</td>
+        <td>Cab driver should be able to track his accepted booking journey from source to destination using a uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Payment for the trip</td>
+        <td>Cab driver should be able to see the user payment status after completing the trip using uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Rate for the trip</td>
+        <td>cab driver should be able to rate for user after the ride using a uber mobile application</td>
+    </tr>
+</table>
+
+### Uber Service Provider Functional Requirements
+
+<table>
+    <tr>
+        <th>Requirement</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>Schedule the trip</td>
+        <td>Uber service provider should be able to schedule the trip according to user's booking request which includes geo-graphical location(s)</td>
+    </tr>
+    <tr>
+        <td>Booking prioritization</td>
+        <td>Uber service provider should be able to prioritize booking for both user and cab driver as per their current rating</td>
+    </tr>
+    <tr>
+        <td>Map service</td>
+        <td>Uber service provider should be able to facilitate the city map of their respective state/country for both user & cab driver using a uber mobile application</td>
+    </tr>
+    <tr>
+        <td>Payment gateway</td>
+        <td>Uber service provider should be able to provide different ways of payment through payment gateway to the user using a uber mobile application</td>
+    </tr>
+</table>
 
 ## Non Functional Requirements
 
 <hr style="border:2px solid gray">
 
-# CAPACITY ESTIMATION
+# <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
 
 ## DAU MAU ESTIMATION
 
@@ -38,30 +123,22 @@
 
 ### Monthly Active Users (MAU)
 
-<hr style="border:1px solid gray">
-
 ## Throughput Estimation
-
-<hr style="border:1px solid gray">
 
 ## Storage
 
-<hr style="border:1px solid gray">
-
 ## Memory
-
-<hr style="border:1px solid gray">
 
 ## Network and Bandwidth Estimation
 
 <hr style="border:2px solid gray">
 
-# API DESIGN
+# <p style="font-size: 24px; font-style: italic; color:red">API DESIGN</p>
 
 <hr style="border:2px solid gray">
 
-# HIGH LEVEL DESIGN
+# <p style="font-size:24px; font-style:italic; color:red">HIGH LEVEL DESIGN</p>
 
 <hr style="border:2px solid gray">
 
-# DEEP DIVE INSIGHTS
+# <p style="font-size: 24px; font-style:italic; color:red">DEEP DIVE INSIGHTS</p>
