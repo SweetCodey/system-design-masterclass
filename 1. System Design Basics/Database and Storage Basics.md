@@ -10,11 +10,11 @@ In this section, let's explore the **data layer** in our system design. We will 
 
 [4.Object Storage](#object-storage)
 
-[5.Databse Sharding and Database Replication](#database-sharding-and-database-replication)
+[5.Database Sharding and Database Replication](#database-sharding-and-database-replication)
 
 [6.Cache](#cache)
 
-[6.CDN](#cdn)
+[7.CDN](#cdn)
 
 These techniques improve **data access, performance, and fault tolerance** for our **data layer**.
 
@@ -155,7 +155,7 @@ Database sharding splits a large database into smaller sections called **shards*
 - If one shard has a problem and stops working, the other shards keep functioning.
 - This ensures that the whole system doesn’t go down, making the database more reliable.
 
-![Database shrading](https://static.wixstatic.com/media/99fa54_7715d98a7c134410b13152fb9fcf5c32~mv2.png/v1/fill/w_1120,h_459,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_7715d98a7c134410b13152fb9fcf5c32~mv2.png)
+![Database sharding](https://static.wixstatic.com/media/99fa54_7715d98a7c134410b13152fb9fcf5c32~mv2.png/v1/fill/w_1120,h_459,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_7715d98a7c134410b13152fb9fcf5c32~mv2.png)
 
 ### Database Replication
 

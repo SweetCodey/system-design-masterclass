@@ -11,9 +11,6 @@ In this section, we'll cover the foundational networking concepts essential for 
 - [4.Protocols:TCP,UDP,HTTP,Websockets](#protocols-tcp-udp-http-websocket)
 
 - [5.Forward and Reverse Proxy](#forward-proxy-and-reverse-proxy)
-## Forward and Reverse Proxies
-
-Press **continue** to dive into these key networking concepts!
 
 <hr style="border:2px solid gray">
 

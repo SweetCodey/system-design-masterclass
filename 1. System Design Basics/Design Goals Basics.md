@@ -4,22 +4,14 @@ In this section, we'll cover key goals to always keep in mind when designing any
 
 ### Key Design Goals
 
-- **Scalability**  
-- **Availability**  
-- **Consistency**  
-- **No SPOF (Single Point of Failure)**  
-- **Fault Tolerance**  
-
+- [1.Scalability](#design-goals-scalability)
+- [2.Availability](#design-goals-availability)
+- [3.Consistency](#design-goals-consistency)
+- [4.No Single Point of Failure (SPOF)](#design-goals-fault-tolerance-and-single-point-of-failure)
+- [5.Fault Tolerance](#design-goals-fault-tolerance-and-single-point-of-failure)
 
 When you prepare food, no matter the ingredients or recipe, you want it to be **tasty, healthy, and affordable**.  
 Just like these qualities make a great meal, these goals make a great system.  
-
-<hr style="border:2px solid gray">
-
-- [1.Design Goals:Scalability](#design-goals-scalability)
-- [2.Design Goals:Availability](#design-goals-availability)
-- [3.Design Goals:Consistency](#design-goals-consistency)
-- [4.Design Goals:Fault Tolerance and Single Point of Failure](#design-goals-fault-tolerance-and-single-point-of-failure)
 
 <hr style="border:2px solid gray">
 
@@ -79,7 +71,7 @@ When you withdraw money from the bank, it’s essential that the updated balance
 
 For example, when withdrawing money from the bank, it’s essential that the updated balance is immediately reflected so the same money isn't withdrawn multiple times.
 
-![Strong Consistecy](https://static.wixstatic.com/media/99fa54_aa673da73b174037bae60af3377950b4~mv2.png/v1/fill/w_1120,h_563,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_aa673da73b174037bae60af3377950b4~mv2.png)
+![Strong Consistency](https://static.wixstatic.com/media/99fa54_aa673da73b174037bae60af3377950b4~mv2.png/v1/fill/w_1120,h_563,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_aa673da73b174037bae60af3377950b4~mv2.png)
 
 ### Eventual Consistency
 
@@ -89,7 +81,7 @@ For example, if you update your profile picture, some users might still see the 
 
 Eventual consistency can be used on social media or in applications where there is no strong need for instant updates.
 
-![Eventual Consistecy](https://static.wixstatic.com/media/99fa54_526a853d801f42f98473e3d733c0cb93~mv2.png/v1/fill/w_1120,h_628,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_526a853d801f42f98473e3d733c0cb93~mv2.png)
+![Eventual Consistency](https://static.wixstatic.com/media/99fa54_526a853d801f42f98473e3d733c0cb93~mv2.png/v1/fill/w_1120,h_628,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_526a853d801f42f98473e3d733c0cb93~mv2.png)
 
 <hr style="border:2px solid gray">
 
