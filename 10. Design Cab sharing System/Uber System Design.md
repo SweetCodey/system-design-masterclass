@@ -113,6 +113,72 @@ Below is a structured table displaying various requirements and their descriptio
 
 ## Non Functional Requirements
 
+### Uber customer Non Functional Requirements
+
+<table>
+    <tr>
+        <th>Requirement</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><strong>Availability</strong></td>
+        <td>The system should be highly available - <strong>99.99%</strong> uptime</td>
+    </tr>
+    <tr>
+        <td><strong>Scalability</strong></td>
+        <td>The system should be able to handle multiple users simultaneously</td>
+    </tr>
+    <tr>
+        <td><strong>Low latency</strong></td>
+        <td>The system's turn around time for user's booking request should be very low.</td>
+    </tr>
+    <tr>
+        <td><strong>Customer Experience</strong></td>
+        <td>The system should give smooth and seamless experience, if customer's internet is working perfectly</td>
+    </tr>
+    <tr>
+        <td><strong>Security</strong></td>
+        <td>The system should provide security with out any data breach</td>
+    </tr>
+    <tr>
+        <td><strong>Storage Reliability</strong></td>
+        <td>The system should ensure storage reliability for customer's content by maintaining his/her records and booking history.</td>
+    </tr>
+</table>
+
+### Uber Cab Driver Non Functional Requirements
+
+<table>
+    <tr>
+        <th>Requirement</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><strong>Availability</strong></td>
+        <td>The system should be highly available - <strong>99.99%</strong> uptime</td>
+    </tr>
+    <tr>
+        <td><strong>Scalability</strong></td>
+        <td>The system should be able to handle multiple cab drivers simultaneously</td>
+    </tr>
+    <tr>
+        <td><strong>Low latency</strong></td>
+        <td>The system's turn around time for cab driver's booking acceptance/deny should be very low.</td>
+    </tr>
+    <tr>
+        <td><strong>Cab driver Experience</strong></td>
+        <td>The system should give smooth and seamless experience, if cab driver's internet is working perfectly</td>
+    </tr>
+    <tr>
+        <td><strong>Security</strong></td>
+        <td>The system should provide security with out any data breach of cab driver</td>
+    </tr>
+    <tr>
+        <td><strong>Storage Reliability</strong></td>
+        <td>The system should ensure storage reliability for cab driver's content by maintaining his/her records and booking history.</td>
+    </tr>
+</table>
+
 <hr style="border:2px solid gray">
 
 # <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
