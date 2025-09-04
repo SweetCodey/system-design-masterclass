@@ -185,11 +185,81 @@ Below is a structured table displaying various requirements and their descriptio
 
 ## DAU MAU ESTIMATION
 
-### Daily Active Users (DAU)
-
-### Monthly Active Users (MAU)
+<strong>How many users are using your software?</strong>
+- <strong>Daily Active Users</strong> (DAU) : 36 million
+- <strong>Monthly Active Users</strong> (MAU) : 180 million
 
 ## Throughput Estimation
+
+Calculation of write requests and read requests to the system
+
+### Write requests
+
+The possible ways of write requests to the system:
+1. Customer/Cab driver details during registration
+2. Customer/Cab driver booking acceptance/rejection information
+3. Customer payment preference (optional)
+4. Customer/Cab driver rating information
+5. Customer complaint information
+
+Most of the cases write requests are one time activities or rare scenarios other than booking, payment and rating requests.
+
+Assumptions:
+- 90 out of 100 customers book rides daily.
+- 95 out of 100 cab drivers accept rides daily.
+- 15 out of 100 customers do app registrations daily.
+- 20 out of 100 customers set their payment preferences daily.
+- 60 out of 100 customers rate for their trip daily
+- 2 out of 100 customer raise complaints daily
+
+Calculation:
+- Total DAU: 36 million
+- Write requests per day:
+    - Booking : (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million write requests per day
+    - Ride acceptance : (95/100) times 36,000,000 = 34,200,000 ~ 34.2 million
+    - App registrations : (15/100) times 36,000,000 = 5,400,000 ~ 5.4 million
+    - Payment preference : (20/100) times 36,000,000 = 7,800,000 ~ 7.8 million
+    - Rating : (60/100) times 36,000,000 = 21,600,000 ~ 21.6 million
+    - Complaints : (2/100) times 36,000,000 = 720,000 ~ 0.72 million
+
+### Read requests
+
+The possible ways of read requests to the system:
+- Trip
+    - Preferences
+    - Acceptance
+    - Scheduling
+    - Tracking
+    - Fares
+    - History
+    - Rating
+    - Payment
+    - Complaint tracking
+
+Assumptions:
+- 90 out of 100 customers read their ride preference(cab type preference e.t.c.) daily.
+- 95 out of 100 cab drivers read the acceptance request daily.
+- 90 out of 100 customers read their source and destination while scheduling their ride daily.
+- 55 out of 100 customers track their journey daily.
+- 85 out of 100 customers read their trip fare details daily.
+- 10 out of 100 customers read their trip history daily
+- 20 out of 100 customers/cab drivers read their user/service ratings daily.
+- 90 out of 100 customers/cab drivers read the trip payment details after their ride daily.
+- 2 out of 100 customers/cab drivers track/read trip complaints daily.
+
+Calculation:
+- Total DAU: 36 million
+- Read requests per day:
+    - Trip
+        - Preferences: (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million
+        - Acceptance: (95/100) times 36,000,000 = 34,200,000 ~ 34.2 million
+        - Scheduling: (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million
+        - Tracking: (55/100) times 36,000,000 = 19,800,000 ~ 19.8 million
+        - Fares: (85/100) times 36,000,000 = 30,600,000 ~ 30.6 million
+        - History: (10/100) times 36,000,000 = 3,600,000 ~ 3.6 million
+        - Rating: (20/100) times 36,000,000 = 7,200,000 ~ 7.2 million
+        - Payment: (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million
+        - Complaint tracking: (2/100) times 36,000,000 = 720,000 ~ 0.7 million
 
 ## Storage
 
