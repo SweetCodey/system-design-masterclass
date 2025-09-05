@@ -352,6 +352,82 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 # API DESIGN
 
+## User Registration
+
+Lets understand how user register in cab sharing application.
+
+When we ask the server to register a user, we use an API call. This is how computers talk to each other.
+
+We follow a standard way to register a user and will use a REST API for this communication. Here are the technical details.
+
+<!--Include HTTP request picture -->
+
+### HTTP Method
+This tells to the server what action to perform. Since we want to create new user on the server, we use the `POST` action.
+
+### Endpoint
+This tells the server where to perform that action. Since we are creating a new user, we will use the `/v1/users/customers` endpoint of the server.
+
+**Note:**
+```
+'v1' means version 1. It is good practice to version your APIs.
+```
+
+### HTTP Body
+We have told the server to create a user, but we haven't provided the details of the user itself. This information is sent in the request body:
+
+```json
+{
+    "userName":"Name of the user",
+    "userEmailId":"EmailId of the user",
+    "userPhoneNumber":"Phone number of the user",
+    "userIdentityNumber":"National Identification Number of the user",
+    "userNationality":"Nationality of the user"
+}
+```
+
+## Cab driver registration
+
+Lets understand how cab driver register in cab sharing application.
+
+When we ask the server to register a cab driver, we use an API call. This is how computers talk to each other.
+
+We follow a standard way to register a cab driver and will use a REST API for this communication. Here are the technical details.
+
+<!--Include HTTP request picture -->
+
+### HTTP Method
+This tells to the server what action to perform. Since we want to create new cab driver on the server, we use the `POST` action.
+
+### Endpoint
+This tells the server where to perform that action. Since we are creating a new cab driver, we will use the `/v1/users/cabDrivers` endpoint of the server.
+
+### HTTP Body
+We have told the server to create a cab driver profile, but we haven't provided the details of the cab driver itself. This information is sent in the request body:
+
+```json
+{
+    "cabDriverName":"Name of the cab driver",
+    "cabDriverEmailId":"EmailId of the cab driver",
+    "cabDriverPhoneNumber":"Phone number of the cab driver",
+    "cabDriverIdentityNumber":"National Identification Number of the cab driver",
+    "cabDriverNationality":"Nationality of the cab driver",
+    "cabNumber":"Vehicle number of the cab driver",
+    "cabDriverLicense":"License number of the cab driver"
+}
+```
+
+## Book a cab
+
+## Find a cab driver
+
+## Track the journey
+
+## Pay for the service
+
+## Service rating system
+
+## Complaint system
 
 <hr style="border:2px solid gray">
 
