@@ -72,6 +72,12 @@ The MasterClass is divided into the following modules, each with its own directo
 - Delivery tracking and analytics
 - User preference management and personalization
 
+### [10 - Cab Sharing System Design 🔔](./10.%20Design%20Cab%20sharing%20System)
+
+- Uber cab service (booking, tracking, payment, rating)
+- Booking prioritization
+- Customer preference management
+
 ### Course Notes 📂
 
 - Contains notes from the course.

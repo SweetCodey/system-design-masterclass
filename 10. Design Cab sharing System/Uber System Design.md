@@ -86,7 +86,7 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
 </table>
 
-### Uber Service Provider Functional Requirements
+### Uber Functional Requirements
 
 <table>
     <tr>
@@ -95,25 +95,25 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
     <tr>
         <td>Schedule the trip</td>
-        <td>Uber service provider should be able to schedule the trip according to user's booking request which includes geo-graphical location(s)</td>
+        <td>System should be able to schedule the trip according to user's booking request which includes geo-graphical location(s)</td>
     </tr>
     <tr>
         <td>Booking prioritization</td>
-        <td>Uber service provider should be able to prioritize booking for both user and cab driver as per their current rating</td>
+        <td>System should be able to prioritize booking for both user and cab driver as per their current rating</td>
     </tr>
     <tr>
         <td>Map service</td>
-        <td>Uber service provider should be able to facilitate the city map of their respective state/country for both user & cab driver using a uber mobile application</td>
+        <td>System should be able to facilitate the city map of their respective state/country for both user & cab driver using a mobile application</td>
     </tr>
     <tr>
         <td>Payment gateway</td>
-        <td>Uber service provider should be able to provide different ways of payment through payment gateway to the user using a uber mobile application</td>
+        <td>System should be able to provide different ways of payment through payment gateway to the user using a mobile application</td>
     </tr>
 </table>
 
 ## Non Functional Requirements
 
-### Uber customer Non Functional Requirements
+### Customer Non Functional Requirements
 
 <table>
     <tr>
@@ -146,7 +146,7 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
 </table>
 
-### Uber Cab Driver Non Functional Requirements
+### Cab Driver Non Functional Requirements
 
 <table>
     <tr>
@@ -204,7 +204,7 @@ The possible ways of write requests to the system:
 
 Most of the cases write requests are one time activities or rare scenarios other than booking, payment and rating requests.
 
-Assumptions:
+<strong>Assumptions</strong>:
 - 90 out of 100 customers book rides daily.
 - 95 out of 100 cab drivers accept rides daily.
 - 15 out of 100 customers do app registrations daily.
@@ -212,7 +212,7 @@ Assumptions:
 - 60 out of 100 customers rate for their trip daily
 - 2 out of 100 customer raise complaints daily
 
-Calculation:
+<strong>Calculation</strong>:
 - Total DAU: 36 million
 - Write requests per day:
     - Booking : (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million write requests per day
@@ -236,7 +236,7 @@ The possible ways of read requests to the system:
     - Payment
     - Complaint tracking
 
-Assumptions:
+<strong>Assumptions</strong>:
 - 90 out of 100 customers read their ride preference(cab type preference e.t.c.) daily.
 - 95 out of 100 cab drivers read the acceptance request daily.
 - 90 out of 100 customers read their source and destination while scheduling their ride daily.
@@ -247,7 +247,7 @@ Assumptions:
 - 90 out of 100 customers/cab drivers read the trip payment details after their ride daily.
 - 2 out of 100 customers/cab drivers track/read trip complaints daily.
 
-Calculation:
+<strong>Calculation</strong>:
 - Total DAU: 36 million
 - Read requests per day:
     - Trip
@@ -261,9 +261,62 @@ Calculation:
         - Payment: (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million
         - Complaint tracking: (2/100) times 36,000,000 = 720,000 ~ 0.7 million
 
-## Storage
+<strong>Summary</strong>
 
-## Memory
+|   Operation                   |   Calculation         |   Result      |
+|-------------------------------|-----------------------|---------------|
+|   Write                       |(90/100)x36 million    |	32.4 million|
+|                               |(95/100)x36 million    |	34.2 million|
+|                               |(15/100)x36 million    |	5.4 million |
+|                               |(20/100)x36 million    |	7.8 million |
+|                               |(60/100)x36 million    |	21.6 million|
+|                               |(02/100)x36 million    |	0.72 million|
+|Total write request(s) per day |                       |~102.12 million|
+|   Read                        |(90/100) x 36 million  |   32.4 million|
+|                               |(95/100) x 36 million  |   34.2 million|
+|                               |(90/100) x 36 million  |   32.4 million|
+|                               |(55/100) x 36 million  |   19.8 million|
+|                               |(85/100) x 36 million  |   30.6 million|
+|                               |(10/100) x 36 million  |   3.6 million |
+|                               |(20/100) x 36 million  |   7.2 million |
+|                               |(90/100) x 36 million  |   32.4 million|
+|                               |(02/100) x 36 million  |   0.7 million |
+|Total read request(s) per day  |                       |~193.3 million |
+
+## Storage Estimation
+
+<strong>Assumptions</strong>
+
+- Average size of a customer record: 100 MB
+- Daily write operations to the system: 102.12 million
+
+<strong>Storage Calculations</strong>
+
+1. Daily storage requirement:
+    100 MB x 102.12 million requests per day = 10.212 PB per day
+2. Storage requirement for 10-Years:
+    10.212 PB per day x 365 days x 10 years = 512.6 PB
+
+<strong>Summary</strong>
+|   Metric          |   Calculation                      |   Result        |
+|-------------------|------------------------------------|-----------------|
+| Daily Storage     | 100 MB x 102.12 M req/day          |   10.212 PB     |
+| 10-Year Storage   | 10.212 PB/day x 365 days x 10 years|    3.727 ZB     |
+
+## Memory Estimation
+
+<strong>Overview</strong>
+By memory, we refer to the <strong>cache memory size</strong> required for faster data access.
+
+<strong>Why Cache Memory</strong>
+Accessing data directly from the database takes time. To speed up data retrieval, cache memory is used.
+
+Cache Memory Requirement Calculation
+- <storage>Daily Storage Requirement</storage>: 10.212 PB
+- <storage>Cache Requirement(1% of Daily Storage)</storage>: (1/100) x 10.212 PB = 102.12 TB
+
+<strong>Scalability</strong>
+The memory size should scale as the system grows to accommodate increasing storage and data access demands.
 
 ## Network and Bandwidth Estimation
 
