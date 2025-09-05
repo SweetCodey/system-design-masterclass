@@ -10,19 +10,20 @@
     - [6. Memory](#memory-estimation)
     - [7. Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
 - [API DESIGN](#api-design)
-    - [8. Book a cab](#book-a-cab)
-    - [9. Find a cab driver](#find-a-cab-driver)
-    - [10. Track the journey](#track-the-journey)
-    - [11. Pay for the service](#pay-for-the-service)
-    - [12. Service rating system](#service-rating-system)
-    - [13. User registration](#user-registration)
-    - [14. Cab driver registration](#cab-driver-registration)
+    - [8. User registration](#user-registration)
+    - [9. Cab driver registration](#cab-driver-registration)
+    - [10. Book a cab](#book-a-cab)
+    - [11. Find a cab driver](#find-a-cab-driver)
+    - [12. Track the journey](#track-the-journey)
+    - [13. Pay for the service](#pay-for-the-service)
+    - [14. Service rating system](#service-rating-system)
+    - [15. Complaint system](#complaint-system)
 - [HIGH LEVEL DESIGN](#high-level-design)
 - [DEEP DIVE INSIGHTS](#deep-dive-insights)
 
 <hr style="border:2px solid gray">
 
-# <p style="font-size: 24px; font-style: italic; color:red">DECIDING REQUIREMENTS</p>
+# DECIDING REQUIREMENTS
 
 ## Functional Requirements
 
@@ -181,13 +182,13 @@ Below is a structured table displaying various requirements and their descriptio
 
 <hr style="border:2px solid gray">
 
-# <p style="font-size: 24px; font-style: italic; color:red">CAPACITY ESTIMATION</p>
+# CAPACITY ESTIMATION
 
 ## DAU MAU ESTIMATION
 
 <strong>How many users are using your software?</strong>
-- <strong>Daily Active Users</strong> (DAU) : 36 million
-- <strong>Monthly Active Users</strong> (MAU) : 180 million
+- <strong>Daily Active Users</strong> (DAU) : ```36 million```
+- <strong>Monthly Active Users</strong> (MAU) : ```180 million```
 
 ## Throughput Estimation
 
@@ -205,22 +206,22 @@ The possible ways of write requests to the system:
 Most of the cases write requests are one time activities or rare scenarios other than booking, payment and rating requests.
 
 <strong>Assumptions</strong>:
-- 90 out of 100 customers book rides daily.
-- 95 out of 100 cab drivers accept rides daily.
-- 15 out of 100 customers do app registrations daily.
-- 20 out of 100 customers set their payment preferences daily.
-- 60 out of 100 customers rate for their trip daily
-- 2 out of 100 customer raise complaints daily
+- ```90 out of 100``` customers book rides daily.
+- ```95 out of 100``` cab drivers accept rides daily.
+- ```15 out of 100``` customers do app registrations daily.
+- ```20 out of 100``` customers set their payment preferences daily.
+- ```60 out of 100``` customers rate for their trip daily
+- ```2 out of 100``` customer raise complaints daily
 
 <strong>Calculation</strong>:
-- Total DAU: 36 million
+- Total DAU: ```36 million```
 - Write requests per day:
-    - Booking : (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million write requests per day
-    - Ride acceptance : (95/100) times 36,000,000 = 34,200,000 ~ 34.2 million
-    - App registrations : (15/100) times 36,000,000 = 5,400,000 ~ 5.4 million
-    - Payment preference : (20/100) times 36,000,000 = 7,800,000 ~ 7.8 million
-    - Rating : (60/100) times 36,000,000 = 21,600,000 ~ 21.6 million
-    - Complaints : (2/100) times 36,000,000 = 720,000 ~ 0.72 million
+    - Booking : ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
+    - Ride acceptance : ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
+    - App registrations : ```(15/100) times 36,000,000 = 5,400,000 ~ 5.4 million```
+    - Payment preference : ```(20/100) times 36,000,000 = 7,800,000 ~ 7.8 million```
+    - Rating : ```(60/100) times 36,000,000 = 21,600,000 ~ 21.6 million```
+    - Complaints : ```(2/100) times 36,000,000 = 720,000 ~ 0.72 million```
 
 ### Read requests
 
@@ -237,41 +238,41 @@ The possible ways of read requests to the system:
     - Complaint tracking
 
 <strong>Assumptions</strong>:
-- 90 out of 100 customers read their ride preference(cab type preference e.t.c.) daily.
-- 95 out of 100 cab drivers read the acceptance request daily.
-- 90 out of 100 customers read their source and destination while scheduling their ride daily.
-- 55 out of 100 customers track their journey daily.
-- 85 out of 100 customers read their trip fare details daily.
-- 10 out of 100 customers read their trip history daily
-- 20 out of 100 customers/cab drivers read their user/service ratings daily.
-- 90 out of 100 customers/cab drivers read the trip payment details after their ride daily.
-- 2 out of 100 customers/cab drivers track/read trip complaints daily.
+- ```90 out of 100``` customers read their ride preference(cab type preference e.t.c.) daily.
+- ```95 out of 100``` cab drivers read the acceptance request daily.
+- ```90 out of 100``` customers read their source and destination while scheduling their ride daily.
+- ```55 out of 100``` customers track their journey daily.
+- ```85 out of 100``` customers read their trip fare details daily.
+- ```10 out of 100``` customers read their trip history daily
+- ```20 out of 100``` customers/cab drivers read their user/service ratings daily.
+- ```90 out of 100``` customers/cab drivers read the trip payment details after their ride daily.
+- ```2 out of 100``` customers/cab drivers track/read trip complaints daily.
 
 <strong>Calculation</strong>:
-- Total DAU: 36 million
+- Total DAU: ```36 million```
 - Read requests per day:
     - Trip
-        - Preferences: (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million
-        - Acceptance: (95/100) times 36,000,000 = 34,200,000 ~ 34.2 million
-        - Scheduling: (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million
-        - Tracking: (55/100) times 36,000,000 = 19,800,000 ~ 19.8 million
-        - Fares: (85/100) times 36,000,000 = 30,600,000 ~ 30.6 million
-        - History: (10/100) times 36,000,000 = 3,600,000 ~ 3.6 million
-        - Rating: (20/100) times 36,000,000 = 7,200,000 ~ 7.2 million
-        - Payment: (90/100) times 36,000,000 = 32,400,000 ~ 32.4 million
-        - Complaint tracking: (2/100) times 36,000,000 = 720,000 ~ 0.7 million
+        - Preferences: ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
+        - Acceptance: ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
+        - Scheduling: ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
+        - Tracking: ```(55/100) times 36,000,000 = 19,800,000 ~ 19.8 million```
+        - Fares: ```(85/100) times 36,000,000 = 30,600,000 ~ 30.6 million```
+        - History: ```(10/100) times 36,000,000 = 3,600,000 ~ 3.6 million```
+        - Rating: ```(20/100) times 36,000,000 = 7,200,000 ~ 7.2 million```
+        - Payment: ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
+        - Complaint tracking: ```(2/100) times 36,000,000 = 720,000 ~ 0.7 million```
 
 <strong>Summary</strong>
 
 |   Operation                   |   Calculation         |   Result      |
 |-------------------------------|-----------------------|---------------|
-|   Write                       |(90/100)x36 million    |	32.4 million|
-|                               |(95/100)x36 million    |	34.2 million|
-|                               |(15/100)x36 million    |	5.4 million |
-|                               |(20/100)x36 million    |	7.8 million |
-|                               |(60/100)x36 million    |	21.6 million|
-|                               |(02/100)x36 million    |	0.72 million|
-|Total write request(s) per day |                       |~102.12 million|
+|   Write                       |(90/100) x 36 million  |	32.4 million|
+|                               |(95/100) x 36 million  |	34.2 million|
+|                               |(15/100) x 36 million  |	5.4 million |
+|                               |(20/100) x 36 million  |	7.8 million |
+|                               |(60/100) x 36 million  |	21.6 million|
+|                               |(02/100) x 36 million  |	0.72 million|
+|Total write request(s) per day |                       | 102.12 million|
 |   Read                        |(90/100) x 36 million  |   32.4 million|
 |                               |(95/100) x 36 million  |   34.2 million|
 |                               |(90/100) x 36 million  |   32.4 million|
@@ -281,21 +282,21 @@ The possible ways of read requests to the system:
 |                               |(20/100) x 36 million  |   7.2 million |
 |                               |(90/100) x 36 million  |   32.4 million|
 |                               |(02/100) x 36 million  |   0.7 million |
-|Total read request(s) per day  |                       |~193.3 million |
+|Total read request(s) per day  |                       | 193.3 million |
 
 ## Storage Estimation
 
 <strong>Assumptions</strong>
 
-- Average size of a customer record: 100 MB
-- Daily write operations to the system: 102.12 million
+- Average size of a customer record: ```100 MB```
+- Daily write operations to the system: ```102.12 million```
 
 <strong>Storage Calculations</strong>
 
-1. Daily storage requirement:
-    100 MB x 102.12 million requests per day = 10.212 PB per day
-2. Storage requirement for 10-Years:
-    10.212 PB per day x 365 days x 10 years = 512.6 PB
+1. <strong>Daily storage requirement</strong>:
+    ```100 MB x 102.12 million requests per day = 10.212 PB per day```
+2. <strong>Storage requirement for 10-Years</strong>:
+    ```10.212 PB per day x 365 days x 10 years = 512.6 PB```
 
 <strong>Summary</strong>
 |   Metric          |   Calculation                      |   Result        |
@@ -311,23 +312,53 @@ By memory, we refer to the <strong>cache memory size</strong> required for faste
 <strong>Why Cache Memory</strong>
 Accessing data directly from the database takes time. To speed up data retrieval, cache memory is used.
 
-Cache Memory Requirement Calculation
-- <storage>Daily Storage Requirement</storage>: 10.212 PB
-- <storage>Cache Requirement(1% of Daily Storage)</storage>: (1/100) x 10.212 PB = 102.12 TB
+<strong>Cache Memory Requirement Calculation</strong>
+
+- <storage>Daily Storage Requirement</storage>: ```10.212 PB```
+- <storage>Cache Requirement(1% of Daily Storage)</storage>: ```(1/100) x 10.212 PB = 102.12 TB```
 
 <strong>Scalability</strong>
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
 
 ## Network and Bandwidth Estimation
 
+<strong>Overview</strong>
+Network/Bandwidth estimation helps us determine the amount of data flowing in and out of the system per second.
+
+<strong>Data Flow Estimations</strong>
+
+<strong>Ingress</strong> (Data flow into the system)
+
+- <strong>Data stored per day</strong>: ```10.212 PB```
+- <strong>Calculation</strong>: ```10.212 PB / (24 x 60 x 60) = 118.194 GB/sec```
+- <strong>Result:</strong> Incoming Data Flow = ```118.194 GB/sec```
+
+<strong>Egress</strong> (Data flow out of the system)
+
+- <strong>Total read requests per day</strong>: ```193.3 million```
+- <strong>Average customer record size</strong>: ```100 MB```
+- <strong>Daily Outgoing Data</strong>: ```193.3 million x 100 MB = 19.33 PB/day```
+- <strong>Calculation</strong>: ```19.33 PB / (24 x 60 x 60) = 223 GB/sec```
+- <strong>Result</strong>: ```223 GB/sec```
+
+<strong>Summary</strong>
+
+|       Type           |        Calculation        |   Result       |
+|----------------------|---------------------------|----------------|
+|Ingress (Data flow in)| 10.212 PB / (24 x 60 x 60)|118.194 GB/sec  |
+|Egress (Data flow out)| 19.33 PB / (24 x 60 x 60) |223 GB/sec      |
+
 <hr style="border:2px solid gray">
 
-# <p style="font-size: 24px; font-style: italic; color:red">API DESIGN</p>
+# API DESIGN
+
 
 <hr style="border:2px solid gray">
 
-# <p style="font-size:24px; font-style:italic; color:red">HIGH LEVEL DESIGN</p>
+# HIGH LEVEL DESIGN
 
 <hr style="border:2px solid gray">
 
-# <p style="font-size: 24px; font-style:italic; color:red">DEEP DIVE INSIGHTS</p>
+# DEEP DIVE INSIGHTS
+
+<hr style="border:2px solid gray">
