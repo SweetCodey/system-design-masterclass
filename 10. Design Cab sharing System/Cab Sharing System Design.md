@@ -334,7 +334,7 @@ When we ask the server to book a cab for user's ride, we use an API call. This i
 
 We follow a standard way to book a ride for a user and will use a REST API for this communication. Here are the technical details.
 
-<!--Include HTTP request picture -->
+![book a cab](./Resources/bookacab.png)
 
 ### HTTP Method
 This tells to the server what action to perform. Since we want to book a cab for a user on the server, we use the `POST` action.
@@ -369,7 +369,7 @@ When we ask the server to find a cab driver for a booking request, we use an API
 
 As we follow a standard way to find for a user and will use a REST API for this communication. Here are the technical details.
 
-<!--Include HTTP request picture -->
+![book a cab](./Resources/findADriver.png)
 
 ### HTTP Method
 This tells to the server what action to perform. Since we want to find a cab driver for a booking request on the server, we use the `GET` action.
@@ -381,6 +381,12 @@ This tells the server where to perform that action. Since we are finding a cab d
 `GET` requests do not include a body because they are used to fetch information, not to send data.
 
 ## API Design :Track the journey
+
+What might be the 'communication' for journey tracking?
+
+Again, we will use an API call for tracking our journey.
+
+[TBD]
 
 ## API Design :Pay for the service
 
