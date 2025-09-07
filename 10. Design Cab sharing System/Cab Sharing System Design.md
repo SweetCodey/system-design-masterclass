@@ -156,20 +156,14 @@ Most of the cases write requests are one time activities other than booking and 
 <strong>Assumptions</strong>:
 - ```90 out of 100``` customers book rides daily.
 - ```95 out of 100``` cab drivers accept rides daily.
-<!-- - ```15 out of 100``` customers do app registrations daily. -->
 - ```20 out of 100``` customers set their payment preferences daily.
-<!-- - ```60 out of 100``` customers rate for their trip daily -->
-<!-- - ```2 out of 100``` customer raise complaints daily -->
 
 <strong>Calculation</strong>:
 - Total DAU: ```36 million```
 - Write requests per day:
     - Booking : ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
     - Ride acceptance : ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
-    <!-- - App registrations : ```(15/100) times 36,000,000 = 5,400,000 ~ 5.4 million``` -->
     - Payment preference : ```(20/100) times 36,000,000 = 7,800,000 ~ 7.8 million```
-    <!-- - Rating : ```(60/100) times 36,000,000 = 21,600,000 ~ 21.6 million``` -->
-    <!-- - Complaints : ```(2/100) times 36,000,000 = 720,000 ~ 0.72 million``` -->
 
 ### Read requests
 
@@ -181,9 +175,7 @@ The possible ways of read requests to the system:
     - Tracking
     - Fares
     - History
-    <!-- - Rating -->
     - Payment
-    <!-- - Complaint tracking -->
 
 <strong>Assumptions</strong>:
 - ```90 out of 100``` customers read their ride preference(cab type preference e.t.c.) daily.
@@ -192,9 +184,7 @@ The possible ways of read requests to the system:
 - ```55 out of 100``` customers track their journey daily.
 - ```85 out of 100``` customers read their trip fare details daily.
 - ```10 out of 100``` customers read their trip history daily
-<!-- - ```20 out of 100``` customers/cab drivers read their user/service ratings daily. -->
 - ```90 out of 100``` customers/cab drivers read the trip payment details after their ride daily.
-<!-- - ```2 out of 100``` customers/cab drivers track/read trip complaints daily. -->
 
 <strong>Calculation</strong>:
 - Total DAU: ```36 million```
@@ -206,9 +196,7 @@ The possible ways of read requests to the system:
         - Tracking: ```(55/100) times 36,000,000 = 19,800,000 ~ 19.8 million```
         - Fares: ```(85/100) times 36,000,000 = 30,600,000 ~ 30.6 million```
         - History: ```(10/100) times 36,000,000 = 3,600,000 ~ 3.6 million```
-        <!-- - Rating: ```(20/100) times 36,000,000 = 7,200,000 ~ 7.2 million``` -->
         - Payment: ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
-        <!-- - Complaint tracking: ```(2/100) times 36,000,000 = 720,000 ~ 0.7 million``` -->
 
 <strong>Summary</strong>
 
@@ -340,7 +328,57 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 ## API Design :Book a cab
 
+Lets understand how user book a cab.
+
+When we ask the server to book a cab for user's ride, we use an API call. This is how computers talk to each other.
+
+We follow a standard way to book a ride for a user and will use a REST API for this communication. Here are the technical details.
+
+<!--Include HTTP request picture -->
+
+### HTTP Method
+This tells to the server what action to perform. Since we want to book a cab for a user on the server, we use the `POST` action.
+
+### Endpoint
+This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings/cab/users` endpoint of the server.
+
+**Note:**
+```
+'v1' means version 1. It is good practice to version your APIs.
+```
+
+### HTTP Body
+We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the request body:
+
+```json
+{
+    "userId":"Identification number of the user",
+    "source":"pick-up location of the ride",
+    "destination":"drop-off location of the ride",
+    "currentLocation":"current location of the user",
+    "cabType":"Type of the cab for a ride. E.g: Economy/Premium e.t.c",
+    "Fare":"Estimated fare for the ride"
+}
+```
+
 ## API Design :Find a cab driver
+
+Lets zoom into the 'communication' for finding a cab driver for our booking.
+
+When we ask the server to find a cab driver for a booking request, we use an API call.
+
+As we follow a standard way to find for a user and will use a REST API for this communication. Here are the technical details.
+
+<!--Include HTTP request picture -->
+
+### HTTP Method
+This tells to the server what action to perform. Since we want to find a cab driver for a booking request on the server, we use the `GET` action.
+
+### Endpoint
+This tells the server where to perform that action. Since we are finding a cab driver for a ride, we will use the `/v1/bookings/cab/{bookingReqId}` endpoint of the server.
+
+### Note:
+`GET` requests do not include a body because they are used to fetch information, not to send data.
 
 ## API Design :Track the journey
 
