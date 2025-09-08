@@ -124,7 +124,7 @@ Below is a structured table displaying various requirements and their descriptio
 - <strong>Daily Active Users</strong> (DAU) : ```36 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```180 million```
 
-***Note:*** DAU and MAU estimations are considered from Uber cab sharing Wiki. If you want, then you can update these estimates as per your convenience.
+***Note:*** DAU and MAU estimations are considered from [Uber cab sharing Wiki](https://en.wikipedia.org/wiki/Uber#:~:text=It%20is%20the%20largest%20ridesharing%20company%20worldwide%20with%20over%20180%20million%20monthly%20active%20users%20and%206%20million%20active%20drivers%20and%20couriers.%20It%20coordinates%20an%20average%20of%2036%20million%20trips%20and%20delivery%20orders%20per%20day). If you want, then you can update these estimates as per your convenience.
 
 ## Throughput Estimation
 
