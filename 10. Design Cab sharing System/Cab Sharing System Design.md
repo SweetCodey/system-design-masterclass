@@ -37,11 +37,10 @@ Below is a structured table displaying various requirements and their descriptio
         <th>Description</th>
     </tr>
     <tr>
-        <td>Book a cab</td>
+        <td rowspan="2">Book a cab</td>
         <td>User should be able to book a cab from any pickup location to any drop-off location</td>
     </tr>
     <tr>
-        <td>Matching user with a cab driver</td>
         <td>User should be able to map with a closest cab driver by finding the one who is nearby</td>
     </tr>
     <tr>
@@ -49,14 +48,12 @@ Below is a structured table displaying various requirements and their descriptio
         <td>User should be able to track his journey from source to destination using a map service</td>
     </tr>
     <tr>
-        <td>Pay for the trip</td>
-        <td>User should be able to pay for his journey before the ride using payment gateway</td>
-    </tr>
-    <tr>
         <td>See for the trip history</td>
         <td>User should be able to view his ride history</td>
     </tr>
 </table>
+
+***Note:*** Payment process is a part of the booking request.
 
 ### Cab Driver Functional Requirements
 
@@ -74,12 +71,12 @@ Below is a structured table displaying various requirements and their descriptio
         <td>Cab driver should be able to track his accepted booking journey from source to destination using a map service</td>
     </tr>
     <tr>
-        <td>Payment for the trip</td>
-        <td>Cab driver should be able to see the user payment status after completing the trip</td>
-    </tr>
-    <tr>
         <td>See for the trip history</td>
         <td>Cab driver should be able to view his ride history</td>
+    </tr>
+    <tr>
+        <td>View for the payment history</td>
+        <td>Cab driver should be able to view his payment history</td>
     </tr>
 </table>
 
@@ -92,15 +89,11 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
     <tr>
         <td><strong>Availability</strong></td>
-        <td>The system should be highly available - <strong>99.99%</strong> uptime</td>
+        <td>The system should be highly available - <strong>99.999999%</strong> uptime</td>
     </tr>
     <tr>
-        <td><strong>Eventual Consistency</strong></td>
-        <td>If a user requests for a ride, it's okay if it doesn't show up immediately but acknowledges with-in considerable amount of time</td>
-    </tr>
-    <tr>
-        <td><strong>Low latency</strong></td>
-        <td>The map should load within 2 or 3 seconds through out the booking.</td>
+        <td><strong>Latency</strong></td>
+        <td>User should receive booking acknowledgement within considerable amount of time.</td>
     </tr>
     <tr>
         <td rowspan="3"><strong>Scalability</strong></td>
@@ -117,19 +110,9 @@ Below is a structured table displaying various requirements and their descriptio
         <td>The design of our system should be such that it is easier to extend it in the future.<br>
         <em>Example:</em> If we need to add features like auto-pilot cab bookings, or drive-in cabs.</td>
     </tr>
-    <tr>
-        <td><strong>User Experience</strong></td>
-        <td>The system should give smooth and seamless experience, if user's internet is working perfectly</td>
-    </tr>
-    <tr>
-        <td><strong>Security</strong></td>
-        <td>The system should provide security with out any data breach</td>
-    </tr>
-    <tr>
-        <td><strong>Storage Reliability</strong></td>
-        <td>The system should ensure storage reliability for user's content by maintaining his/her records and booking history.</td>
-    </tr>
 </table>
+
+***Note:*** For now, we are not concentrating on the non-functional requirements such as User experience, Security and Storage reliability.
 
 <hr style="border:2px solid gray">
 
@@ -141,6 +124,8 @@ Below is a structured table displaying various requirements and their descriptio
 - <strong>Daily Active Users</strong> (DAU) : ```36 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```180 million```
 
+***Note:*** DAU and MAU estimations are considered from Uber cab sharing Wiki. If you want, then you can update these estimates as per your convenience.
+
 ## Throughput Estimation
 
 Calculation of write requests and read requests to the system
@@ -148,58 +133,43 @@ Calculation of write requests and read requests to the system
 ### Write requests
 
 Some of the possible ways of write requests to the system:
-1. Customer/Cab driver's booking acceptance/rejection information
-2. Customer payment preference (optional)
+- Customer/Cab driver's booking acceptance/rejection information
 
 Most of the cases write requests are one time activities other than booking and payment requests.
 
 <strong>Assumptions</strong>:
-- ```90 out of 100``` customers book rides daily.
+- ```50 out of 100``` customers book rides daily.
 - ```95 out of 100``` cab drivers accept rides daily.
-- ```20 out of 100``` customers set their payment preferences daily.
 
 <strong>Calculation</strong>:
 - Total DAU: ```36 million```
 - Write requests per day:
-    - Booking : ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
+    - Booking : ```(50/100) times 36,000,000 = 18,000,000 ~ 18 million```
     - Ride acceptance : ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
-    - Payment preference : ```(20/100) times 36,000,000 = 7,800,000 ~ 7.8 million```
 
 ### Read requests
 
-The possible ways of read requests to the system:
-- Trip
-    - Preferences
-    - Acceptance
-    - Scheduling
-    - Tracking
-    - Fares
-    - History
-    - Payment
+Some of the possible ways of read requests to the system:
+- Cab driver read their booking request.
+- Users track their ride.
+- Users check their ride's fare.
+- Users refer their ride history.
 
 <strong>Assumptions</strong>:
-- ```90 out of 100``` customers read their ride preference(cab type preference e.t.c.) daily.
-- ```95 out of 100``` cab drivers read the acceptance request daily.
-- ```90 out of 100``` customers read their source and destination while scheduling their ride daily.
-- ```55 out of 100``` customers track their journey daily.
-- ```85 out of 100``` customers read their trip fare details daily.
-- ```10 out of 100``` customers read their trip history daily
-- ```90 out of 100``` customers/cab drivers read the trip payment details after their ride daily.
+- ```95 out of 100``` cab drivers read their booking request.
+- ```55 out of 100``` users track their ride.
+- ```55 out of 100``` users check their ride's fare.
+- ```10 out of 100``` users refer their ride history daily.
 
 <strong>Calculation</strong>:
 - Total DAU: ```36 million```
 - Read requests per day:
-    - Trip
-        - Preferences: ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
-        - Acceptance: ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
-        - Scheduling: ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
-        - Tracking: ```(55/100) times 36,000,000 = 19,800,000 ~ 19.8 million```
-        - Fares: ```(85/100) times 36,000,000 = 30,600,000 ~ 30.6 million```
-        - History: ```(10/100) times 36,000,000 = 3,600,000 ~ 3.6 million```
-        - Payment: ```(90/100) times 36,000,000 = 32,400,000 ~ 32.4 million```
+    - Cab drivers read their booking request: ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
+    - Users track their ride: ```(55/100) times 36,000,000 = 19,800,000 ~ 19.8 million```
+    - Users check their ride's fare: ```(55/100) times 36,000,000 = 19,800,000 ~ 19.8 million```
+    - Users refer their ride history daily: ```(10/100) times 36,000,000 = 3,600,000 ~ 3.6 million```
 
 <strong>Summary</strong>
-
 <table>
     <tr>
         <th>Operation</th>
@@ -207,54 +177,38 @@ The possible ways of read requests to the system:
         <th>Result</th>
     </tr>
     <tr>
-        <td rowspan="3">Write</td>
-        <td>(90/100) x 36 million</td>
-        <td>32.4 million</td>
+        <td rowspan="2">Write</td>
+        <td>(50/100) x 36 million</td>
+        <td>18 million</td>
     </tr>
     <tr>
         <td>(95/100) x 36 million</td>
         <td>34.2 million</td>
-    </tr>
-    <tr>
-        <td>(20/100) x 36 million</td>
-        <td>7.8 million</td>
     </tr>
     <tr>
         <td colspan="2">Total write request(s) per day</td>
-        <td><strong>74.4 million</strong></td>
+        <td><strong>52.2 million</strong></td>
     </tr>
     <tr>
-        <td rowspan="7">Read</td>
-        <td>(90/100) x 36 million</td>
-        <td>32.4 million</td>
-    </tr>
-    <tr>
+        <td rowspan="4">Read</td>
         <td>(95/100) x 36 million</td>
         <td>34.2 million</td>
-    </tr>
-    <tr>
-        <td>(90/100) x 36 million</td>
-        <td>32.4 million</td>
     </tr>
     <tr>
         <td>(55/100) x 36 million</td>
         <td>19.8 million</td>
     </tr>
     <tr>
-        <td>(85/100) x 36 million</td>
-        <td>30.6 million</td>
+        <td>(55/100) x 36 million</td>
+        <td>19.8 million</td>
     </tr>
     <tr>
         <td>(10/100) x 36 million</td>
         <td>3.6 million</td>
     </tr>
     <tr>
-        <td>(90/100) x 36 million</td>
-        <td>32.4 million</td>
-    </tr>
-    <tr>
         <td colspan="2">Total read request(s) per day</td>
-        <td><strong>185.4 million</strong></td>
+        <td><strong>77.4 million</strong></td>
     </tr>
 </table>
 
@@ -262,21 +216,21 @@ The possible ways of read requests to the system:
 
 <strong>Assumptions</strong>
 
-- Average size of a customer record: ```100 MB```
-- Daily write operations to the system: ```74.4 million```
+- Average size of a cab sharing record: ```100 KB```
+- Daily write operations to the system: ```52.2 million```
 
 <strong>Storage Calculations</strong>
 
 1. <strong>Daily storage requirement</strong>:
-    ```100 MB x 74.4 million requests per day = 7.44 PB per day```
+    ```100 KB x 52.2 million requests per day = 5.22 TB per day```
 2. <strong>Storage requirement for 10-Years</strong>:
-    ```7.44 PB per day x 365 days x 10 years = 271.56 PB```
+    ```5.22 TB per day x 365 days x 10 years = 19.053 PB```
 
 <strong>Summary</strong>
 |   Metric          |   Calculation                      |   Result        |
 |-------------------|------------------------------------|-----------------|
-| Daily Storage     | 100 MB x 102.12 M req/day          |    7.44 PB      |
-| 10-Year Storage   | 7.44 PB/day x 365 days x 10 years. |   27.156 EB     |
+| Daily Storage     | 100 KB x 52.2 M req/day            |    5.22 TB      |
+| 10-Year Storage   | 5.22 TB/day x 365 days x 10 years. |   19.053 PB     |
 
 ## Memory Estimation
 
@@ -288,8 +242,10 @@ Accessing data directly from the database takes time. To speed up data retrieval
 
 <strong>Cache Memory Requirement Calculation</strong>
 
-- <storage>Daily Storage Requirement</storage>: ```7.44 PB```
-- <storage>Cache Requirement(1% of Daily Storage)</storage>: ```(1/100) x 7.44 PB = 74.4 TB```
+- <storage>Daily Storage Requirement</storage>: ```5.22 TB```
+- <storage>Cache Requirement(1% of Daily Storage)</storage>: ```(1/100) x 5.22 TB = 52.2 GB```
+
+***Note:*** You may wonder, why we considered 1% of daily storage as cache requirement! It's for storing geo spacial information primarily.
 
 <strong>Scalability</strong>
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
@@ -303,28 +259,30 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 <strong>Ingress</strong> (Data flow into the system)
 
-- <strong>Data stored per day</strong>: ```7.44 PB```
-- <strong>Calculation</strong>: ```7.44 PB / (24 x 60 x 60) = 86.11 GB/sec```
-- <strong>Result:</strong> Incoming Data Flow = ```86.11 GB/sec```
+- <strong>Data stored per day</strong>: ```5.22 TB```
+- <strong>Calculation</strong>: ```5.22 TB / (24 x 60 x 60) = 60.42 MB/sec```
+- <strong>Result:</strong> Incoming Data Flow = ```60.42 MB/sec```
 
 <strong>Egress</strong> (Data flow out of the system)
 
-- <strong>Total read requests per day</strong>: ```185.4 million```
-- <strong>Average customer record size</strong>: ```100 MB```
-- <strong>Daily Outgoing Data</strong>: ```185.4 million x 100 MB = 18.54 PB/day```
-- <strong>Calculation</strong>: ```18.54 PB / (24 x 60 x 60) = 214.58 GB/sec```
-- <strong>Result</strong>: ```214.58 GB/sec```
+- <strong>Total read requests per day</strong>: ```77.4 million```
+- <strong>Average customer record size</strong>: ```100 KB```
+- <strong>Daily Outgoing Data</strong>: ```77.4 million x 100 KB = 7.74 TB/day```
+- <strong>Calculation</strong>: ```7.74 TB / (24 x 60 x 60) = 89.58 MB/sec```
+- <strong>Result</strong>: ```89.58 MB/sec```
 
 <strong>Summary</strong>
 
 |       Type           |        Calculation        |   Result       |
 |----------------------|---------------------------|----------------|
-|Ingress (Data flow in)|  7.44 PB / (24 x 60 x 60) | 86.11 GB/sec   |
-|Egress (Data flow out)| 18.54 PB / (24 x 60 x 60) |214.58 GB/sec   |
+|Ingress (Data flow in)|  5.22 TB / (24 x 60 x 60) | 60.42 MB/sec   |
+|Egress (Data flow out)|  7.74 TB / (24 x 60 x 60) | 89.58 MB/sec   |
 
 <hr style="border:2px solid gray">
 
 # API DESIGN
+
+We follow a standard way to communicate between the cab sharing systems. That's why we go with REST API for this communication. 
 
 ## API Design :Book a cab
 
@@ -332,7 +290,7 @@ Lets understand how user book a cab.
 
 When we ask the server to book a cab for user's ride, we use an API call. This is how computers talk to each other.
 
-We follow a standard way to book a ride for a user and will use a REST API for this communication. Here are the technical details.
+Here are the technical details.
 
 ![book a cab](./Resources/bookacab.png)
 
@@ -340,12 +298,9 @@ We follow a standard way to book a ride for a user and will use a REST API for t
 This tells to the server what action to perform. Since we want to book a cab for a user on the server, we use the `POST` action.
 
 ### Endpoint
-This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings/cab/users` endpoint of the server.
+This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server.
 
-**Note:**
-```
-'v1' means version 1. It is good practice to version your APIs.
-```
+***Note:*** 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
 
 ### HTTP Body
 We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the request body:
@@ -357,11 +312,12 @@ We have told the server to book a ride for a user, but we haven't provided the d
     "destination":"drop-off location of the ride",
     "currentLocation":"current location of the user",
     "cabType":"Type of the cab for a ride. E.g: Economy/Premium e.t.c",
-    "Fare":"Estimated fare for the ride"
+    "BookingQuoteId":"Temporary booking Id for the ride"
 }
 ```
 
 ## API Design :Find a cab driver
+[TODO] Club interlinked APIs into one with a sequence.
 
 Lets zoom into the 'communication' for finding a cab driver for our booking.
 
@@ -370,15 +326,15 @@ When we ask the server to find a cab driver for a booking request, we use an API
 As we follow a standard way to find for a user and will use a REST API for this communication. Here are the technical details.
 
 ![book a cab](./Resources/findADriver.png)
+[TODO] Update pic with response
 
 ### HTTP Method
 This tells to the server what action to perform. Since we want to find a cab driver for a booking request on the server, we use the `GET` action.
 
 ### Endpoint
-This tells the server where to perform that action. Since we are finding a cab driver for a ride, we will use the `/v1/bookings/cab/{bookingReqId}` endpoint of the server.
+This tells the server where to perform that action. Since we are finding a cab driver for a ride, we will use the `/v1/bookings/{bookingReqId}` endpoint of the server.
 
-### Note:
-`GET` requests do not include a body because they are used to fetch information, not to send data.
+***Note:*** `GET` requests do not include a body because they are used to fetch information, not to send data.
 
 ## API Design :Track the journey
 
