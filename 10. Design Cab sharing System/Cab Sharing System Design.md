@@ -293,50 +293,65 @@ When we ask the server to book a cab for user's ride, we use an API call. This i
 
 Here are the technical details.
 
-![book a cab](./Resources/bookacab.png)
+##### gRPC Method
+This tells to the server what action to perform. We use gRPC channel(s) to specify the booking request.
 
-### HTTP Method
-This tells to the server what action to perform. Since we want to book a cab for a user on the server, we use the `POST` action.
-
-### Endpoint
-This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server.
+##### Endpoint
+This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server and this can be sent via gRPC channel.
 
 ***Note:*** 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
 
-### HTTP Body
-We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the request body:
+##### gRPC Channel Body
+We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the gRPC Channel:
 
-```json
-{
-    "userId":"Identification number of the user",
-    "source":"pick-up location of the ride",
-    "destination":"drop-off location of the ride",
-    "currentLocation":"current location of the user",
-    "cabType":"Type of the cab for a ride. E.g: Economy/Premium e.t.c",
-    "BookingQuoteId":"Temporary booking Id for the ride"
-}
+```gRPC Channel
+(
+    target="bookinghost:50051",
+    options=[
+        ("grpc.userId", 12345),
+        ("grpc.source", "XYZ"),
+        ("grpc.destination", "EFG"),
+        ("grpc.cabType", "Premium"),
+        ("grpc.bookingQuoteId", 098765),
+        ("grpc.requestType", "Booking"),
+        ("grpc.endPoint", "/v1/bookings")
+        ]
+)
 ```
+
+***Note:*** This gRPC channel information is a sample one. You can update it as per your convenience.
 
 #### Second Part: Sending a booking request to the Cab Driver.
 
 Lets zoom into the 'communication' for finding a cab driver for our booking.
 
-When we ask the server to find a cab driver for a booking request, we use an API call.
+When we ask the another gRPC client service to find a cab driver for a booking request, we use an API call.
 
-As we follow a standard way to find for a user and will use a REST API for this communication. Here are the technical details.
+As we follow a standard & efficient way to find a cab driver and will use a gRPC API for this communication. Here are the technical details.
 
-![book a cab](./Resources/findADriver.png)
-[TODO] Update pic with response
+##### gRPC Method
+This tells to the server what action to perform. We use gRPC channel(s) to specify the cab driver finding  request.
 
-### HTTP Method
-This tells to the server what action to perform. Since we want to find a cab driver for a booking request on the server, we use the `GET` action.
-
-### Endpoint
-This tells the server where to perform that action. Since we are finding a cab driver for a ride, we will use the `/v1/bookings/{bookingReqId}` endpoint of the server.
-
-***Note:*** `GET` requests do not include a body because they are used to fetch information, not to send data.
+##### Endpoint
+This tells the server where to perform that action. Since we are finding a cab driver, we will use the `/v1/bookings/{bookingReqId}` endpoint of the server and this can be sent via gRPC channel.
 
 #### Third Part: Cab Driver acknowledges the booking request.
+
+What might be the 'communication' for getting acknowledgement from a cab driver?
+
+As we need to send a cab driver acknowledgement, we use an API call to a gRPC server.
+
+Again, we follow a standard & efficient way to send acknowledgement from a cab driver and will use a gRPC API for this communication. Here are the technical details.
+
+##### gRPC Method
+This tells to the server what action to perform along with response details. We use gRPC channel(s) to specify the cab driver response.
+
+[TODO] Add more technical details if possible.
+
+***Note:*** Here we may get either booking accept or booking reject from a cab driver.
+
+##### Pictorial representation
+![book a cab](./Resources/bookACabgRPC.png)
 
 ## API Design :Track the journey
 
