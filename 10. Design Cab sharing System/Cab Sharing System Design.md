@@ -11,14 +11,14 @@
     - [7. Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
 - [API DESIGN](#api-design)
     - [8. API Design:Book a cab](#api-design-book-a-cab)
-    - [9. API Design:Find a cab driver](#api-design-find-a-cab-driver)
-    - [10. API Design:Track the journey](#api-design-track-the-journey)
-    - [11. API Design:Pay for the service](#api-design-pay-for-the-service)
+    - [9. API Design:Track the journey](#api-design-track-the-journey)
+    - [10. API Design:check for the trip history](#api-design-check-for-the-trip-history)
+    - [11. API Design:See for the payment history](#api-design-see-for-the-payment-history)
 - [HIGH LEVEL DESIGN](#high-level-design)
     - [12. High Level Design:Book a cab](#high-level-design-book-a-cab)
-    - [13. High Level Design:Find a cab driver](#high-level-design-find-a-cab-driver)
-    - [14. High Level Design:Track the journey](#high-level-design-track-the-journey)
-    - [15. High Level Design:Pay for the service](#high-level-design-pay-for-the-service)
+    - [13. High Level Design:Track the journey](#high-level-design-track-the-journey)
+    - [14. High Level Design:check for the trip history](#high-level-design-check-for-the-trip-history)
+    - [15. High Level Design:see for the payment history](#high-level-design-see-for-the-payment-history)
 - [DEEP DIVE INSIGHTS](#deep-dive-insights)
 
 <hr style="border:2px solid gray">
@@ -48,7 +48,7 @@ Below is a structured table displaying various requirements and their descriptio
         <td>User should be able to track his journey from source to destination using a map service</td>
     </tr>
     <tr>
-        <td>See for the trip history</td>
+        <td>Check for the trip history</td>
         <td>User should be able to view his ride history</td>
     </tr>
 </table>
@@ -67,15 +67,7 @@ Below is a structured table displaying various requirements and their descriptio
         <td>Cab driver should be able to accept/decline a user booking request</td>
     </tr>
     <tr>
-        <td>Track the trip</td>
-        <td>Cab driver should be able to track his accepted booking journey from source to destination using a map service</td>
-    </tr>
-    <tr>
-        <td>See for the trip history</td>
-        <td>Cab driver should be able to view his ride history</td>
-    </tr>
-    <tr>
-        <td>View for the payment history</td>
+        <td>See for the payment history</td>
         <td>Cab driver should be able to view his payment history</td>
     </tr>
 </table>
@@ -150,7 +142,7 @@ Most of the cases write requests are one time activities other than booking and 
 ### Read requests
 
 Some of the possible ways of read requests to the system:
-- Cab driver read their booking request.
+- Cab drivers read their booking request.
 - Users track their ride.
 - Users check their ride's fare.
 - Users refer their ride history.
@@ -282,11 +274,20 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 # API DESIGN
 
-We follow a standard way to communicate between the cab sharing systems. That's why we go with REST API for this communication. 
+[TODO] Update the API design content with gRPC call flow.
+
+We follow a standard way to communicate between the cab sharing systems and also this communication should be quick enough to accommodate the user's booking request. That's why we go with gRPC for this communication.
+
+***Note:*** We can also use REST API for this communication if turn around time between services is negligible 
 
 ## API Design :Book a cab
 
-Lets understand how user book a cab.
+### The process of 'Booking a cab' for a user:
+1. **User** sends a booking request with his choice of pick-up and drop-off location(s) to **Cab Sharing Server**.
+2. **Cab Sharing Server** maps booking request with a **Cab Driver** who is near to the **user's pick-up location**.
+3. **Cab Driver** acknowledges the booking request with his acceptance or rejection.
+
+#### First Part: Sending a booking request to the server.
 
 When we ask the server to book a cab for user's ride, we use an API call. This is how computers talk to each other.
 
@@ -316,8 +317,7 @@ We have told the server to book a ride for a user, but we haven't provided the d
 }
 ```
 
-## API Design :Find a cab driver
-[TODO] Club interlinked APIs into one with a sequence.
+#### Second Part: Sending a booking request to the Cab Driver.
 
 Lets zoom into the 'communication' for finding a cab driver for our booking.
 
@@ -336,6 +336,8 @@ This tells the server where to perform that action. Since we are finding a cab d
 
 ***Note:*** `GET` requests do not include a body because they are used to fetch information, not to send data.
 
+#### Third Part: Cab Driver acknowledges the booking request.
+
 ## API Design :Track the journey
 
 What might be the 'communication' for journey tracking?
@@ -344,7 +346,9 @@ Again, we will use an API call for tracking our journey.
 
 [TBD]
 
-## API Design :Pay for the service
+## API Design :Check for the trip history
+
+## API Design :See for the payment history
 
 <hr style="border:2px solid gray">
 
@@ -352,11 +356,11 @@ Again, we will use an API call for tracking our journey.
 
 ## High Level Design :Book a cab
 
-## High Level Design :Find a cab driver
-
 ## High Level Design :Track the journey
 
-## High Level Design :Pay for the service
+## High Level Design :Check for the trip history
+
+## High Level Design :See for the payment history
 
 <hr style="border:2px solid gray">
 
