@@ -274,84 +274,103 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 # API DESIGN
 
-[TODO] Update the API design content with gRPC call flow.
-
-We follow a standard way to communicate between the cab sharing systems and also this communication should be quick enough to accommodate the user's booking request. That's why we go with gRPC for this communication.
-
-***Note:*** We can also use REST API for this communication if turn around time between services is negligible 
+We follow a standard way to communicate between the cab sharing systems. Computers talk to each other through API call. So let's first try with REST API for this communication.
 
 ## API Design :Book a cab
 
-### The process of 'Booking a cab' for a user:
-1. **User** sends a booking request with his choice of pick-up and drop-off location(s) to **Cab Sharing Server**.
-2. **Cab Sharing Server** maps booking request with a **Cab Driver** who is near to the **user's pick-up location**.
-3. **Cab Driver** acknowledges the booking request with his acceptance or rejection.
+Let's say our user(Mark) wants to book a ride using a cab sharing company. Mark can send request to the cab sharing server, the cab sharing server can relay that request to cab driver(John). John can accept the ride, the cab sharing server can get the response from John, and then cab sharing server can pass the booking confirmation response to Mark.
 
-#### First Part: Sending a booking request to the server.
+![book a cab1](./Resources/bookACab1.png)
 
-When we ask the server to book a cab for user's ride, we use an API call. This is how computers talk to each other.
+***Note:*** Here, John can also reject the Mark's booking request. If so, Mark will have to repeat the process by re-initiating booking request.
+
+### Let's put this analogy of 'Booking a cab' on paper:
+1. **User(Mark)** sends a booking request with his choice of pick-up and drop-off location(s) to the **Cab Sharing Server**.
+2. The **Cab Sharing Server** maps booking request with a **Cab Driver(John)** who is near to the **Mark's pick-up location**.
+3. **John** acknowledges the booking request with his acceptance or rejection and notifies to the **Cab Sharing Server**
+4. The **Cab Sharing Server** relays that acknowledgement to **Mark**.
+
+#### First Part: Sending a booking request to the server
+
+We can handle this with a simple REST API call (HTTP POST request).
 
 Here are the technical details.
 
-##### gRPC Method
-This tells to the server what action to perform. We use gRPC channel(s) to specify the booking request.
+![book a cab2](./Resources/bookACab2.png)
 
-##### Endpoint
-This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server and this can be sent via gRPC channel.
+### HTTP Method
+This tells to the server what action to perform. Since we want to book a cab for a user on the server, we use the `POST` action.
+
+### Endpoint
+This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server.
 
 ***Note:*** 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
 
-##### gRPC Channel Body
-We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the gRPC Channel:
+### HTTP Body
+We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the request body:
 
-```gRPC Channel
-(
-    target="bookinghost:50051",
-    options=[
-        ("grpc.userId", 12345),
-        ("grpc.source", "XYZ"),
-        ("grpc.destination", "EFG"),
-        ("grpc.cabType", "Premium"),
-        ("grpc.bookingQuoteId", 098765),
-        ("grpc.requestType", "Booking"),
-        ("grpc.endPoint", "/v1/bookings")
-        ]
-)
+```json
+{
+    "userId":"Identification number of the user",
+    "source":"pick-up location of the ride",
+    "destination":"drop-off location of the ride",
+    "cabType":"Type of the cab for a ride. E.g: Economy/Premium e.t.c",
+    "BookingQuoteId":"Temporary booking Id for the ride"
+}
 ```
 
-***Note:*** This gRPC channel information is a sample one. You can update it as per your convenience.
+#### Second Part: Relaying the message to the Cab Driver
 
-#### Second Part: Sending a booking request to the Cab Driver.
+This is more challenging. The Cab Sharing Server needs to send the message to John.
 
-Lets zoom into the 'communication' for finding a cab driver for our booking.
+![book a cab3](./Resources/bookACab3.png)
 
-When we ask the another gRPC client service to find a cab driver for a booking request, we use an API call.
+#### Third Part: Relaying the message to the Cab Driver
 
-As we follow a standard & efficient way to find a cab driver and will use a gRPC API for this communication. Here are the technical details.
+If second step isn't through, then we can forget about the third part even though client-server communication is possible through HTTP request.
 
-##### gRPC Method
-This tells to the server what action to perform. We use gRPC channel(s) to specify the cab driver finding  request.
+#### Fourth Part: Relaying the message to the Cab Driver
 
-##### Endpoint
-This tells the server where to perform that action. Since we are finding a cab driver, we will use the `/v1/bookings/{bookingReqId}` endpoint of the server and this can be sent via gRPC channel.
+So is the fourth part!
 
-#### Third Part: Cab Driver acknowledges the booking request.
+![book a cab4](./Resources/bookACab4.png)
 
-What might be the 'communication' for getting acknowledgement from a cab driver?
+#### Problem
 
-As we need to send a cab driver acknowledgement, we use an API call to a gRPC server.
+In HTTP, the server cannot initiate requests to the user. Requests can only be sent **from the client to the server** - it's a one-way street (user -> cab sharing server).
 
-Again, we follow a standard & efficient way to send acknowledgement from a cab driver and will use a gRPC API for this communication. Here are the technical details.
+#### Solution: WebSockets
 
-##### gRPC Method
-This tells to the server what action to perform along with response details. We use gRPC channel(s) to specify the cab driver response.
+##### Curious to know about WebSockets?
 
-[TODO] Add more technical details if possible.
+WebSockets are a mechanism that allows bidirectional communication. Both the cab sharing server and user can send messages to each other.
 
-***Note:*** Here we may get either booking accept or booking reject from a cab driver.
+##### How to establish a WebSocket connection?
 
-##### Pictorial representation
-![book a cab](./Resources/bookACabgRPC.png)
+At a fundamental level, a WebSocket connection is a an "***upgraded***" **version of a HTTP request**.
+1. The User/Client starts by sending a **HTTP GET request** with the following headers:
+    - ```Connection: Upgrade```
+    - ```Upgrade: websocket```
+2. The endpoint client uses, such as ```ws://cabsharing.com/booking```, is specifically setup by the cab sharing server for handling WebSocket connection requests.
+    ("ws" stands for WebSockets)
+3. When the server receives this HTTP request, it understands that the client wants to switch from HTTP to WebSockets. It responds with the status code **101 - Switching Protocols (HTTP -> WebSocket)**.
+
+<!-- Include bi-directional communication picture here!! -->
+
+#####  WebSocket Communication
+Once the connection is upgraded, it remains **open**, allowing both the cab sharing server and user/client to send messages directly to each other in **real-time** without needing the traditional HTTP request/response model.
+
+- Mark sends messages to the cab sharing server through his connection.
+- John receives messages from the cab sharing server through his connection.
+- John sends messages to the cab sharing server through his connection.
+- Mark receives messages from the cab sharing server through his connection.
+
+#####  Why Is WebSocket Faster?
+In a WebSocket connection:
+- Messages flow back and forth quickly because there is **no need for extra headers or metadata** (as in HTTP).  
+This makes communication faster.
+
+[TBD]
 
 ## API Design :Track the journey
 
@@ -361,9 +380,7 @@ Again, we will use an API call for tracking our journey.
 
 [TBD]
 
-## API Design :Check for the trip history
-
-## API Design :See for the payment history
+## API Design :Pay for the service
 
 <hr style="border:2px solid gray">
 
@@ -371,11 +388,11 @@ Again, we will use an API call for tracking our journey.
 
 ## High Level Design :Book a cab
 
+## High Level Design :Find a cab driver
+
 ## High Level Design :Track the journey
 
-## High Level Design :Check for the trip history
-
-## High Level Design :See for the payment history
+## High Level Design :Pay for the service
 
 <hr style="border:2px solid gray">
 
