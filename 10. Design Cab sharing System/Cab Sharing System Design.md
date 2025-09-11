@@ -274,7 +274,7 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 
 # API DESIGN
 
-We follow a standard way to communicate between the cab sharing systems. Computers talk to each other through API call. So let's first try with REST API for this communication.
+We follow a standard & efficient way to communicate between the cab sharing systems. Computers talk to each other through API call. So let's first try with REST API for this communication.
 
 ## API Design :Book a cab
 
@@ -289,6 +289,8 @@ Let's say our user(Mark) wants to book a ride using a cab sharing company. Mark 
 2. The **Cab Sharing Server** maps booking request with a **Cab Driver(John)** who is near to the **Mark's pick-up location**.
 3. **John** acknowledges the booking request with his acceptance or rejection and notifies to the **Cab Sharing Server**
 4. The **Cab Sharing Server** relays that acknowledgement to **Mark**.
+
+***Note:*** The process of mapping cab driver involves micro-service gRPC communication and we will talk about that in High-level design.
 
 #### First Part: Sending a booking request to the server
 
@@ -327,7 +329,7 @@ This is more challenging. The Cab Sharing Server needs to send the message to Jo
 
 #### Third Part: Relaying the message to the Cab Driver
 
-If second step isn't through, then we can forget about the third part even though client-server communication is possible through HTTP request.
+If second step isn't through, then we can forget about the third part even though from client to server communication is possible through HTTP request.
 
 #### Fourth Part: Relaying the message to the Cab Driver
 
@@ -355,7 +357,7 @@ At a fundamental level, a WebSocket connection is a an "***upgraded***" **versio
     ("ws" stands for WebSockets)
 3. When the server receives this HTTP request, it understands that the client wants to switch from HTTP to WebSockets. It responds with the status code **101 - Switching Protocols (HTTP -> WebSocket)**.
 
-<!-- Include bi-directional communication picture here!! -->
+![HTTP upgrade](./Resources/http_upgrade.png)
 
 #####  WebSocket Communication
 Once the connection is upgraded, it remains **open**, allowing both the cab sharing server and user/client to send messages directly to each other in **real-time** without needing the traditional HTTP request/response model.
@@ -367,17 +369,16 @@ Once the connection is upgraded, it remains **open**, allowing both the cab shar
 
 #####  Why Is WebSocket Faster?
 In a WebSocket connection:
-- Messages flow back and forth quickly because there is **no need for extra headers or metadata** (as in HTTP).  
-This makes communication faster.
+- Messages flow back and forth quickly because there is **no need for extra headers or metadata** (as in HTTP). This makes communication faster.
 
-[TBD]
+![WebSocket connection](./Resources/webSocket_connection.png)
+
+##### Important Note
+WebSockets maintain a continuous, open connection that allows direct data exchanges without the traditional HTTP request-response model. Therefore, there is no need for specific API design details like HTTP methods (```GET```,```POST```,```PUT```,```DELETE```), endpoints, or bodies. Both the client and server can directly send data to each other.
 
 ## API Design :Track the journey
 
 What might be the 'communication' for journey tracking?
-
-Again, we will use an API call for tracking our journey.
-
 [TBD]
 
 ## API Design :Pay for the service
