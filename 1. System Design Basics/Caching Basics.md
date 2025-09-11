@@ -131,5 +131,5 @@ The key difference here is that the database update happens **asynchronously**. 
 - **Risk of Data Loss:** The asynchronous database update can fail. If the background update doesn’t go through, data won't be stored in the database, raising durability concerns.
 - **Cache Dependency:** Since every write depends on the cache, a cache failure could prevent writes from being stored in the database, leading to system downtime.
 
-
 <hr style="border:2px solid gray">
+
