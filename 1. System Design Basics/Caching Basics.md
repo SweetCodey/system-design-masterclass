@@ -62,7 +62,7 @@ This is called **"Read Through"** because we are reading the data **through the 
 
 ### *RTS Pros:*
 - **No Stale Data (with Write-Through):**  
-  If we pair the Read-Through strategy with Write-Through, data in the cache stays fresh. Every update (like a change in `user4`’s address) is written to both the cache and database at the same time. So, whenever we read data from the cache, it’s guaranteed to be up-to-date.
+  If we pair the Read-Through strategy with [Write-Through](#write-through-strategy-wts), data in the cache stays fresh. Every update (like a change in `user4`’s address) is written to both the cache and database at the same time. So, whenever we read data from the cache, it’s guaranteed to be up-to-date.
 
 ### *RTS Cons:*
 - **Cache Failure Causes Downtime:**  
@@ -130,5 +130,6 @@ The key difference here is that the database update happens **asynchronously**. 
 ### **WBS Cons:**
 - **Risk of Data Loss:** The asynchronous database update can fail. If the background update doesn’t go through, data won't be stored in the database, raising durability concerns.
 - **Cache Dependency:** Since every write depends on the cache, a cache failure could prevent writes from being stored in the database, leading to system downtime.
+
 
 <hr style="border:2px solid gray">
