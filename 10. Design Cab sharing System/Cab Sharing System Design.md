@@ -38,22 +38,19 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
     <tr>
         <td rowspan="2">Book a cab</td>
-        <td>User should be able to book a cab from any pickup location to any drop-off location</td>
-    </tr>
-    <tr>
-        <td>User should be able to map with a closest cab driver by finding the one who is nearby</td>
+        <td>User should be able to book a cab from any pickup location to any drop-off location. When they do so, our system should try to match them with one of the closest driver.</td>
     </tr>
     <tr>
         <td>Track the trip</td>
-        <td>User should be able to track his journey from source to destination using a map service</td>
+        <td>User should be able to track their journey from source to destination on a map</td>
     </tr>
     <tr>
         <td>Check for the trip history</td>
-        <td>User should be able to view his ride history</td>
+        <td>User should be able to view their ride history</td>
     </tr>
 </table>
 
-***Note:*** Payment process is a part of the booking request.
+***Note:*** We won't be covering payment in this design as this design focuses on Cab sharing.
 
 ### Cab Driver Functional Requirements
 
@@ -64,10 +61,10 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
     <tr>
         <td>Accept/decline the booking request</td>
-        <td>Cab driver should be able to accept/decline a user booking request</td>
+        <td>The cab driver who accepts the rider first will be given the ride</td>
     </tr>
     <tr>
-        <td>See for the payment history</td>
+        <td>View payment history</td>
         <td>Cab driver should be able to view his payment history</td>
     </tr>
 </table>
@@ -85,7 +82,7 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
     <tr>
         <td><strong>Latency</strong></td>
-        <td>User should receive booking acknowledgement within considerable amount of time.</td>
+        <td>User should receive booking acknowledgement within 15 seconds.</td>
     </tr>
     <tr>
         <td rowspan="3"><strong>Scalability</strong></td>
@@ -100,7 +97,7 @@ Below is a structured table displaying various requirements and their descriptio
     <tr>
         <td><strong>Extensibility</strong></td>
         <td>The design of our system should be such that it is easier to extend it in the future.<br>
-        <em>Example:</em> If we need to add features like auto-pilot cab bookings, or drive-in cabs.</td>
+        <em>Example:</em> If we need to add features like auto-pilot cab bookings, or luxury cab bookings.</td>
     </tr>
 </table>
 
@@ -237,7 +234,7 @@ Accessing data directly from the database takes time. To speed up data retrieval
 - <storage>Daily Storage Requirement</storage>: ```5.22 TB```
 - <storage>Cache Requirement(1% of Daily Storage)</storage>: ```(1/100) x 5.22 TB = 52.2 GB```
 
-***Note:*** You may wonder, why we considered 1% of daily storage as cache requirement! It's for storing geo spacial information primarily.
+***Note:*** You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
 
 <strong>Scalability</strong>
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
