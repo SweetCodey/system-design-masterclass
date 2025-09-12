@@ -1,24 +1,43 @@
 # CAB SHARING SYSTEM DESIGN
 
 - [DECIDING REQUIREMENTS](#deciding-requirements)
+
     - [1. Functional Requirements](#functional-requirements)
+
     - [2. Non Functional Requirements](#non-functional-requirements)
+
 - [CAPACITY ESTIMATION](#capacity-estimation)
+
     - [3. DAU-MAU](#dau-mau-estimation)
+
     - [4. Throughput](#throughput-estimation)
+
     - [5. Storage](#storage-estimation)
+
     - [6. Memory](#memory-estimation)
+
     - [7. Network and Bandwidth Estimation](#network-and-bandwidth-estimation)
+
 - [API DESIGN](#api-design)
+
     - [8. API Design:Book a cab](#api-design-book-a-cab)
-    - [9. API Design:Track the journey](#api-design-track-the-journey)
-    - [10. API Design:check for the trip history](#api-design-check-for-the-trip-history)
-    - [11. API Design:See for the payment history](#api-design-see-for-the-payment-history)
+
+    - [9. API Design:Track the trip](#api-design-track-the-trip)
+
+    - [10. API Design:Check for the trip history](#api-design-check-for-the-trip-history)
+
+    - [11. API Design:View payment history](#api-design-view-payment-history)
+
 - [HIGH LEVEL DESIGN](#high-level-design)
+
     - [12. High Level Design:Book a cab](#high-level-design-book-a-cab)
-    - [13. High Level Design:Track the journey](#high-level-design-track-the-journey)
-    - [14. High Level Design:check for the trip history](#high-level-design-check-for-the-trip-history)
-    - [15. High Level Design:see for the payment history](#high-level-design-see-for-the-payment-history)
+
+    - [13. High Level Design:Track the trip](#high-level-design-track-the-trip)
+
+    - [14. High Level Design:Check for the trip history](#high-level-design-check-for-the-trip-history)
+
+    - [15. High Level Design:View payment history](#high-level-design-view-payment-history)
+
 - [DEEP DIVE INSIGHTS](#deep-dive-insights)
 
 <hr style="border:2px solid gray">
@@ -37,7 +56,7 @@ Below is a structured table displaying various requirements and their descriptio
         <th>Description</th>
     </tr>
     <tr>
-        <td rowspan="2">Book a cab</td>
+        <td>Book a cab</td>
         <td>User should be able to book a cab from any pickup location to any drop-off location. When they do so, our system should try to match them with one of the closest driver.</td>
     </tr>
     <tr>
@@ -373,12 +392,14 @@ In a WebSocket connection:
 ##### Important Note
 WebSockets maintain a continuous, open connection that allows direct data exchanges without the traditional HTTP request-response model. Therefore, there is no need for specific API design details like HTTP methods (```GET```,```POST```,```PUT```,```DELETE```), endpoints, or bodies. Both the client and server can directly send data to each other.
 
-## API Design :Track the journey
+## API Design :Track the trip
 
 What might be the 'communication' for journey tracking?
 [TBD]
 
-## API Design :Pay for the service
+## API Design :check for the trip history
+
+## API Design :View payment history
 
 <hr style="border:2px solid gray">
 
@@ -386,11 +407,11 @@ What might be the 'communication' for journey tracking?
 
 ## High Level Design :Book a cab
 
-## High Level Design :Find a cab driver
+## High Level Design :Track the trip
 
-## High Level Design :Track the journey
+## High Level Design :check for the trip history
 
-## High Level Design :Pay for the service
+## High Level Design :View payment history
 
 <hr style="border:2px solid gray">
 
