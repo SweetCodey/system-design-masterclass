@@ -26,17 +26,13 @@
 
     - [10. API Design:View Ride History](#api-design-view-ride-history)
 
-    - [11. API Design:View Payment History](#api-design-view-payment-history)
-
 - [HIGH LEVEL DESIGN](#high-level-design)
 
-    - [12. High Level Design:Book A Cab](#high-level-design-book-a-cab)
+    - [11. High Level Design:Book A Cab](#high-level-design-book-a-cab)
 
-    - [13. High Level Design:Track The Trip](#high-level-design-track-the-trip)
+    - [12. High Level Design:Track The Trip](#high-level-design-track-the-trip)
 
-    - [14. High Level Design:View Ride History](#high-level-design-view-ride-history)
-
-    - [15. High Level Design:View Payment History](#high-level-design-view-payment-history)
+    - [13. High Level Design:View Ride History](#high-level-design-view-ride-history)
 
 - [DEEP DIVE INSIGHTS](#deep-dive-insights)
 
@@ -549,8 +545,6 @@ What might be the 'communication' for journey tracking?
 
 ## API Design :View Ride History
 
-## API Design :View Payment History
-
 <hr style="border:2px solid gray">
 
 # HIGH LEVEL DESIGN
@@ -560,8 +554,6 @@ What might be the 'communication' for journey tracking?
 ## High Level Design :Track The Trip
 
 ## High Level Design :View Ride History
-
-## High Level Design :View Payment History
 
 <hr style="border:2px solid gray">
 
