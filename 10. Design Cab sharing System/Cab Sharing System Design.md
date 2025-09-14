@@ -542,7 +542,15 @@ WebSockets maintain a continuous, open connection that allows direct data exchan
 
 What might be the 'communication' for journey tracking?
 
+### Wait for the cab
+
 ![Wait for the cab](./Resources/waitForTheCab.png)
+
+### Start the trip
+
+![Start the trip](./Resources/startTheTrip.png)
+
+### Track the trip
 
 [TBD]![Track the trip](./Resources/trackTheTrip.png)
 
