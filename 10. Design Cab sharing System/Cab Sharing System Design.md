@@ -144,7 +144,7 @@ Calculation of write requests and read requests to the system
 
 ### For Customers
 
-#### Write requests
+#### Write Requests
 
 One of the possible ways of write requests to the system:
 - Customer booking request information
@@ -159,7 +159,7 @@ Most of the cases, write requests are one time activities other than booking req
 - Write requests per day:
     - Booking : ```(50/100) times 36,000,000 = 18,000,000 ~ 18 million```
 
-#### Read requests
+#### Read Requests
 
 One of the possible ways of read requests to the system:
 - Users track their ride.
@@ -189,7 +189,7 @@ Most of the cases write requests are one time activities other than booking and 
 - Write requests per day:
     - Ride acceptance : ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
 
-#### Read requests
+#### Read Requests
 
 Some of the possible ways of read requests to the system:
 - Cab drivers read their booking request.
@@ -321,13 +321,13 @@ Accessing data directly from the database takes time. To speed up data retrieval
 
 ### For Customers
 
-- <storage>Daily Storage Requirement</storage>: ```1.8 TB```
-- <storage>Cache Requirement(1% of Daily Storage)</storage>: ```(1/100) x 1.8 TB = 18 GB```
+- <strong>Daily Storage Requirement</strong>: ```1.8 TB```
+- <strong>Cache Requirement(1% of Daily Storage)</strong>: ```(1/100) x 1.8 TB = 18 GB```
 
 ### For Cab Drivers
 
-- <storage>Daily Storage Requirement</storage>: ```3.42 TB```
-- <storage>Cache Requirement(1% of Daily Storage)</storage>: ```(1/100) x 3.42 TB = 34.2 GB```
+- <strong>Daily Storage Requirement</strong>: ```3.42 TB```
+- <strong>Cache Requirement(1% of Daily Storage)</strong>: ```(1/100) x 3.42 TB = 34.2 GB```
 
 ***Note:*** You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
 
@@ -541,7 +541,12 @@ WebSockets maintain a continuous, open connection that allows direct data exchan
 ## API Design :Track The Trip
 
 What might be the 'communication' for journey tracking?
-[TBD]
+
+![Wait for the cab](./Resources/waitForTheCab.png)
+
+[TBD]![Track the trip](./Resources/trackTheTrip.png)
+
+[TBD] Description
 
 ## API Design :View Ride History
 
