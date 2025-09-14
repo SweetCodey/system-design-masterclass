@@ -552,7 +552,7 @@ What might be the 'communication' for journey tracking?
 
 ### Track the trip
 
-[TBD]![Track the trip](./Resources/trackTheTrip.png)
+![Track the trip](./Resources/trackTheTrip.png)
 
 [TBD] Description
 
