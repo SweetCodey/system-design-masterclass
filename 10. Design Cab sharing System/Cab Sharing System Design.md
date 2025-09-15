@@ -22,7 +22,7 @@
 
     - [8. API Design:Book A Cab](#api-design-book-a-cab)
 
-    - [9. API Design:Track The Trip](#api-design-track-the-trip)
+    - [9. API Design:Track The Ride](#api-design-track-the-ride)
 
     - [10. API Design:View Ride History](#api-design-view-ride-history)
 
@@ -30,7 +30,7 @@
 
     - [11. High Level Design:Book A Cab](#high-level-design-book-a-cab)
 
-    - [12. High Level Design:Track The Trip](#high-level-design-track-the-trip)
+    - [12. High Level Design:Track The Ride](#high-level-design-track-the-ride)
 
     - [13. High Level Design:View Ride History](#high-level-design-view-ride-history)
 
@@ -56,7 +56,7 @@ Below is a structured table displaying various requirements and their descriptio
         <td>User should be able to book a cab from any pickup location to any drop-off location. When they do so, our system should try to match them with one of the closest driver.</td>
     </tr>
     <tr>
-        <td>Track the trip</td>
+        <td>Track the ride</td>
         <td>User should be able to track their journey from source to destination on a map</td>
     </tr>
 </table>
@@ -538,25 +538,56 @@ In a WebSocket connection:
 ##### Important Note
 WebSockets maintain a continuous, open connection that allows direct data exchanges without the traditional HTTP request-response model. Therefore, there is no need for specific API design details like HTTP methods (```GET```,```POST```,```PUT```,```DELETE```), endpoints, or bodies. Both the client and server can directly send data to each other.
 
-## API Design :Track The Trip
+## API Design :Track The Ride
 
-What might be the 'communication' for journey tracking?
+In the above API, we saw how Mark booked a ride. Now, let's see how Mark will track his ride.
 
-### Wait for the cab
+We will continue with the WebSocket connection as ```Track The Ride``` requires bi-directional communication.
+
+<strong>Ride tracking involves the steps below.</strong>
+1. Mark will wait for John's cab to arrive at the pick-up location.
+2. John will start the ride after picking Mark from the pick-up location.
+3. Mark and John will start tracking their ride along the way.
+
+### First Part: Wait for the cab
+
+Imagine Mark is waiting at his pick-up location for John. He has no clue when John will arrive at his location. So, Mark opened the cab sharing application to get John's Estimated Time of Arrival(ETA).
+
+Cab sharing server will read the Mark's pick-up point and John's current location coordinates to calculate the ETA. After ETA calculation, server will share John's ETA to Mark's pick-up location with Mark.
 
 ![Wait for the cab](./Resources/waitForTheCab.png)
 
-### Start the trip
+### Second Part: Start the ride
 
-![Start the trip](./Resources/startTheTrip.png)
+Imagine John is at Mark's pick-up point. Mark got into John's cab now. They wanted start the ride and John clicked start ride button in the cab sharing application.
 
-### Track the trip
+Server will read the Mark/John's current and drop-off location coordinates to calculate the ETA to the drop-off location along with distance in miles. After calculation, server will share ETA to the drop-off location and distance between pick-up and drop-off locations to both Mark and John via cab sharing application.
 
-![Track the trip](./Resources/trackTheTrip.png)
+![Start the ride](./Resources/startTheRide.png)
 
-[TBD] Description
+### Third Part: Track the ride
+
+Let's assume Mark is curious to track his cab ride along with John. So, they opened cab sharing application to track their ride.
+
+Server will consider both Mark/John's current location and drop-off location coordinates continuously to calculate dynamic ETA, distance(in miles). It will asynchronously sending these updates to both Mark and John to track their ride along the way.
+
+![Track the ride](./Resources/trackTheRide.png)
+
+***Note:***
+1. ETA calculation involves several steps which will be covered in Ride tracking high level design.
+2. Here the map, ETA and distance in miles are considered as an example. You can re-consider these factors as per your convenience.
+3. There can be more cases during this tracking process. Some of them are-
+    - Mark may change his pick-up location during ```Wait For The Cab``` period. In this case-
+        - Server can notify both Mark and John about the dynamic change of John's ETA to Mark's location along with distance to reach.
+        - Server can give heads-up to John about Mark's new pick up location.
+    - Server can suggest alternate ways to reach drop-off location by considering various factors, such as ETA, distance, traffic e.t.c.
+    - During the trip, Mark may change his drop-off location. In this case-
+        - Server can re-calculate ETA to the drop-off location along with relevant changes, such as price, alternate routes e.t.c.
+        - Server can notify these changes to both Mark and John.
 
 ## API Design :View Ride History
+
+[TBD]![View ride history](./Resources/viewRideHistory.png)
 
 <hr style="border:2px solid gray">
 
@@ -564,7 +595,7 @@ What might be the 'communication' for journey tracking?
 
 ## High Level Design :Book A Cab
 
-## High Level Design :Track The Trip
+## High Level Design :Track The Ride
 
 ## High Level Design :View Ride History
 
