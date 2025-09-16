@@ -61,7 +61,7 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
 </table>
 
-***Note:*** We won't be covering payment in this design as this design focuses on Cab sharing.
+__*Note:*__ We won't be covering payment in this design as this design focuses on Cab sharing.
 
 ### Cab Driver Functional Requirements
 
@@ -112,7 +112,7 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
 </table>
 
-***Note:*** For now, we are not concentrating on the non-functional requirements such as User experience, Security and Storage reliability.
+__*Note:*__ For now, we are not concentrating on the non-functional requirements such as User experience, Security and Storage reliability.
 
 <hr style="border:2px solid gray">
 
@@ -128,7 +128,7 @@ For Capacity Estimation, we will consider both **customers** and **cab drivers**
 - <strong>Daily Active Users</strong> (DAU) : ```36 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```180 million```
 
-***Note:*** DAU and MAU estimations for customers are considered from [Uber cab sharing Wiki](https://en.wikipedia.org/wiki/Uber#:~:text=It%20is%20the%20largest%20ridesharing%20company%20worldwide%20with%20over%20180%20million%20monthly%20active%20users%20and%206%20million%20active%20drivers%20and%20couriers.%20It%20coordinates%20an%20average%20of%2036%20million%20trips%20and%20delivery%20orders%20per%20day). If you want, then you can update these estimates as per your convenience.
+__*Note:*__ DAU and MAU estimations for customers are considered from [Uber cab sharing Wiki](https://en.wikipedia.org/wiki/Uber#:~:text=It%20is%20the%20largest%20ridesharing%20company%20worldwide%20with%20over%20180%20million%20monthly%20active%20users%20and%206%20million%20active%20drivers%20and%20couriers.%20It%20coordinates%20an%20average%20of%2036%20million%20trips%20and%20delivery%20orders%20per%20day). If you want, then you can update these estimates as per your convenience.
 
 ### For Cab Drivers
 
@@ -136,7 +136,7 @@ For Capacity Estimation, we will consider both **customers** and **cab drivers**
 - <strong>Daily Active Users</strong> (DAU) : ```3 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```93 million```
 
-***Note:*** DAU and MAU estimations for cab drivers are considered as a rough estimate based on the Google search results. If you want, then you can update these estimates as per your convenience.
+__*Note:*__ DAU and MAU estimations for cab drivers are considered as a rough estimate based on the Google search results. If you want, then you can update these estimates as per your convenience.
 
 ## Throughput Estimation
 
@@ -307,7 +307,7 @@ Some of the possible ways of read requests to the system:
     </tr>
 </table>
 
-***Note:*** Average size of a Cab Sharing user record - 100 KB is considered as a rough estimate. If you want, then you can update it as per your convenience.
+__*Note:*__ Average size of a Cab Sharing user record - 100 KB is considered as a rough estimate. If you want, then you can update it as per your convenience.
 
 ## Memory Estimation
 
@@ -329,7 +329,7 @@ Accessing data directly from the database takes time. To speed up data retrieval
 - <strong>Daily Storage Requirement</strong>: ```3.42 TB```
 - <strong>Cache Requirement(1% of Daily Storage)</strong>: ```(1/100) x 3.42 TB = 34.2 GB```
 
-***Note:*** You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
+__*Note:*__ You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
 
 <strong>Scalability</strong>
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
@@ -444,7 +444,7 @@ Let's say our user(Mark) wants to book a ride using a cab sharing company. Mark 
 
 ![book a cab1](./Resources/bookACab1.png)
 
-***Note:*** Here, John can also reject the Mark's booking request. If so, Mark will have to repeat the process by re-initiating booking request.
+__*Note:*__ Here, John can also reject the Mark's booking request. If so, Mark will have to repeat the process by re-initiating booking request.
 
 ### Let's put this analogy of 'Booking a cab' on paper:
 1. **User(Mark)** sends a booking request with his choice of pick-up and drop-off location(s) to the **Cab Sharing Server**.
@@ -452,7 +452,7 @@ Let's say our user(Mark) wants to book a ride using a cab sharing company. Mark 
 3. **John** acknowledges the booking request with his acceptance or rejection and notifies to the **Cab Sharing Server**
 4. The **Cab Sharing Server** relays that acknowledgement to **Mark**.
 
-***Note:*** The process of mapping cab driver involves micro-service gRPC communication and we will talk about that in High-level design.
+__*Note:*__ The process of mapping cab driver involves micro-service gRPC communication and we will talk about that in High-level design.
 
 #### First Part: Sending a booking request to the server
 
@@ -468,7 +468,7 @@ This tells to the server what action to perform. Since we want to book a cab for
 ### Endpoint
 This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server.
 
-***Note:*** 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
+__*Note:*__ 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
 
 ### HTTP Body
 We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the request body:
@@ -509,7 +509,7 @@ WebSockets (an upgraded version of a HTTP request) are a mechanism that allows b
 
 ![HTTP upgrade](./Resources/http_upgrade.png)
 
-***Note:*** For more details on WebSockets, you can refer to this [wiki link](https://en.wikipedia.org/wiki/WebSocket).
+__*Note:*__ For more details on WebSockets, you can refer to this [wiki link](https://en.wikipedia.org/wiki/WebSocket).
 
 Once the connection is upgraded, it remains **open**, allowing both the cab sharing server and user/client to send messages directly to each other in **real-time** without needing the traditional HTTP request/response model.
 
@@ -524,7 +524,7 @@ Once the connection is upgraded, it remains **open**, allowing both the cab shar
 
 In the above API, we saw how Mark booked a ride. Now, let's see how Mark will track his ride.
 
-We will continue with the WebSocket connection as __Track The Ride__ requires bi-directional communication.
+We will continue with the WebSocket connection as __Track The Ride__ requires bi-directional communication and also a stream of messages from server to client.
 
 <strong>Ride tracking involves the steps below.</strong>
 1. Mark will wait for John's cab to arrive at the pick-up location.
@@ -555,7 +555,7 @@ Server will consider both Mark/John's current location and drop-off location coo
 
 ![Track the ride](./Resources/trackTheRide.png)
 
-***Note:***
+__*Note:*__
 1. ETA calculation involves several steps which will get covered in the __Track The Ride__ high level design.
 2. __The map, ETA and distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
 3. There can be more cases during this tracking process. Some of them are-
@@ -569,14 +569,18 @@ Server will consider both Mark/John's current location and drop-off location coo
 
 ## API Design :View Ride History
 
-![Request ride history](./Resources/requestRideHistory.png)
+After dropping Mark at drop-off point, John thought of checking his ride history along with the payment information. So, John opened his Cab Sharing application and clicked __Activity__ option in his profile page.
 
-[TBD]![View ride history](./Resources/viewRideHistory.png)
+Unlike previous API, we can use REST API(HTTP GET request) for viewing ride history. But, we will stick to the WebSocket connection for API communication to avoid extra HTTP headers and also to maintain consistency.
+
+![View ride history](./Resources/viewRideHistory.png)
+
+Now, John is able to view his ride history including payment information. He can also view more details of a particular ride if needed.
 
 <hr style="border:2px solid gray">
 
 # HIGH LEVEL DESIGN
-
+[TBD]
 ## High Level Design :Book A Cab
 
 ## High Level Design :Track The Ride
@@ -586,5 +590,5 @@ Server will consider both Mark/John's current location and drop-off location coo
 <hr style="border:2px solid gray">
 
 # DEEP DIVE INSIGHTS
-
+[TBD]
 <hr style="border:2px solid gray">
