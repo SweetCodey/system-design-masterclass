@@ -499,29 +499,18 @@ So is the fourth part!
 
 ![book a cab4](./Resources/bookACab4.png)
 
-#### Problem
+__Problem__
 
 In HTTP, the server cannot initiate requests to the user. Requests can only be sent **from the client to the server** - it's a one-way street (user -> cab sharing server).
 
-#### Solution: WebSockets
+__Solution: WebSockets__
 
-##### Curious to know about WebSockets?
-
-WebSockets are a mechanism that allows bidirectional communication. Both the cab sharing server and user can send messages to each other.
-
-##### How to establish a WebSocket connection?
-
-At a fundamental level, a WebSocket connection is a an "***upgraded***" **version of a HTTP request**.
-1. The User/Client starts by sending a **HTTP GET request** with the following headers:
-    - ```Connection: Upgrade```
-    - ```Upgrade: websocket```
-2. The endpoint client uses, such as ```ws://cabsharing.com/booking```, is specifically setup by the cab sharing server for handling WebSocket connection requests.
-    ("ws" stands for WebSockets)
-3. When the server receives this HTTP request, it understands that the client wants to switch from HTTP to WebSockets. It responds with the status code **101 - Switching Protocols (HTTP -> WebSocket)**.
+WebSockets (an upgraded version of a HTTP request) are a mechanism that allows bidirectional communication. Client can send __HTTP GET request__ to switch from __HTTP__ to __WebSocket__ as shown in the reference image below.
 
 ![HTTP upgrade](./Resources/http_upgrade.png)
 
-#####  WebSocket Communication
+***Note:*** For more details on WebSockets, you can refer to this [wiki link](https://en.wikipedia.org/wiki/WebSocket).
+
 Once the connection is upgraded, it remains **open**, allowing both the cab sharing server and user/client to send messages directly to each other in **real-time** without needing the traditional HTTP request/response model.
 
 - Mark sends messages to the cab sharing server through his connection.
@@ -529,27 +518,20 @@ Once the connection is upgraded, it remains **open**, allowing both the cab shar
 - John sends messages to the cab sharing server through his connection.
 - Mark receives messages from the cab sharing server through his connection.
 
-#####  Why Is WebSocket Faster?
-In a WebSocket connection:
-- Messages flow back and forth quickly because there is **no need for extra headers or metadata** (as in HTTP). This makes communication faster.
-
 ![WebSocket connection](./Resources/webSocket_connection.png)
-
-##### Important Note
-WebSockets maintain a continuous, open connection that allows direct data exchanges without the traditional HTTP request-response model. Therefore, there is no need for specific API design details like HTTP methods (```GET```,```POST```,```PUT```,```DELETE```), endpoints, or bodies. Both the client and server can directly send data to each other.
 
 ## API Design :Track The Ride
 
 In the above API, we saw how Mark booked a ride. Now, let's see how Mark will track his ride.
 
-We will continue with the WebSocket connection as ```Track The Ride``` requires bi-directional communication.
+We will continue with the WebSocket connection as __Track The Ride__ requires bi-directional communication.
 
 <strong>Ride tracking involves the steps below.</strong>
 1. Mark will wait for John's cab to arrive at the pick-up location.
 2. John will start the ride after picking Mark from the pick-up location.
 3. Mark and John will start tracking their ride along the way.
 
-### First Part: Wait for the cab
+### First Part: How does the structure of data sent and received look like?
 
 Imagine Mark is waiting at his pick-up point for John. He has no clue when John will arrive at his location. So, Mark opened the cab sharing application to get John's Estimated Time of Arrival(ETA).
 
@@ -557,15 +539,15 @@ Server will read the Mark's pick-up point and John's current location coordinate
 
 ![Wait for the cab](./Resources/waitForTheCab.png)
 
-### Second Part: Start the ride
+### Second Part: Data flow while starting an operation
 
-Imagine John is at Mark's pick-up point. Mark got into John's cab now. They wanted start the ride and John clicked start ride button in the cab sharing application.
+Imagine John is at Mark's pick-up point. Mark got into John's cab now. They wanted to start the ride and John clicked start ride button in the cab sharing application.
 
 Server will read the Mark/John's current and drop-off location coordinates to calculate the ETA to the drop-off location along with distance in miles. After calculation, server will share ETA to the drop-off location and distance between pick-up and drop-off locations to both Mark and John via cab sharing application.
 
 ![Start the ride](./Resources/startTheRide.png)
 
-### Third Part: Live tracking
+### Third Part: Live data flow after starting the operation
 
 Let's assume Mark is curious to track his cab ride along with John. So, they both opened cab sharing application to track their ride.
 
@@ -574,14 +556,14 @@ Server will consider both Mark/John's current location and drop-off location coo
 ![Track the ride](./Resources/trackTheRide.png)
 
 ***Note:***
-1. ETA calculation involves several steps which will get covered in the ```Track The Ride``` high level design.
-2. ```The map, ETA and distance(in miles)``` in the above images are considered as an example. You can re-consider these factors as per your convenience.
+1. ETA calculation involves several steps which will get covered in the __Track The Ride__ high level design.
+2. __The map, ETA and distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
 3. There can be more cases during this tracking process. Some of them are-
-    - Mark may change his pick-up location during ```Wait For The Cab``` period. In this case-
+    - Mark may change his pick-up location during __Wait For The Cab__ period. In this case-
         - Server can notify both Mark and John about the dynamic change of John's ETA to Mark's location along with distance to reach.
         - Server can give heads-up to John about Mark's new pick up location.
-    - Server can suggest ```alternate ways``` to reach drop-off location by considering various factors, such as ETA, distance, traffic e.t.c.
-    - ```During the trip```, Mark may change his ```drop-off location```. In this case-
+    - Server can suggest __alternate ways__ to reach drop-off location by considering various factors, such as ETA, distance, traffic e.t.c.
+    - __During the trip__, Mark may change his __drop-off location__. In this case-
         - Server can re-calculate ETA to the drop-off location along with relevant changes, such as price, alternate routes e.t.c.
         - Server can notify these changes to both Mark and John.
 
