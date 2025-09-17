@@ -124,7 +124,7 @@ For Capacity Estimation, we will consider both **customers** and **cab drivers**
 
 ### For Customers
 
-<strong>How many users are using your software?</strong>
+#### How many users are using your software?
 - <strong>Daily Active Users</strong> (DAU) : ```36 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```180 million```
 
@@ -132,7 +132,7 @@ __*Note:*__ DAU and MAU estimations for customers are considered from [Uber cab 
 
 ### For Cab Drivers
 
-<strong>How many cab drivers are using your software?</strong>
+#### How many cab drivers are using your software?
 - <strong>Daily Active Users</strong> (DAU) : ```3 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```93 million```
 
@@ -205,7 +205,7 @@ Some of the possible ways of read requests to the system:
     - Cab drivers read their booking request: ```(95/100) times 36,000,000 = 34,200,000 ~ 34.2 million```
     - Users refer their ride history along with fare details daily: ```(90/100) times 36,000,000 = 32400000 ~ 32.4 million```
 
-<strong>Summary</strong>
+### Summary
 <table>
     <tr>
         <th>End User</th>
@@ -311,30 +311,30 @@ __*Note:*__ Average size of a Cab Sharing user record - 100 KB is considered as 
 
 ## Memory Estimation
 
-<strong>Overview</strong>
+### Overview
 By memory, we refer to the <strong>cache memory size</strong> required for faster data access.
 
-<strong>Why Cache Memory</strong>
+### Why Cache Memory
 Accessing data directly from the database takes time. To speed up data retrieval, cache memory is used.
 
-<strong>Cache Memory Requirement Calculation</strong>
+### Cache Memory Requirement Calculation
 
-### For Customers
+#### For Customers
 
 - <strong>Daily Storage Requirement</strong>: ```1.8 TB```
 - <strong>Cache Requirement(1% of Daily Storage)</strong>: ```(1/100) x 1.8 TB = 18 GB```
 
-### For Cab Drivers
+#### For Cab Drivers
 
 - <strong>Daily Storage Requirement</strong>: ```3.42 TB```
 - <strong>Cache Requirement(1% of Daily Storage)</strong>: ```(1/100) x 3.42 TB = 34.2 GB```
 
 __*Note:*__ You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
 
-<strong>Scalability</strong>
+### Scalability
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
 
-<strong>Summary</strong>
+### Summary
 <table>
     <tr>
         <th>End-user</th>
@@ -363,20 +363,20 @@ The memory size should scale as the system grows to accommodate increasing stora
 
 ## Network and Bandwidth Estimation
 
-<strong>Overview</strong>
+### Overview
 Network/Bandwidth estimation helps us determine the amount of data flowing in and out of the system per second.
 
-<strong>Data Flow Estimations</strong>
+### Data Flow Estimations
 
-### For Customers
+#### For Customers
 
-<strong>Ingress</strong> (Data flow into the system)
+##### Ingress (Data flow into the system)
 
 - <strong>Data stored per day</strong>: ```1.8 TB```
 - <strong>Calculation</strong>: ```1.8 TB / (24 x 60 x 60) = 20.833 MB/sec```
 - <strong>Result:</strong> Incoming Data Flow = ```20.833 MB/sec```
 
-<strong>Egress</strong> (Data flow out of the system)
+##### Egress (Data flow out of the system)
 
 - <strong>Total read requests per day</strong>: ```19.8 million```
 - <strong>Average customer record size</strong>: ```100 KB```
@@ -384,15 +384,15 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 - <strong>Calculation</strong>: ```1.98 TB / (24 x 60 x 60) = 22.92 MB/sec```
 - <strong>Result</strong>: ```22.92 MB/sec```
 
-### For Cab Drivers
+#### For Cab Drivers
 
-<strong>Ingress</strong> (Data flow into the system)
+##### Ingress (Data flow into the system)
 
 - <strong>Data stored per day</strong>: ```3.42 TB```
 - <strong>Calculation</strong>: ```3.42 TB / (24 x 60 x 60) = 39.58 MB/sec```
 - <strong>Result:</strong> Incoming Data Flow = ```39.58 MB/sec```
 
-<strong>Egress</strong> (Data flow out of the system)
+##### Egress (Data flow out of the system)
 
 - <strong>Total read requests per day</strong>: ```66.6 million```
 - <strong>Average customer record size</strong>: ```100 KB```
@@ -400,7 +400,7 @@ Network/Bandwidth estimation helps us determine the amount of data flowing in an
 - <strong>Calculation</strong>: ```6.66 TB / (24 x 60 x 60) = 77.08 MB/sec```
 - <strong>Result</strong>: ```77.08 MB/sec```
 
-<strong>Summary</strong>
+#### Summary
 <table>
     <tr>
         <th>End User</th>
@@ -580,8 +580,12 @@ Now, John is able to view his ride history including payment information. He can
 <hr style="border:2px solid gray">
 
 # HIGH LEVEL DESIGN
-[TBD]
+
 ## High Level Design :Book A Cab
+
+### HLD :View Map
+
+![View map](./Resources/HLDViewMap.png)
 
 ## High Level Design :Track The Ride
 
