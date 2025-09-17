@@ -581,9 +581,30 @@ Now, John is able to view his ride history including payment information. He can
 
 # HIGH LEVEL DESIGN
 
+Let's see what was happened in the background when-
+- Mark booked a cab,
+- Mark and John tracked their ride,
+- John viewed his ride history along with payment information.
+
 ## High Level Design :Book A Cab
 
+Mark performed a couple of steps to book his cab. Let's dive into them one by one on a high-level.
+
 ### HLD :View Map
+
+How Mark was able to view the map which allowed him to choose pick-up and drop-off points graphically? Below steps walk us through.
+1. Mark can tap the __cab sharing app__ icon and view request can goto API gateway via WebSocket connection
+2. __API gateway__ can relay the request to __load balancer__ to route the request.
+3. __Load balancer__ can route the request to __Data Fetch__ service which is a part of service cluster with gRPC communication.
+4. Using gRPC channel and with the help of proto buffers, __Data Fetch__ service can relay the request to __map service__.
+5. __Map Service__ can use Google's S2 geospatial index to get S2 cell based on user's location and also to find relevant Amazon's DynamoDB partition.
+6. __Map Service__ can use this partition to download the map data from DynamoDB.
+7. As there can be a risk of missing map data, __Map Service__ can take help from __GPS signal__ service, meaning previous driver location data can be considered to create a plot of missing roads.
+8. The de-serialized updated map data can be relayed back to __Data Fetch__ service.
+9. __Data Fetch__ service can send the same data back to load balancer as a response from service cluster.
+10. __Load balancer__ can relay the response message to __API gateway__.
+11. Mark can view the booking landing page with __Map view__ after receiving response from __API gateway__.
+[TBD] remaining steps
 
 ![View map](./Resources/HLDViewMap.png)
 
