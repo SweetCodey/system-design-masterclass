@@ -621,7 +621,9 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 ### HLD :View ETA
 
+[TBD] Description
 
+[TBD][Inprogress]![View ETA](./Resources/HLDviewETA.png)
 
 ## High Level Design :Track The Ride
 
