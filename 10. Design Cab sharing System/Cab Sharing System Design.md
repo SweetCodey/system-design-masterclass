@@ -571,7 +571,7 @@ __*Note:*__
 
 After dropping Mark at drop-off point, John thought of checking his ride history along with the payment information. So, John opened his Cab Sharing application and clicked __Activity__ option in his profile page.
 
-Unlike previous API, we can use REST API(HTTP GET request) for viewing ride history. But, we will stick to the WebSocket connection for API communication to avoid extra HTTP headers and also to maintain consistency.
+Unlike previous API, we can use REST API (HTTP GET request) for viewing ride history. But, we will stick to the __WebSocket connection__ for API communication to avoid extra HTTP headers and also to maintain consistency.
 
 ![View ride history](./Resources/viewRideHistory.png)
 
@@ -586,6 +586,15 @@ Let's see what was happened in the background when-
 - Mark and John tracked their ride,
 - John viewed his ride history along with payment information.
 
+In the API design, we saw how WebSocket connection can be used to communicate with cab sharing servers. If we go a little deeper, then we can see how services communicate with each other.
+
+For service communication, we can use gRPC.
+
+google Remote Procedure call(gRPC) enables efficient communication between services using proto buffers and gRPC server.
+- Protocol buffers(an interface definition language) used to represent the service interface and the payload message structure.
+- gRPC server is used to handle client calls.
+__*Note:*__ For more information, you can refer to [gRPC site](https://grpc.io/).
+
 ## High Level Design :Book A Cab
 
 Mark performed a couple of steps to book his cab. Let's dive into them one by one on a high-level.
@@ -593,9 +602,12 @@ Mark performed a couple of steps to book his cab. Let's dive into them one by on
 ### HLD :View Map
 
 How Mark was able to view the map which allowed him to choose pick-up and drop-off points graphically? Below steps walk us through.
-1. Mark can tap the __cab sharing app__ icon and view request can goto API gateway via WebSocket connection
-2. __API gateway__ can relay the request to __load balancer__ to route the request.
-3. __Load balancer__ can route the request to __Data Fetch__ service which is a part of service cluster with gRPC communication.
+
+![View map](./Resources/HLDViewMap.png)
+
+1. Mark can tap the __cab sharing app__ icon to send view request to API gateway via WebSocket connection.
+2. __API gateway__ can relay the request to __load balancer__.
+3. __Load balancer__ can route the request to __Data Fetch__ service which is a part of service cluster enabled with gRPC communication.
 4. Using gRPC channel and with the help of proto buffers, __Data Fetch__ service can relay the request to __map service__.
 5. __Map Service__ can use Google's S2 geospatial index to get S2 cell based on user's location and also to find relevant Amazon's DynamoDB partition.
 6. __Map Service__ can use this partition to download the map data from DynamoDB.
@@ -604,13 +616,19 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 9. __Data Fetch__ service can send the same data back to load balancer as a response from service cluster.
 10. __Load balancer__ can relay the response message to __API gateway__.
 11. Mark can view the booking landing page with __Map view__ after receiving response from __API gateway__.
-[TBD] remaining steps
+12. __Content Delivery Network(CDN)__ can be used to cache the map data. It can help us to __reduce latency__ and __high availability__ of the service.
+13. To __avoid network data usage__ overhead due to redundant download of map data by drivers, we can setup __SQLite caching__ layer on front-end client side. So that __in-memory cache__ update can happen only if the server map data changes.
 
-![View map](./Resources/HLDViewMap.png)
+### HLD :View ETA
+
+
 
 ## High Level Design :Track The Ride
 
 ## High Level Design :View Ride History
+
+
+<!-- We have used WebSocket connection to communicate with cab sharing servers and provided seamless operations to Mark & John by using gRPC to communicate between services. -->
 
 <hr style="border:2px solid gray">
 
