@@ -622,27 +622,34 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 ### HLD :View ETA
 
-How Mark was able to view ETA to the drop-off point after entering pick-up and drop-off points of the ride? Below flow of steps can give us clarity.
+How Mark was able to view ETA to the drop-off point? Let's find out.
 
 ![View ETA](./Resources/HLDviewETA.png)
 
-1. Mark can click __ok__ button after entering pick-up and drop-off points to send view ETA and other options (such as cab selection e.t.c which are not covered in this design) request to __API gateway__.
+1. Mark can click __ok__ button after entering pick-up and drop-off points to send __view ETA__ and other options (such as cab selection e.t.c which are not covered in this design) request to __API gateway__.
 2. __API gateway__ can relay the request to __load balancer__.
-3. __Load balancer__ can route the request to __Data Fetch__ service which is a part of service cluster enabled with gRPC communication.
-4. Using gRPC channel and with the help of proto buffers, __Data Fetch__ service can relay the request to __ETA service__.
+3. __Load balancer__ can route the request to __Data Fetch__ service.
+4. __Data Fetch__ service can relay the same request to __ETA service__.
     - ETA service can use __deep learning algorithms__ to predict __traffic control elements__ which can be considered to compute ETA.
     - We can store average speeds from Geo hash to normal hash table for fast look-up.
     - ETA computation can be done by dividing the haversine distance by the average speed.
-    - To compute accurate ETA, especially in rush traffic hours, we can consider average speed for every hour of the day and this can be stored in a nested hash table.
+    - To compute accurate ETA in rush traffic hours, we can consider average speed for every hour of the day which can be stored in a nested hash table.
 5. The calculated ETA data can be relayed back to __Data Fetch__ service.
 6. __Data Fetch__ service can send the same data back to load balancer as a response from service cluster.
 7. __Load balancer__ can relay the response message to __API gateway__.
 8. Mark can view __ETA__ information on the __ready to book__ page.
 
+__*Note:*__
+1. The average speed and ETA in the reference image are considered as an example. We can always update them as per our convenience.
+2. You might be wondering what is the haversine distance that we talked in the above flow. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
+
+### HLD :Find a Driver
+
+[TODO][In progress]![Find a Cab Driver](./Resources/HLDfindADriver.png)
+
 ## High Level Design :Track The Ride
 
 ## High Level Design :View Ride History
-
 
 <!-- We have used WebSocket connection to communicate with cab sharing servers and provided seamless operations to Mark & John by using gRPC to communicate between services. -->
 
@@ -651,3 +658,6 @@ How Mark was able to view ETA to the drop-off point after entering pick-up and d
 # DEEP DIVE INSIGHTS
 [TBD]
 <hr style="border:2px solid gray">
+
+__*Note:*__
+1. The Map and other reference icons are considered just as an example. We can always change them as per our convenience.
