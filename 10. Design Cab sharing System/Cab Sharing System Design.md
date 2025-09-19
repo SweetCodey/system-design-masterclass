@@ -581,23 +581,24 @@ Now, John is able to view his ride history including payment information. He can
 
 # HIGH LEVEL DESIGN
 
-Let's see what was happened in the background when-
+Let's see what was happened in the __background__ when-
 - Mark booked a cab,
 - Mark and John tracked their ride,
 - John viewed his ride history along with payment information.
 
-In the API design, we saw how WebSocket connection can be used to communicate with cab sharing servers. If we go a little deeper, then we can see how services communicate with each other.
+In the API design, we saw how WebSocket connection can be used to communicate with cab sharing servers. If we go __a little deeper__, then we can see how __services communicate__ with each other.
 
-For service communication, we can use gRPC.
+For service communication, we can use __gRPC__.
 
-google Remote Procedure call(gRPC) enables efficient communication between services using proto buffers and gRPC server.
-- Protocol buffers(an interface definition language) used to represent the service interface and the payload message structure.
-- gRPC server is used to handle client calls.
+google __Remote Procedure call__(gRPC) enables efficient communication between services using __proto buffers__ and __gRPC server__.
+- Protocol buffers(an interface definition language) used to represent the __service interface__ and the __payload message structure__.
+- gRPC server is used to __handle client calls__.
+
 __*Note:*__ For more information, you can refer to [gRPC site](https://grpc.io/).
 
 ## High Level Design :Book A Cab
 
-Mark performed a couple of steps to book his cab. Let's dive into them one by one on a high-level.
+Mark performed a couple of steps to book his cab. Let's dive into them one by one on a __high-level__.
 
 ### HLD :View Map
 
@@ -605,7 +606,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 ![View map](./Resources/HLDViewMap.png)
 
-1. Mark can tap the __cab sharing app__ icon to send view request to API gateway via WebSocket connection.
+1. Mark can tap the __cab sharing app__ icon to send view request to __API gateway__ via WebSocket connection.
 2. __API gateway__ can relay the request to __load balancer__.
 3. __Load balancer__ can route the request to __Data Fetch__ service which is a part of service cluster enabled with gRPC communication.
 4. Using gRPC channel and with the help of proto buffers, __Data Fetch__ service can relay the request to __map service__.
@@ -621,9 +622,22 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 ### HLD :View ETA
 
-[TBD] Description
+How Mark was able to view ETA to the drop-off point after entering pick-up and drop-off points of the ride? Below flow of steps can give us clarity.
 
-[TBD][Inprogress]![View ETA](./Resources/HLDviewETA.png)
+![View ETA](./Resources/HLDviewETA.png)
+
+1. Mark can click __ok__ button after entering pick-up and drop-off points to send view ETA and other options (such as cab selection e.t.c which are not covered in this design) request to __API gateway__.
+2. __API gateway__ can relay the request to __load balancer__.
+3. __Load balancer__ can route the request to __Data Fetch__ service which is a part of service cluster enabled with gRPC communication.
+4. Using gRPC channel and with the help of proto buffers, __Data Fetch__ service can relay the request to __ETA service__.
+    - ETA service can use __deep learning algorithms__ to predict __traffic control elements__ which can be considered to compute ETA.
+    - We can store average speeds from Geo hash to normal hash table for fast look-up.
+    - ETA computation can be done by dividing the haversine distance by the average speed.
+    - To compute accurate ETA, especially in rush traffic hours, we can consider average speed for every hour of the day and this can be stored in a nested hash table.
+5. The calculated ETA data can be relayed back to __Data Fetch__ service.
+6. __Data Fetch__ service can send the same data back to load balancer as a response from service cluster.
+7. __Load balancer__ can relay the response message to __API gateway__.
+8. Mark can view __ETA__ information on the __ready to book__ page.
 
 ## High Level Design :Track The Ride
 
