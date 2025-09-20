@@ -643,10 +643,30 @@ __*Note:*__
 1. The average speed and ETA in the reference image are considered as an example. We can always update them as per our convenience.
 2. You might be wondering what is the haversine distance that we talked in the above flow. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
 
-### HLD :Find a Driver
+### HLD :Find A Driver
 
-[TBD] Description
+How Mark was able to find a driver for his booking? Let's look into it.
+
 ![Find a Cab Driver](./Resources/HLDfindADriver.png)
+
+1. Mark can click __Book__ button after choosing cab type to send __find a driver__ request to API gateway.
+2. __API gateway__ can relay the request to __load balancer__.
+3. __Load balancer__ can route the request to __Data Fetch__ service.
+4. __Data Fetch__ service can relay the same request to __Find A Driver__.
+5. __Find A Driver__ service can seek help from __Map service__ to get the map data according to requested locations.
+    - __Find A Driver__ service can use Redis cluster to manage driver locations.
+    - __Redis cluster__ can have many __Redis instances__, meaning driver locations are __distributed__ among all Redis instances.
+    - We may encounter two issues with Redis cluster setup:
+        1. Hot Shard Problems
+        2. In-active Drivers
+    - __Hot Shard Problems__ can occur due to more drivers in big cities and we can handle them using Google's S2 library.
+        - The hierarchical natured S2 library can divide a map into grids and each cell size varies from square centimeters to square kilometers.
+        - We can choose Geohash to find nearby drivers and it represents a square kilometer, so only few cars will fit inside a single shard.
+    - __In-active drivers__ are the drivers who __stopped driving__ for the rest of the day. Below steps can provide us a solution to filter them out.
+        - We can __create in-memory time buckets periodically__ to __store active drivers__ list and __remove old buckets__ every 30 seconds.
+        - It results in constant allocation and freeing up of memory, so we can use a __Redis sorted set__ with last timestamp reported by drivers(sorting factor) in __each Geohash__ to find nearby drivers. In this way, we can overwrite memory instead of reallocating it.
+6. The active driver list can be relayed back to __Data Fetch Service__.
+[TBD]
 
 ## High Level Design :Track The Ride
 
