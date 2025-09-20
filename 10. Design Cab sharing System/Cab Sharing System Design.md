@@ -556,7 +556,7 @@ Server will consider both Mark/John's current location and drop-off location coo
 ![Track the ride](./Resources/trackTheRide.png)
 
 __*Note:*__
-1. ETA calculation involves several steps which will get covered in the __Track The Ride__ high level design.
+1. ETA calculation involves several steps which will get covered in the __Book A Cab__ high level design.
 2. __The map, ETA and distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
 3. There can be more cases during this tracking process. Some of them are-
     - Mark may change his pick-up location during __Wait For The Cab__ period. In this case-
@@ -666,7 +666,8 @@ How Mark was able to find a driver for his booking? Let's look into it.
         - We can __create in-memory time buckets periodically__ to __store active drivers__ list and __remove old buckets__ every 30 seconds.
         - It results in constant allocation and freeing up of memory, so we can use a __Redis sorted set__ with last timestamp reported by drivers(sorting factor) in __each Geohash__ to find nearby drivers. In this way, we can overwrite memory instead of reallocating it.
 6. The active driver list can be relayed back to __Data Fetch Service__.
-[TBD]
+7. __Data Fetch Service__ can relay the active driver list to __Request Service__.
+[TBD] Need to review the Request service requests to drivers.
 
 ## High Level Design :Track The Ride
 
