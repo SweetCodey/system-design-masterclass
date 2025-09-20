@@ -509,7 +509,7 @@ WebSockets (an upgraded version of a HTTP request) are a mechanism that allows b
 
 ![HTTP upgrade](./Resources/http_upgrade.png)
 
-__*Note:*__ For more details on WebSockets, you can refer to this [wiki link](https://en.wikipedia.org/wiki/WebSocket).
+__*Note:*__ For more details, you can refer to our WebSocket section under [Communication Protocol](../Course%20Notes/03%20-%20Appendix/03%20-%20Networking%20Buzzwords/03%20-%20Communication%20Protocols_%20Rules%20for%20Computer%20Communication.md).
 
 Once the connection is upgraded, it remains **open**, allowing both the cab sharing server and user/client to send messages directly to each other in **real-time** without needing the traditional HTTP request/response model.
 
@@ -594,7 +594,7 @@ google __Remote Procedure call__(gRPC) enables efficient communication between s
 - Protocol buffers(an interface definition language) used to represent the __service interface__ and the __payload message structure__.
 - gRPC server is used to __handle client calls__.
 
-__*Note:*__ For more information, you can refer to [gRPC site](https://grpc.io/).
+__*Note:*__ We can relate gRPC to a general example [here](../Course%20Notes/03%20-%20Appendix/04%20-%20Communication%20Buzzwords/03%20-%20gRPC_%20A%20Restaurant%20Analogy.md)
 
 ## High Level Design :Book A Cab
 
@@ -618,7 +618,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 10. __Load balancer__ can relay the response message to __API gateway__.
 11. Mark can view the booking landing page with __Map view__ after receiving response from __API gateway__.
 12. __Content Delivery Network(CDN)__ can be used to cache the map data. It can help us to __reduce latency__ and __high availability__ of the service.
-13. To __avoid network data usage__ overhead due to redundant download of map data by drivers, we can setup __SQLite caching__ layer on front-end client side. So that __in-memory cache__ update can happen only if the server map data changes.
+13. To __avoid network data usage__ overhead due to redundant download of map data by drivers, we can setup __SQLite caching__ layer on front-end system (client side). So that __in-memory cache__ update can happen only if the server map data changes.
 
 ### HLD :View ETA
 
@@ -645,7 +645,8 @@ __*Note:*__
 
 ### HLD :Find a Driver
 
-[TODO][In progress]![Find a Cab Driver](./Resources/HLDfindADriver.png)
+[TBD] Description
+![Find a Cab Driver](./Resources/HLDfindADriver.png)
 
 ## High Level Design :Track The Ride
 
