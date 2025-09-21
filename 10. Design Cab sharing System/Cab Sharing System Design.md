@@ -612,13 +612,13 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 2. Client can send view request to __API gateway__ via WebSocket connection.
     - An API gateway acts as a single entry point for all incoming requests.
-    __*Note:*__ For more details, you can refer to our [API gateway template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/10%20-%20API%20Gateway.md)
+    *Note:* For more details, you can refer to our [API gateway template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/10%20-%20API%20Gateway.md)
 
 ![API Gateway Service Flow](./Resources/HLDViewMap2.png)
 
 3. The __API gateway__ can relay the request to __load balancer__.
     - A load balancer acts like a traffic manager, directing incoming user requests to different servers.
-    __*Note:*__ For more details, you can refer to our [ultimate system design template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/04%20-%20Load%20Balancer.md)
+    *Note:* For more details, you can refer to our [ultimate system design template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/04%20-%20Load%20Balancer.md)
 
 4. The __Load balancer__ can relay the request to __Data Fetch__ service.
     - The Data Fetch service can take request and pass it to appropriate service within cluster for a response.
@@ -642,10 +642,10 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 11. The Client can save information to __CDN__.
     - The __Content Delivery Network(CDN)__ stores copies of your website’s data that doesn’t change too often.
-    __*Note:*__ For more details on CDN, you can refer to CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
+    *Note:* For more details on CDN, you can refer to the CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
 
-12. We can use in-memory cache to avoid additional __network data usage__ on duplicate download of map data by drivers.
-    - In-memory cache can help us to update data only if the server map data changes.
+12. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
+    - __In-memory cache__ can help us to update data only if the server map data changes.
 
 __Overall Flow Of View Map__:
 
@@ -655,24 +655,45 @@ __Overall Flow Of View Map__:
 
 How Mark was able to view ETA to the drop-off point? Let's find out.
 
-![View ETA](./Resources/HLDviewETA.png)
+![View ETA](./Resources/HLDviewETA1.png)
 
-1. Mark can click __ok__ button after entering pick-up and drop-off points to send __view ETA__ and other options (such as cab selection e.t.c which are not covered in this design) request to __API gateway__.
-2. __API gateway__ can relay the request to __load balancer__.
-3. __Load balancer__ can route the request to __Data Fetch__ service.
-4. __Data Fetch__ service can relay the same request to __ETA service__.
-    - ETA service can use __deep learning algorithms__ to predict __traffic control elements__ which can be considered to compute ETA.
-    - We can store average speeds from Geo hash to normal hash table for fast look-up.
-    - ETA computation can be done by dividing the haversine distance by the average speed.
-    - To compute accurate ETA in rush traffic hours, we can consider average speed for every hour of the day which can be stored in a nested hash table.
-5. The calculated ETA data can be relayed back to __Data Fetch__ service.
-6. __Data Fetch__ service can send the same data back to load balancer as a response from service cluster.
-7. __Load balancer__ can relay the response message to __API gateway__.
-8. Mark can view __ETA__ information on the __ready to book__ page.
+1. Mark can click __ok__ button after entering pick-up and drop-off points.
+2. Client can send __view ETA__ request to __API gateway__.
+
+__*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c can also be considered, but we are not covering them in this design.
+
+![View ETA](./Resources/HLDviewETA2.png)
+
+3. The __API gateway__ can relay the request to __load balancer__.
+4. The __Load balancer__ can direct the same request to __Data Fetch__ service.
+
+![View ETA](./Resources/HLDviewETA3.png)
+
+5. The __Data Fetch__ service can relay the request to the __ETA service__.
+    - Here, Data Fetch service can __validate the input__ data before sending it to the ETA service.
+
+![View ETA](./Resources/HLDviewETA4.png)
+
+- The ETA service can use __deep learning algorithms__ to predict __traffic control elements__ which can be considered to compute ETA.
+- We can store average speeds in a hash table for fast look-up.
+    - A hash table generalizes the simpler notion of an array.
+    *Note:* You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
+- ETA computation can be done by dividing the distance by the average speed.
+- To compute accurate ETA in rush traffic hours, we can consider average speed for every hour of the day which can be stored in a nested hash table.
+- The calculated ETA data can be relayed back to __Data Fetch__ service.
+
+![View ETA](./Resources/HLDviewETA5.png)
+
+6. The __API gateway__ can relay the response message to __Client__.
+7. Mark can view the __ETA__ on his booking page.
+
+__Overall Flow Of View ETA__:
+
+![View ETA](./Resources/HLDviewETAOverall.png)
 
 __*Note:*__
 1. The average speed and ETA in the reference image are considered as an example. We can always update them as per our convenience.
-2. You might be wondering what is the haversine distance that we talked in the above flow. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
+2. While calculating ETA, we can consider haversine distance. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
 
 ### HLD :Find A Driver
 
