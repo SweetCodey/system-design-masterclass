@@ -503,13 +503,15 @@ __Problem__
 
 In HTTP, the server cannot initiate requests to the user. Requests can only be sent **from the client to the server** - it's a one-way street (user -> cab sharing server).
 
-__Solution: WebSockets__
+__Solution:__ WebSockets
 
-WebSockets (an upgraded version of a HTTP request) are a mechanism that allows bidirectional communication. Client can send __HTTP GET request__ to switch from __HTTP__ to __WebSocket__ as shown in the reference image below.
+WebSockets enable __bidirectional__ communication.
+
+__*Note:*__ For more details, you can refer to our WebSocket section of [Communication Protocols](../Course%20Notes/03%20-%20Appendix/03%20-%20Networking%20Buzzwords/03%20-%20Communication%20Protocols_%20Rules%20for%20Computer%20Communication.md).
+
+The below image represents the creation of bi-directional communication using a HTTP request.
 
 ![HTTP upgrade](./Resources/http_upgrade.png)
-
-__*Note:*__ For more details, you can refer to our WebSocket section under [Communication Protocol](../Course%20Notes/03%20-%20Appendix/03%20-%20Networking%20Buzzwords/03%20-%20Communication%20Protocols_%20Rules%20for%20Computer%20Communication.md).
 
 Once the connection is upgraded, it remains **open**, allowing both the cab sharing server and user/client to send messages directly to each other in **real-time** without needing the traditional HTTP request/response model.
 
@@ -604,21 +606,50 @@ Mark performed a couple of steps to book his cab. Let's dive into them one by on
 
 How Mark was able to view the map which allowed him to choose pick-up and drop-off points graphically? Below steps walk us through.
 
-![View map](./Resources/HLDViewMap.png)
+![Client API Flow](./Resources/HLDViewMap1.png)
 
-1. Mark can tap the __cab sharing app__ icon to send view request to __API gateway__ via WebSocket connection.
-2. __API gateway__ can relay the request to __load balancer__.
-3. __Load balancer__ can route the request to __Data Fetch__ service which is a part of service cluster enabled with gRPC communication.
-4. Using gRPC channel and with the help of proto buffers, __Data Fetch__ service can relay the request to __map service__.
-5. __Map Service__ can use Google's S2 geospatial index to get S2 cell based on user's location and also to find relevant Amazon's DynamoDB partition.
-6. __Map Service__ can use this partition to download the map data from DynamoDB.
-7. As there can be a risk of missing map data, __Map Service__ can take help from __GPS signal__ service, meaning previous driver location data can be considered to create a plot of missing roads.
-8. The de-serialized updated map data can be relayed back to __Data Fetch__ service.
-9. __Data Fetch__ service can send the same data back to load balancer as a response from service cluster.
-10. __Load balancer__ can relay the response message to __API gateway__.
-11. Mark can view the booking landing page with __Map view__ after receiving response from __API gateway__.
-12. __Content Delivery Network(CDN)__ can be used to cache the map data. It can help us to __reduce latency__ and __high availability__ of the service.
-13. To __avoid network data usage__ overhead due to redundant download of map data by drivers, we can setup __SQLite caching__ layer on front-end system (client side). So that __in-memory cache__ update can happen only if the server map data changes.
+1. Mark can tap the __Cab Sharing App__ icon on his mobile device(client) to open Cab Sharing Application.
+
+2. Client can send view request to __API gateway__ via WebSocket connection.
+    - An API gateway acts as a single entry point for all incoming requests.
+    __*Note:*__ For more details, you can refer to our [API gateway template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/10%20-%20API%20Gateway.md)
+
+![API Gateway Service Flow](./Resources/HLDViewMap2.png)
+
+3. The __API gateway__ can relay the request to __load balancer__.
+    - A load balancer acts like a traffic manager, directing incoming user requests to different servers.
+    __*Note:*__ For more details, you can refer to our [ultimate system design template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/04%20-%20Load%20Balancer.md)
+
+4. The __Load balancer__ can relay the request to __Data Fetch__ service.
+    - The Data Fetch service can take request and pass it to appropriate service within cluster for a response.
+
+![Flow within Service Cluster](./Resources/HLDViewMap3.png)
+
+5. The __Data Fetch__ service can relay the request to __map service__.
+    - The __map service__ is responsible to manage map data
+
+6. The __Map Service__ can use S2 index to get user's region and also to find relevant database partition.
+
+7. The __Map Service__ can use this partition to download the map data from key value storage.
+
+8. The __Map Service__ can take help from __GPS signal__ service to avoid the risk of missing road data.
+
+9. The updated map data can be relayed back to the __Data Fetch__ service.
+
+![API Response](./Resources/HLDViewMap4.png)
+
+10. The __API gateway__ can send the response back to __Client__. Now, Mark can view the booking page with a __Map view__.
+
+11. The Client can save information to __CDN__.
+    - The __Content Delivery Network(CDN)__ stores copies of your website’s data that doesn’t change too often.
+    __*Note:*__ For more details on CDN, you can refer to CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
+
+12. We can use in-memory cache to avoid additional __network data usage__ on duplicate download of map data by drivers.
+    - In-memory cache can help us to update data only if the server map data changes.
+
+__Overall Flow Of View Map__:
+
+![View Map Overall Flow](./Resources/HLDViewMapOverall.png)
 
 ### HLD :View ETA
 
