@@ -699,39 +699,62 @@ __*Note:*__
 
 How Mark was able to find a driver for his booking? Let's look into it.
 
-<!-- ![User Request](./Resources/HLDfindADriver1.png)
+[TBD] Icon review in real-time
+
+![User Request](./Resources/HLDfindADriver1.png)
+
+1. Mark can click __Book__ button after knowing ETA to his drop-off point.
+2. Client can send __booking__ request to __API gateway__.
+    - __Find A Driver__ request is a part of booking request.
+
 ![API Load Balancer Request](./Resources/HLDfindADriver2.png)
+
+3. The __API gateway__ can relay the request to __load balancer__.
+4. The __Load balancer__ can direct the same request to __Data Fetch__ service.
+
 ![Service Request](./Resources/HLDfindADriver3.png)
-![Find A Driver Service](./Resources/HLDfindADriver4.png)
-![Driver Service Response](./Resources/HLDfindADriver5.png)
+
+5. The __Data Fetch__ service can relay the same request to __Driver Finder__.
+    - The __Driver Finder__ service is responsible to find active drivers near Mark's location.
+
+6. The __Driver Finder__ service can take help from __Map service__ to get the map data according to available drivers locations.
+
+![Driver Finder Service](./Resources/HLDfindADriver4.png)
+
+[TBD] Data refinement
+
+<!-- - The __Driver Finder__ service can use Redis cluster to store driver locations.
+- The __Redis cluster__ can have many __Redis instances__, meaning driver locations are __distributed__ among all Redis instances.
+- We may encounter two issues with Redis cluster setup:
+    1. Hot Shard Problems
+    2. In-active Drivers
+- __Hot Shard Problems__ can occur due to more drivers in big cities and we can handle them using Google's S2 library.
+    - The hierarchical natured S2 library can divide a map into grids and each cell size varies from square centimeters to square kilometers.
+    - We can choose Geohash to find nearby drivers and it represents a square kilometer, so only few cars will fit inside a single shard.
+- __In-active drivers__ are the drivers who __stopped driving__ for the rest of the day. Below steps can provide us a solution to filter them out.
+    - We can __create in-memory time buckets periodically__ to __store active drivers__ list and __remove old buckets__ every 30 seconds.
+    - It results in constant allocation and freeing up of memory, so we can use a __Redis sorted set__ with last timestamp reported by drivers(sorting factor) in __each Geohash__ to find nearby drivers. In this way, we can overwrite memory instead of reallocating it. -->
+
+![Driver Finder Response](./Resources/HLDfindADriver5.png)
+
+[TBD] Step explanation
+
 ![Request Service Req1](./Resources/HLDfindADriver6.png)
+
+[TBD] Step explanation
+
 ![Request Service Req2](./Resources/HLDfindADriver7.png)
-![API Gateway Response](./Resources/HLDfindADriver8.png) -->
-<!-- ![Find a Cab Driver](./Resources/HLDfindADriver9.png)
-![Find a Cab Driver](./Resources/HLDfindADriver10.png) -->
 
+[TBD] Step explanation
 
-![Find a Cab Driver](./Resources/HLDfindADriver.png)
+![Request Service Response](./Resources/HLDfindADriver8.png)
 
-1. Mark can click __Book__ button after choosing cab type to send __find a driver__ request to API gateway.
-2. __API gateway__ can relay the request to __load balancer__.
-3. __Load balancer__ can route the request to __Data Fetch__ service.
-4. __Data Fetch__ service can relay the same request to __Find A Driver__.
-5. __Find A Driver__ service can seek help from __Map service__ to get the map data according to requested locations.
-    - __Find A Driver__ service can use Redis cluster to manage driver locations.
-    - __Redis cluster__ can have many __Redis instances__, meaning driver locations are __distributed__ among all Redis instances.
-    - We may encounter two issues with Redis cluster setup:
-        1. Hot Shard Problems
-        2. In-active Drivers
-    - __Hot Shard Problems__ can occur due to more drivers in big cities and we can handle them using Google's S2 library.
-        - The hierarchical natured S2 library can divide a map into grids and each cell size varies from square centimeters to square kilometers.
-        - We can choose Geohash to find nearby drivers and it represents a square kilometer, so only few cars will fit inside a single shard.
-    - __In-active drivers__ are the drivers who __stopped driving__ for the rest of the day. Below steps can provide us a solution to filter them out.
-        - We can __create in-memory time buckets periodically__ to __store active drivers__ list and __remove old buckets__ every 30 seconds.
-        - It results in constant allocation and freeing up of memory, so we can use a __Redis sorted set__ with last timestamp reported by drivers(sorting factor) in __each Geohash__ to find nearby drivers. In this way, we can overwrite memory instead of reallocating it.
-6. The active driver list can be relayed back to __Data Fetch Service__.
-7. __Data Fetch Service__ can relay the active driver list to __Request Service__.
-[TBD] Need to review the Request service requests to drivers.
+[TBD] Step explanation
+
+![API Gateway Response](./Resources/HLDfindADriver9.png)
+
+__Overall Flow Of View ETA__:
+[TBD]
 
 ## High Level Design :Track The Ride
 
