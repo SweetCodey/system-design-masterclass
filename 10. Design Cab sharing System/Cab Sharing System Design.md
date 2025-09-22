@@ -559,7 +559,7 @@ Server will consider both Mark/John's current location and drop-off location coo
 
 __*Note:*__
 1. ETA calculation involves several steps which will get covered in the __Book A Cab__ high level design.
-2. __The map, ETA and distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
+2. __The map, ETA__ and __distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
 3. There can be more cases during this tracking process. Some of them are-
     - Mark may change his pick-up location during __Wait For The Cab__ period. In this case-
         - Server can notify both Mark and John about the dynamic change of John's ETA to Mark's location along with distance to reach.
@@ -655,24 +655,24 @@ __Overall Flow Of View Map__:
 
 How Mark was able to view ETA to the drop-off point? Let's find out.
 
-![View ETA](./Resources/HLDviewETA1.png)
+![User Request](./Resources/HLDviewETA1.png)
 
 1. Mark can click __ok__ button after entering pick-up and drop-off points.
 2. Client can send __view ETA__ request to __API gateway__.
 
 __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c can also be considered, but we are not covering them in this design.
 
-![View ETA](./Resources/HLDviewETA2.png)
+![API Load Balancer Flow](./Resources/HLDviewETA2.png)
 
 3. The __API gateway__ can relay the request to __load balancer__.
 4. The __Load balancer__ can direct the same request to __Data Fetch__ service.
 
-![View ETA](./Resources/HLDviewETA3.png)
+![Initial Service Flow](./Resources/HLDviewETA3.png)
 
 5. The __Data Fetch__ service can relay the request to the __ETA service__.
     - Here, Data Fetch service can __validate the input__ data before sending it to the ETA service.
 
-![View ETA](./Resources/HLDviewETA4.png)
+![ETA Service Flow](./Resources/HLDviewETA4.png)
 
 - The ETA service can use __deep learning algorithms__ to predict __traffic control elements__ which can be considered to compute ETA.
 - We can store average speeds in a hash table for fast look-up.
@@ -682,14 +682,14 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
 - To compute accurate ETA in rush traffic hours, we can consider average speed for every hour of the day which can be stored in a nested hash table.
 - The calculated ETA data can be relayed back to __Data Fetch__ service.
 
-![View ETA](./Resources/HLDviewETA5.png)
+![Response Flow](./Resources/HLDviewETA5.png)
 
 6. The __API gateway__ can relay the response message to __Client__.
 7. Mark can view the __ETA__ on his booking page.
 
 __Overall Flow Of View ETA__:
 
-![View ETA](./Resources/HLDviewETAOverall.png)
+![ETA Overall Flow](./Resources/HLDviewETAOverall.png)
 
 __*Note:*__
 1. The average speed and ETA in the reference image are considered as an example. We can always update them as per our convenience.
@@ -698,6 +698,18 @@ __*Note:*__
 ### HLD :Find A Driver
 
 How Mark was able to find a driver for his booking? Let's look into it.
+
+<!-- ![User Request](./Resources/HLDfindADriver1.png)
+![API Load Balancer Request](./Resources/HLDfindADriver2.png)
+![Service Request](./Resources/HLDfindADriver3.png)
+![Find A Driver Service](./Resources/HLDfindADriver4.png)
+![Driver Service Response](./Resources/HLDfindADriver5.png)
+![Request Service Req1](./Resources/HLDfindADriver6.png)
+![Request Service Req2](./Resources/HLDfindADriver7.png)
+![API Gateway Response](./Resources/HLDfindADriver8.png) -->
+<!-- ![Find a Cab Driver](./Resources/HLDfindADriver9.png)
+![Find a Cab Driver](./Resources/HLDfindADriver10.png) -->
+
 
 ![Find a Cab Driver](./Resources/HLDfindADriver.png)
 
