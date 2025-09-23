@@ -85,28 +85,41 @@ __*Note:*__ We won't be covering payment in this design as this design focuses o
 <table>
     <tr>
         <th>Requirement</th>
+        <th>End User</th>
         <th>Description</th>
     </tr>
     <tr>
         <td><strong>Availability</strong></td>
+        <td>Customers & Cab Drivers</td>
         <td>The system should be highly available - <strong>99.999999%</strong> uptime</td>
     </tr>
     <tr>
         <td><strong>Latency</strong></td>
-        <td>User should receive booking acknowledgement within 15 seconds.</td>
+        <td>Customers & Cab Drivers</td>
+        <td colspan="2">User should receive booking acknowledgement within 15 seconds.</td>
     </tr>
     <tr>
-        <td rowspan="3"><strong>Scalability</strong></td>
+        <td rowspan="5"><strong>Scalability</strong></td>
+        <td>Customers & Cab Drivers</td>
         <td>The system should support global users and traffic that will be from multiple geographic regions</td>
     </tr>
     <tr>
-        <td>The system should support <strong>36 million Daily Active Users (DAU)</strong></td>
+        <td rowspan="2">Customers</td>
+        <td >The system should support <strong>36 million Daily Active Users (DAU)</strong></td>
     </tr>
     <tr>
         <td>The system should support <strong>180 million Monthly Active Users (MAU)</strong></td>
     </tr>
     <tr>
+        <td rowspan="2">Cab Driver</td>
+        <td>The system should support <strong>3 million Daily Active Users (DAU)</strong></td>
+    </tr>
+    <tr>
+        <td>The system should support <strong>93 million Monthly Active Users (MAU)</strong></td>
+    </tr>
+    <tr>
         <td><strong>Extensibility</strong></td>
+        <td>Customers & Cab Drivers</td>
         <td>The design of our system should be such that it is easier to extend it in the future.<br>
         <em>Example:</em> If we need to add features like auto-pilot cab bookings, or luxury cab bookings.</td>
     </tr>
@@ -610,37 +623,37 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 1. Mark can tap the __Cab Sharing App__ icon on his mobile device(client) to open Cab Sharing Application.
 
-2. Client can send view request to __API gateway__ via WebSocket connection.
+2. The __Client__ can send view request to the __API gateway__ via WebSocket connection.
     - An API gateway acts as a single entry point for all incoming requests.
     *Note:* For more details, you can refer to our [API gateway template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/10%20-%20API%20Gateway.md)
 
 ![API Gateway Service Flow](./Resources/HLDViewMap2.png)
 
-3. The __API gateway__ can relay the request to __load balancer__.
+3. The __API gateway__ can relay the request to the __load balancer__.
     - A load balancer acts like a traffic manager, directing incoming user requests to different servers.
     *Note:* For more details, you can refer to our [ultimate system design template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/04%20-%20Load%20Balancer.md)
 
-4. The __Load balancer__ can relay the request to __Data Fetch__ service.
+4. The __Load balancer__ can relay the request to the __Data Fetch__ service.
     - The Data Fetch service can take request and pass it to appropriate service within cluster for a response.
 
 ![Flow within Service Cluster](./Resources/HLDViewMap3.png)
 
-5. The __Data Fetch__ service can relay the request to __map service__.
+5. The __Data Fetch__ service can relay the request to the __map service__.
     - The __map service__ is responsible to manage map data
 
 6. The __Map Service__ can use S2 index to get user's region and also to find relevant database partition.
 
 7. The __Map Service__ can use this partition to download the map data from key value storage.
 
-8. The __Map Service__ can take help from __GPS signal__ service to avoid the risk of missing road data.
+8. The __Map Service__ can take help from the __GPS signal__ service to avoid the risk of missing road data.
 
 9. The updated map data can be relayed back to the __Data Fetch__ service.
 
 ![API Response](./Resources/HLDViewMap4.png)
 
-10. The __API gateway__ can send the response back to __Client__. Now, Mark can view the booking page with a __Map view__.
+10. The __API gateway__ can send the response back to the __Client__. Now, Mark can view the booking page with a __Map view__.
 
-11. The Client can save information to __CDN__.
+11. The __Client__ can save map information to the __CDN__.
     - The __Content Delivery Network(CDN)__ stores copies of your website’s data that doesn’t change too often.
     *Note:* For more details on CDN, you can refer to the CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
 
@@ -658,7 +671,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 ![User Request](./Resources/HLDviewETA1.png)
 
 1. Mark can click __ok__ button after entering pick-up and drop-off points.
-2. Client can send __view ETA__ request to __API gateway__.
+2. The __Client__ can send __view ETA__ request to the __API gateway__.
 
 __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c can also be considered, but we are not covering them in this design.
 
@@ -684,7 +697,7 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
 
 ![Response Flow](./Resources/HLDviewETA5.png)
 
-6. The __API gateway__ can relay the response message to __Client__.
+6. The __API gateway__ can relay the response message to the __Client__.
 7. Mark can view the __ETA__ on his booking page.
 
 __Overall Flow Of View ETA__:
@@ -702,20 +715,20 @@ How Mark was able to find a driver for his booking? Let's look into it.
 ![User Request](./Resources/HLDfindADriver1.png)
 
 1. Mark can click __Book__ button after knowing ETA to his drop-off point.
-2. Client can send __booking__ request to __API gateway__.
+2. The __Client__ can send __booking__ request to the __API gateway__.
     - __Find A Driver__ request is a part of booking request.
 
 ![API Load Balancer Request](./Resources/HLDfindADriver2.png)
 
-3. The __API gateway__ can relay the request to __load balancer__.
-4. The __Load balancer__ can direct the same request to __Data Fetch__ service.
+3. The __API gateway__ can relay the request to the __load balancer__.
+4. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
 
 ![Service Request](./Resources/HLDfindADriver3.png)
 
-5. The __Data Fetch__ service can relay the same request to __Driver Finder__.
+5. The __Data Fetch__ service can relay the same request to the __Driver Finder__ service.
     - The __Driver Finder__ service is responsible to find active drivers near Mark's location.
 
-6. The __Driver Finder__ service can take help from __Map service__ to get the map data according to available drivers locations.
+6. The __Driver Finder__ service can take help from the __Map service__ to get map data of available drivers locations.
 
 ![Driver Finder Service](./Resources/HLDfindADriver4.png)
 
@@ -737,31 +750,40 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 ![Driver Finder Response](./Resources/HLDfindADriver5.png)
 
-7. The __Driver Finder__ service can give respond to Request service with list of active drivers nearby.
+7. The __Driver Finder__ service can relay a list of active drivers near to Mark's location to the __Request__ service.
     - The __Request__ service is responsible for sending requests to users and record their responses.
 
 ![Request Service Req1](./Resources/HLDfindADriver6.png)
 
-[TBD] Step explanation
+8. The __Request__ service can send Mark's booking request to first driver(Kevin) in the active drivers list.
+9. The __Client__ can relay Kevin's rejection message to the __Request__ service.
 
 ![Request Service Req2](./Resources/HLDfindADriver7.png)
 
-[TBD] Step explanation
+10. As Kevin rejected the booking request, the __Request__ service can send Mark's booking request to John.
+11. The __Client__ can relay John's approval message to the __Request__ service.
+12. The __Client__ can save driver details to the __CDN__.
 
 ![Request Service Response](./Resources/HLDfindADriver8.png)
 
-[TBD] Step explanation
+13. The __Request service__ can stop sending requests to drivers and can relay response to the __Data Fetch__ service.
 
 ![API Gateway Response](./Resources/HLDfindADriver9.png)
+
+14. The __API gateway__ can send the response back to the __Client__ with booking acceptance message.
+15. The __Client__ can fetch John details from the __CDN__.
+    *Note:* The Client can get the driver details from API gateway, but for faster load time, it can make use of CDN.
+16. Now, Mark is __able to view__ driver details via Client.
 
 __Overall Flow Of Find A Driver__:
 
 ![Find A Driver](./Resources/HLDfindADriverOverall.png)
 
 ## High Level Design :Track The Ride
+[TBD]
 
 ## High Level Design :View Ride History
-
+[TBD]
 <!-- We have used WebSocket connection to communicate with cab sharing servers and provided seamless operations to Mark & John by using gRPC to communicate between services. -->
 
 <hr style="border:2px solid gray">
