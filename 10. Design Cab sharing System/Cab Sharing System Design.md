@@ -90,21 +90,21 @@ __*Note:*__ We won't be covering payment in this design as this design focuses o
     </tr>
     <tr>
         <td><strong>Availability</strong></td>
-        <td>Customers & Cab Drivers</td>
+        <td>Customer & Cab Driver</td>
         <td>The system should be highly available - <strong>99.999999%</strong> uptime</td>
     </tr>
     <tr>
         <td><strong>Latency</strong></td>
-        <td>Customers & Cab Drivers</td>
+        <td>Customer & Cab Driver</td>
         <td colspan="2">User should receive booking acknowledgement within 15 seconds.</td>
     </tr>
     <tr>
         <td rowspan="5"><strong>Scalability</strong></td>
-        <td>Customers & Cab Drivers</td>
+        <td>Customer & Cab Driver</td>
         <td>The system should support global users and traffic that will be from multiple geographic regions</td>
     </tr>
     <tr>
-        <td rowspan="2">Customers</td>
+        <td rowspan="2">Customer</td>
         <td >The system should support <strong>36 million Daily Active Users (DAU)</strong></td>
     </tr>
     <tr>
@@ -119,7 +119,7 @@ __*Note:*__ We won't be covering payment in this design as this design focuses o
     </tr>
     <tr>
         <td><strong>Extensibility</strong></td>
-        <td>Customers & Cab Drivers</td>
+        <td>Customer & Cab Driver</td>
         <td>The design of our system should be such that it is easier to extend it in the future.<br>
         <em>Example:</em> If we need to add features like auto-pilot cab bookings, or luxury cab bookings.</td>
     </tr>
@@ -644,6 +644,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 6. The __Map Service__ can use S2 index to get user's region and also to find relevant database partition.
 
 7. The __Map Service__ can use this partition to download the map data from key value storage.
+    - Key value storage is an example of NoSQL database. For more details, refer to our [Database and Storage Basics](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md)
 
 8. The __Map Service__ can take help from the __GPS signal__ service to avoid the risk of missing road data.
 
@@ -657,6 +658,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
     - The __Content Delivery Network(CDN)__ stores copies of your website’s data that doesn’t change too often.
     *Note:* For more details on CDN, you can refer to the CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
 
+[TBD] Review in-memory cache once again
 12. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
     - __In-memory cache__ can help us to update data only if the server map data changes.
 
@@ -707,6 +709,7 @@ __Overall Flow Of View ETA__:
 __*Note:*__
 1. The average speed and ETA in the reference image are considered as an example. We can always update them as per our convenience.
 2. While calculating ETA, we can consider haversine distance. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
+3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA, we are not considering any specific database storage. The dynamic calculation can be preferred.
 
 ### HLD :Find A Driver
 
@@ -733,6 +736,7 @@ How Mark was able to find a driver for his booking? Let's look into it.
 ![Driver Finder Service](./Resources/HLDfindADriver4.png)
 
 - The __Driver Finder__ service can use Key-Value(Redis cluster) storage to store driver locations.
+    - Redis key-value store is an example of NoSQL database. For more details, you can refer to [Database Concept](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/02%20-%20Database.md).
 - The __Key Value Storage__ can have many __instances__, meaning driver locations are __distributed__ among all instances.
 - We may encounter two issues with this storage:
     1. __Hot Shard Problems__
