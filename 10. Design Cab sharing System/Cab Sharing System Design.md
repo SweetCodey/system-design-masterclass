@@ -689,18 +689,29 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
 
 ![ETA Service Flow](./Resources/HLDviewETA4.png)
 
-- The ETA service can use __deep learning algorithms__ to predict __traffic control elements__ which can be considered to compute ETA.
+6. The __ETA__ service can get the map data from the __Map__ service based on Mark's pick-up and drop-off points.
+
+7. The ETA service can use __deep learning algorithms__ to predict __traffic control elements__ such as stop signals and traffic lights.
+
+8. The __ETA__ service can consider the map data as a __graph__ to compute accurate ETA.
+    - In Graph map, a node is the road intersection and a directed edge is a road segment.
+    - Let's say road intersections are more Mark's ride path. In this case we can partition the graph map to calculate ETA efficiently.
+    *Note:* You can refer to this [link](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) for more details on Graph.
+
+9. The __ETA__ service can make use of __GPS signal__ service to get GPS observed points between Mark's pick-up and drop-off points.
+
+10. Now, to get the __accurate ETA__, we can do __map matching__ between estimated and GPS observed points as shown in the image above.
+    - The calculated ETA data can be relayed back to __Data Fetch__ service.
+
+__*Note:*__
 - We can store average speeds in a hash table for fast look-up.
     - A hash table generalizes the simpler notion of an array.
     *Note:* You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
-- ETA computation can be done by dividing the distance by the average speed.
-- To compute accurate ETA in rush traffic hours, we can consider average speed for every hour of the day which can be stored in a nested hash table.
-- The calculated ETA data can be relayed back to __Data Fetch__ service.
 
 ![Response Flow](./Resources/HLDviewETA5.png)
 
-6. The __API gateway__ can relay the response message to the __Client__.
-7. Mark can view the __ETA__ on his booking page.
+11. The __API gateway__ can relay the response message to the __Client__.
+12. Mark can view the __ETA__ on his booking page.
 
 __Overall Flow Of View ETA__:
 
