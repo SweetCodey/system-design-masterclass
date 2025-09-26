@@ -648,18 +648,22 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 8. The __Map Service__ can take help from the __GPS signal__ service to avoid the risk of missing road data.
 
-9. The updated map data can be relayed back to the __Data Fetch__ service.
+9. The __Map Service__ can save user's map information to database through __Storage__ service.
+    - The __Storage__ service is responsible to save and retrieve user's information to and from database.
+        - Internally Storage service can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in cab sharing system.
+        *Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
+
+10. The updated map data can be relayed back to the __Data Fetch__ service.
 
 ![API Response](./Resources/HLDViewMap4.png)
 
-10. The __API gateway__ can send the response back to the __Client__. Now, Mark can view the booking page with a __Map view__.
+11. The __API gateway__ can send the response back to the __Client__. Now, Mark can view the booking page with a __Map view__.
 
-11. The __Client__ can save map information to the __CDN__.
+12. The __Client__ can save map information to the __CDN__.
     - The __Content Delivery Network(CDN)__ stores copies of your website’s data that doesn’t change too often.
     *Note:* For more details on CDN, you can refer to the CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
 
-[TBD] Review in-memory cache once again
-12. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
+13. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
     - __In-memory cache__ can help us to update data only if the server map data changes.
 
 __Overall Flow Of View Map__:
@@ -691,17 +695,23 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
 
 6. The __ETA__ service can get the map data from the __Map__ service based on Mark's pick-up and drop-off points.
 
-7. The ETA service can use __deep learning algorithms__ to predict __traffic control elements__ such as stop signals and traffic lights.
+7. The __ETA__ service can use __deep learning algorithms__ to predict __traffic control elements__ such as stop signals and traffic lights.
 
-8. The __ETA__ service can consider the map data as a __graph__ to compute accurate ETA.
-    - In Graph map, a node is the road intersection and a directed edge is a road segment.
-    - Let's say road intersections are more Mark's ride path. In this case we can partition the graph map to calculate ETA efficiently.
+8. The __ETA__ service can get average speeds (based on the locations) from __hash table__ through __Storage__ service.
+
+9. The __ETA__ service can consider the map data as a __graph__ to compute accurate ETA.
+    - In Map graph, the road intersection is considered as a node and a road segment is considered as an edge.
+    - Let's say road intersections are more in Mark's ride path. In this case, we can partition the Map graph to calculate ETA efficiently.
     *Note:* You can refer to this [link](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) for more details on Graph.
 
-9. The __ETA__ service can make use of __GPS signal__ service to get GPS observed points between Mark's pick-up and drop-off points.
+10. The __ETA__ service can make use of __GPS signal__ service to get active & recent GPS observed points between Mark's pick-up and drop-off points.
+    *Note:* For more information on GPS signals, you can refer to this [link](https://en.wikipedia.org/wiki/GPS_signals)
 
-10. Now, to get the __accurate ETA__, we can do __map matching__ between estimated and GPS observed points as shown in the image above.
-    - The calculated ETA data can be relayed back to __Data Fetch__ service.
+11. Now, to get the __accurate ETA__, we can do __map matching__ between estimated and GPS observed points as shown in the image above.
+    - In __Map matching__, if the estimated and GPS observed points are different, then step 9 will be repeated with the ride path paired with GPS observed points and can skip step 10 and step 11.
+    - The final calculated ETA data can be relayed back to the __Data Fetch__ service.
+
+12. The computed __ETA__ along with user's details (such as user's current location, pick-up and drop-off points) can be registered in database through __Storage__ service for re-usability purposes.
 
 __*Note:*__
 - We can store average speeds in a hash table for fast look-up.
@@ -710,17 +720,17 @@ __*Note:*__
 
 ![Response Flow](./Resources/HLDviewETA5.png)
 
-11. The __API gateway__ can relay the response message to the __Client__.
-12. Mark can view the __ETA__ on his booking page.
+13. The __API gateway__ can relay the response message to the __Client__.
+14. Mark can view the __ETA__ on his booking page.
 
 __Overall Flow Of View ETA__:
 
 ![ETA Overall Flow](./Resources/HLDviewETAOverall.png)
 
 __*Note:*__
-1. The average speed and ETA in the reference image are considered as an example. We can always update them as per our convenience.
-2. While calculating ETA, we can consider haversine distance. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
-3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA, we are not considering any specific database storage. The dynamic calculation can be preferred.
+1. The average speed and ETA in the reference image are considered as an example. You can update them as per your convenience.
+2. While calculating ETA, __Haversine distance__ can be considered. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
+3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA. So, we are not considering ETA storage for entire ride path. Instant communication can be preferred.
 
 ### HLD :Find A Driver
 
@@ -781,12 +791,14 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 ![Request Service Response](./Resources/HLDfindADriver8.png)
 
-13. The __Request service__ can stop sending requests to drivers and can relay response to the __Data Fetch__ service.
+13. The __Request service__ can stop sending requests to drivers and can send confirmed Driver details to the __Driver Finder__ service.
+14. The __Driver Finder__ service can store John's details associated to Mark's ride in database via __Storage__ service.
+    - These details are useful to maintain ride history.
 
 ![API Gateway Response](./Resources/HLDfindADriver9.png)
 
 14. The __API gateway__ can send the response back to the __Client__ with booking acceptance message.
-15. The __Client__ can fetch John details from the __CDN__.
+15. The __Client__ can retrieve John details from the __CDN__.
     *Note:* The Client can get the driver details from API gateway, but for faster load time, it can make use of CDN.
 16. Now, Mark is __able to view__ driver details via Client.
 
@@ -795,7 +807,7 @@ __Overall Flow Of Find A Driver__:
 ![Find A Driver](./Resources/HLDfindADriverOverall.png)
 
 ## High Level Design :Track The Ride
-[TBD]
+[TBD] In-progress
 
 ## High Level Design :View Ride History
 [TBD]
