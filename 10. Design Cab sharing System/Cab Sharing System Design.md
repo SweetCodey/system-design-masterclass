@@ -807,7 +807,12 @@ __Overall Flow Of Find A Driver__:
 ![Find A Driver](./Resources/HLDfindADriverOverall.png)
 
 ## High Level Design :Track The Ride
-[TBD] In-progress
+
+[TBD] Image split is in progress
+
+__Overall Flow Of Track The Ride__:
+
+![Track The Ride](./Resources/HLDTrackTheRideOverall.png)
 
 ## High Level Design :View Ride History
 [TBD]
