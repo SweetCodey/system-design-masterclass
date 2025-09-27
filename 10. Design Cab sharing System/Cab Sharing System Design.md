@@ -808,7 +808,29 @@ __Overall Flow Of Find A Driver__:
 
 ## High Level Design :Track The Ride
 
-[TBD] Image split is in progress
+![User Request](./Resources/HLDTrackTheRide1.png)
+
+[TBD] Step Description
+
+![API Gateway Flow](./Resources/HLDTrackTheRide2.png)
+
+[TBD] Step Description
+
+![Data Fetch Request Flow](./Resources/HLDTrackTheRide3.png)
+
+[TBD] Step Description
+
+![Ride Tracking Flow](./Resources/HLDTrackTheRide4.png)
+
+[TBD] Step Description
+
+![Ride Tracking Response](./Resources/HLDTrackTheRide5.png)
+
+[TBD] Step Description
+
+![API Gateway Response](./Resources/HLDTrackTheRide6.png)
+
+[TBD] Step Description
 
 __Overall Flow Of Track The Ride__:
 
