@@ -812,7 +812,7 @@ __Overall Flow Of Find A Driver__:
 
 __Overall Flow Of Track The Ride__:
 
-![Track The Ride](./Resources/HLDTrackTheRideOverall.png)
+![Track The Ride](./Resources/HLDTrackTheRideOverAll.png)
 
 ## High Level Design :View Ride History
 [TBD]
