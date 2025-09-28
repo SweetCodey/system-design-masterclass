@@ -641,29 +641,34 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 5. The __Data Fetch__ service can relay the request to the __map service__.
     - The __map service__ is responsible to manage map data
 
-6. The __Map Service__ can use S2 index to get user's region and also to find relevant database partition.
+6. The __Map Service__ can take help from __Map Database__ service to get the map details.
+    - The __Map Database__ service is responsible for getting relevant map details and also for maintaining user's map information until the ride completes.
 
-7. The __Map Service__ can use this partition to download the map data from key value storage.
-    - Key value storage is an example of NoSQL database. For more details, refer to our [Database and Storage Basics](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md)
+7. The __Map Database__ service can use S2 index to get user's region and also to find relevant database partition.
 
-8. The __Map Service__ can take help from the __GPS signal__ service to avoid the risk of missing road data.
+8. The __Map Database__ service can use this partition to download the map data from __key value storage__.
+    - The __Key value storage__ is an example of __NoSQL__ database. For more details, refer to our [Database and Storage Basics](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md)
 
-9. The __Map Service__ can save user's map information to database through __Storage__ service.
-    - The __Storage__ service is responsible to save and retrieve user's information to and from database.
-        - Internally Storage service can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in cab sharing system.
+9. The __Map Database__ service can relay the response to the __Map Service__.
+
+10. The __Map Service__ can take help from the __GPS signal__ service to avoid the risk of missing road data.
+
+11. The __Map Service__ can provide final map data output to the __Data Fetch__ service.
+
+12. The __Data Fetch__ can save user's map information to the __user record__ database.
+    - The __user record__ database is responsible for maintaining user's information.
+        - Internally, you can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in cab sharing system.
         *Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
-
-10. The updated map data can be relayed back to the __Data Fetch__ service.
 
 ![API Response](./Resources/HLDViewMap4.png)
 
-11. The __API gateway__ can send the response back to the __Client__. Now, Mark can view the booking page with a __Map view__.
+13. The __API gateway__ can send the response back to the __Client__. Now, Mark can view the booking page with a __Map view__.
 
-12. The __Client__ can save map information to the __CDN__.
+14. The __Client__ can save map information to the __CDN__.
     - The __Content Delivery Network(CDN)__ stores copies of your website’s data that doesn’t change too often.
     *Note:* For more details on CDN, you can refer to the CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
 
-13. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
+15. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
     - __In-memory cache__ can help us to update data only if the server map data changes.
 
 __Overall Flow Of View Map__:
@@ -688,30 +693,30 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
 
 ![Initial Service Flow](./Resources/HLDviewETA3.png)
 
-5. The __Data Fetch__ service can relay the request to the __ETA service__.
-    - Here, Data Fetch service can __validate the input__ data before sending it to the ETA service.
+5. The __Data Fetch__ service can relay the request to the __Ride Estimator__ service.
+    - Here, Data Fetch service can __validate the input__ data __before sending__ it to the Ride Estimator service.
 
 ![ETA Service Flow](./Resources/HLDviewETA4.png)
 
-6. The __ETA__ service can get the map data from the __Map__ service based on Mark's pick-up and drop-off points.
+6. The __Ride Estimator__ service can get the map data from the __Map__ service based on Mark's pick-up and drop-off points.
 
-7. The __ETA__ service can use __deep learning algorithms__ to predict __traffic control elements__ such as stop signals and traffic lights.
+7. The __Ride Estimator__ service can use __deep learning algorithms__ to predict __traffic control elements__ such as stop signals and traffic lights.
 
-8. The __ETA__ service can get average speeds (based on the locations) from __hash table__ through __Storage__ service.
+8. The __Ride Estimator__ service can get average speeds (based on the locations) from __hash table__ through __Estimator Database__ handler.
 
-9. The __ETA__ service can consider the map data as a __graph__ to compute accurate ETA.
+9. The __Ride Estimator__ service can consider the map data as a __graph__ to compute accurate ETA.
     - In Map graph, the road intersection is considered as a node and a road segment is considered as an edge.
     - Let's say road intersections are more in Mark's ride path. In this case, we can partition the Map graph to calculate ETA efficiently.
     *Note:* You can refer to this [link](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) for more details on Graph.
 
-10. The __ETA__ service can make use of __GPS signal__ service to get active & recent GPS observed points between Mark's pick-up and drop-off points.
+10. The __Ride Estimator__ service can make use of __GPS signal__ service to get active & recent GPS observed points between Mark's pick-up and drop-off points.
     *Note:* For more information on GPS signals, you can refer to this [link](https://en.wikipedia.org/wiki/GPS_signals)
 
 11. Now, to get the __accurate ETA__, we can do __map matching__ between estimated and GPS observed points as shown in the image above.
     - In __Map matching__, if the estimated and GPS observed points are different, then step 9 will be repeated with the ride path paired with GPS observed points and can skip step 10 and step 11.
     - The final calculated ETA data can be relayed back to the __Data Fetch__ service.
 
-12. The computed __ETA__ along with user's details (such as user's current location, pick-up and drop-off points) can be registered in database through __Storage__ service for re-usability purposes.
+12. The computed __ETA__ along with user's details (such as user's current location, pick-up and drop-off points) can be registered in database through __Estimator Database__ handler for re-usability purposes.
 
 __*Note:*__
 - We can store average speeds in a hash table for fast look-up.
@@ -789,18 +794,24 @@ How Mark was able to find a driver for his booking? Let's look into it.
 11. The __Client__ can relay John's approval message to the __Request__ service.
 12. The __Client__ can save driver details to the __CDN__.
 
-![Request Service Response](./Resources/HLDfindADriver8.png)
+![Request Service Response](./Resources/HLDfindADriver8_1.png)
 
 13. The __Request service__ can stop sending requests to drivers and can send confirmed Driver details to the __Driver Finder__ service.
-14. The __Driver Finder__ service can store John's details associated to Mark's ride in database via __Storage__ service.
+14. The __Driver Finder__ service can update the ride status of John in database.
+    - These details are useful in filtering out active drivers.
+
+![Request Service Response](./Resources/HLDfindADriver8_2.png)
+
+15. The __Driver Finder__ service can give response back to the __Data Fetch__ service.
+16. The __Data Fetch__ service can store John's details associated to Mark's ride in __user record__ database.
     - These details are useful to maintain ride history.
 
 ![API Gateway Response](./Resources/HLDfindADriver9.png)
 
-14. The __API gateway__ can send the response back to the __Client__ with booking acceptance message.
-15. The __Client__ can retrieve John details from the __CDN__.
+17. The __API gateway__ can send the response back to the __Client__ with booking acceptance message.
+18. The __Client__ can retrieve John details from the __CDN__.
     *Note:* The Client can get the driver details from API gateway, but for faster load time, it can make use of CDN.
-16. Now, Mark is __able to view__ driver details via Client.
+19. Now, Mark is __able to view__ driver details via Client.
 
 __Overall Flow Of Find A Driver__:
 
