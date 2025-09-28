@@ -72,6 +72,13 @@ The MasterClass is divided into the following modules, each with its own directo
 - Delivery tracking and analytics
 - User preference management and personalization
 
+### [10 - Design Distributed Logging System 🪵](./10.%20Design%20Distributed%20Logging%20System)
+
+- Centralized log collection and aggregation
+- Real-time log processing and analysis
+- Distributed storage for log data
+- Monitoring and alerting based on log patterns
+
 ### Course Notes 📂
 
 - Contains notes from the course.
