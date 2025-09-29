@@ -885,7 +885,7 @@ How Mark and John were able to track their ride? Let's take a look.
 
 __Overall Flow Of Track The Ride__:
 
-![Track The Ride](./Resources/HLDTrackTheRideOverAll.png)
+![Track The Ride](./Resources/HLDTrackTheRideOverall.png)
 
 ## High Level Design :View Ride History
 [TBD]
