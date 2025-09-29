@@ -819,6 +819,8 @@ __Overall Flow Of Find A Driver__:
 
 ## High Level Design :Track The Ride
 
+How Mark and John were able to track their ride? Let's take a look.
+
 ![User Request](./Resources/HLDTrackTheRide1.png)
 
 1. __User can start their ride__ through __Client__ device to initiate the __tracking request__.
@@ -861,11 +863,25 @@ __Overall Flow Of Find A Driver__:
 
 ![Ride Tracking Response](./Resources/HLDTrackTheRide5.png)
 
-[TBD] Step Description
+15. The __Map__ service can relay the response back to the __Data Fetch__ service.
+16. The __Ride Estimator__ service can provide the computed ETA to the __Data Fetch__ service.
+17. The __Data Fetch__ service can save user's current, drop-off location coordinates and respective ETA to the __user record__ database.
+    - This step can be an optional one, because it will be a storage overhead to maintain location coordinates through out the ride path.
+    - You can consider the location coordinates at the start of the ride and at the end of the ride along with their ETA. Also, you can consider this storage if Mark changes his drop-off location.
 
 ![API Gateway Response](./Resources/HLDTrackTheRide6.png)
 
-[TBD] Step Description
+18. The __API Gateway__ can give a response to the __Client__.
+    - As we are tracking the ride, responses can be asynchronous i.e: cab sharing servers can keep-on sending responses to client as Mark's or John's current location progresses.
+19. The __Client__ can store the information to the __CDN__.
+20. The static information from __CDN__ can be used to render the client's User Interface(UI) until, it receives the response from backend system.
+21. As Mark progressed with his ride, our __backend-system__ responded back with __updated ETA__ along with his __latest location__ details to __Client__ through __API Gateway__.
+22. The __Client__ can store the information to the __CDN__.
+23. The __Client retrieves__ static information that was saved in __CDN__.
+    - And this process of retrieving data from backend system for data population continuous until ride completes
+24. The __API Gateway__ can relay the ride completion response to the __client__.
+25. The __Client__ can save the ride completion status to the __CDN__.
+    - This can help Mark to view his ride status later on.
 
 __Overall Flow Of Track The Ride__:
 
