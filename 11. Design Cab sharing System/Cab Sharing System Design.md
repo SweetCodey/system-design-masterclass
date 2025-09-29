@@ -821,19 +821,43 @@ __Overall Flow Of Find A Driver__:
 
 ![User Request](./Resources/HLDTrackTheRide1.png)
 
-[TBD] Step Description
+1. __User can start their ride__ through __Client__ device to initiate the __tracking request__.
+2. The Client can __fetch static data__ from __CDN__ to populate on Client device.
+3. The __Client__ can make use of web-socket connection to forward the request to the __API Gateway__.
 
 ![API Gateway Flow](./Resources/HLDTrackTheRide2.png)
 
-[TBD] Step Description
+4. The __API gateway__ can relay the request to the __load balancer__.
+5. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
 
 ![Data Fetch Request Flow](./Resources/HLDTrackTheRide3.png)
 
-[TBD] Step Description
+6. The __Data Fetch__ service can send a Map data request to the __Map Service__.
+7. The __Data Fetch__ service can send a ETA request to the __Ride Estimator Service__.
 
 ![Ride Tracking Flow](./Resources/HLDTrackTheRide4.png)
 
-[TBD] Step Description
+8. The __Map Service__ can take help from __Map Database__ handler to get the map details.
+    - The __Map Database__ handler can use S2 index to get user's region and also to find relevant database partition.
+    - The __Map Database__ handler can use this partition to download the map data from __key value storage__.
+    - The __Map Database__ handler can relay the response to the __Map Service__.
+
+9. The __Map Service__ can take help from the __GPS signal__ service to avoid the risk of missing road data.
+
+10. The __Map Service__ can provide a copy of final map data output to the __Estimator__ service for computing ETA.
+
+11. The __Estimator__ service can use __deep learning algorithms__ to predict traffic control elements, such as __stop signals__ and __traffic lights__.
+    *Note:*
+    1. The traffic control elements will be considered only once between pick-up and drop-off points.
+    2. If Mark changes either pick-up point (at the start) or drop-off point (at the end), then you can repeat this step to get updated data.
+
+12. The __Estimator__ service can get location based average speeds from the hash table through __Estimator Database__ handler.
+
+13. The __Estimator__ service can extract __GPS signal__ details for missing road information.
+    - This information is useful, if the estimated path encounters any run time changes like John takes different route to reach drop-off location or Mark updates the ride with stopping points in between.
+
+14. The __Estimator__ service will make use of __Map__ data to compute the ETA as per user's current location.
+    - The partition of Map graph is still useful to compute ETA by considering road intersections and road segments efficiently.
 
 ![Ride Tracking Response](./Resources/HLDTrackTheRide5.png)
 
