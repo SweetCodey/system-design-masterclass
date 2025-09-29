@@ -570,7 +570,7 @@ This flow is conceptually very similar to text messaging, but the difference her
 
 You've probably noticed when you send a WhatsApp message to a friend, initially a single black tick appears. Then, after some time, when the message reaches your friend's phone, a double black tick appears. Finally, when your friend reads it, it turns into a double blue tick. Basically, the 'state' of your message changes:
 
-**![alt text](image.png)**
+Sent (✔) → Delivered (✔✔) → Read ($${\color{blue}✔✔}$$)
 
 Let’s understand this flow and see what happens on the server side during this process and how your phone knows which tick to display.
 
@@ -596,7 +596,7 @@ Naturally, the 'delivered' status of a message happens after it has been deliver
 - **Step 11:** WebSocket Handler 2 asks the **WebSocket Connections Manager** which WebSocket Handler is connected to Client 1.  
 - **Step 12:** The Connections Manager checks the cache and finds that it's connected to **WebSocket Handler 1.**  
 - **Step 13:** Therefore, WebSocket Handler 2 informs WebSocket Handler 1 that Max's **"Hi Emily"** message has been delivered.  
-- **Step 14:** WebSocket Handler 1 then notifies Max about this. Now, Max sees a **double black tick (![alt text](image-1.png))** on that message.
+- **Step 14:** WebSocket Handler 1 then notifies Max about this. Now, Max sees a double black tick (**✔✔**) on that message.
 
 
 ### Read Status
@@ -611,7 +611,7 @@ The flow is very similar to the 'Delivered' status, with a small change. This ti
 - **Step 18:** WebSocket Handler 2 asks the **WebSocket Connections Manager** which WebSocket Handler is connected to Client 1.  
 - **Step 19:** The Connections Manager checks the cache and finds that it's connected to **WebSocket Handler 1.**  
 - **Step 20:** Therefore, WebSocket Handler 2 informs WebSocket Handler 1 that Max's **"Hi Emily"** message has been read.  
-- **Step 21:** WebSocket Handler 1 then notifies Max about this. Now, Max sees a **double blue tick (![alt text](image-2.png))** on that message.
+- **Step 21:** WebSocket Handler 1 then notifies Max about this. Now, Max sees a **double blue tick ($${\color{blue}✔✔}$$)** on that message.
 <hr style="border:2px solid gray">
 
 ## HIGH LEVEL DESIGN :Online Status
@@ -840,6 +840,7 @@ You might wonder how this secret language (i.e., encryption and decryption) work
 Since only your friend has the key, even if a hacker intercepts the message, they can't read it.
 
 ![endToEnd2](https://static.wixstatic.com/media/99fa54_7768105cb2dc4853871bd488960cd0f8~mv2.png/v1/fill/w_1050,h_638,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/99fa54_7768105cb2dc4853871bd488960cd0f8~mv2.png)
+
 
 
 
