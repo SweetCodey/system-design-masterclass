@@ -889,6 +889,14 @@ __Overall Flow Of Track The Ride__:
 
 ## High Level Design :View Ride History
 
+![Client Request](./Resources/HLDViewRideHistory1.png)
+
+![API-Load balancer](./Resources/HLDViewRideHistory2.png)
+
+![Service flow](./Resources/HLDViewRideHistory3.png)
+
+![Response](./Resources/HLDViewRideHistory4.png)
+
 ![View Ride History](./Resources/HLDViewRideHistory.png)
 
 <!-- We have used WebSocket connection to communicate with cab sharing servers and provided seamless operations to Mark & John by using gRPC to communicate between services. -->
