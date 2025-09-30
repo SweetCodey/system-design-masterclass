@@ -823,8 +823,8 @@ How Mark and John were able to track their ride? Let's take a look.
 
 ![User Request](./Resources/HLDTrackTheRide1.png)
 
-1. __User can start their ride__ through __Client__ device to initiate the __tracking request__.
-2. The Client can __fetch static data__ from __CDN__ to populate on Client device.
+1. __User can start their ride__ through __Client__ device to initiate __tracking__.
+2. The Client can __get static data__ from __CDN__ to populate on Client device.
 3. The __Client__ can make use of web-socket connection to forward the request to the __API Gateway__.
 
 ![API Gateway Flow](./Resources/HLDTrackTheRide2.png)
@@ -834,19 +834,19 @@ How Mark and John were able to track their ride? Let's take a look.
 
 ![Data Fetch Request Flow](./Resources/HLDTrackTheRide3.png)
 
-6. The __Data Fetch__ service can send a Map data request to the __Map Service__.
-7. The __Data Fetch__ service can send a ETA request to the __Ride Estimator Service__.
+6. The __Data Fetch__ service can send the Map data request to the __Map__ service.
+7. The __Data Fetch__ service can send the ETA request to the __Ride Estimator__ service.
 
 ![Ride Tracking Flow](./Resources/HLDTrackTheRide4.png)
 
-8. The __Map Service__ can take help from __Map Database__ handler to get the map details.
+8. The __Map__ service can take help from __Map Database__ handler to get the map details.
     - The __Map Database__ handler can use S2 index to get user's region and also to find relevant database partition.
     - The __Map Database__ handler can use this partition to download the map data from __key value storage__.
     - The __Map Database__ handler can relay the response to the __Map Service__.
 
-9. The __Map Service__ can take help from the __GPS signal__ service to avoid the risk of missing road data.
+9. The __Map__ service can take help from the __GPS signal__ service to avoid the risk of missing road data.
 
-10. The __Map Service__ can provide a copy of final map data output to the __Estimator__ service for computing ETA.
+10. The __Map__ service can provide a copy of final map data output to the __Estimator__ service for computing ETA.
 
 11. The __Estimator__ service can use __deep learning algorithms__ to predict traffic control elements, such as __stop signals__ and __traffic lights__.
     *Note:*
@@ -888,7 +888,9 @@ __Overall Flow Of Track The Ride__:
 ![Track The Ride](./Resources/HLDTrackTheRideOverall.png)
 
 ## High Level Design :View Ride History
-[TBD]
+
+![View Ride History](./Resources/HLDViewRideHistory.png)
+
 <!-- We have used WebSocket connection to communicate with cab sharing servers and provided seamless operations to Mark & John by using gRPC to communicate between services. -->
 
 <hr style="border:2px solid gray">
