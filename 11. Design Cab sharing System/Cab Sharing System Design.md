@@ -671,7 +671,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 15. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
     - __In-memory cache__ can help us to update data only if the server map data changes.
 
-__Overall Flow Of View Map__:
+__View Map Final HLD__:
 
 ![View Map Overall Flow](./Resources/HLDViewMapOverall.png)
 
@@ -682,6 +682,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 ![User Request](./Resources/HLDviewETA1.png)
 
 1. Mark can click __ok__ button after entering pick-up and drop-off points.
+
 2. The __Client__ can send __view ETA__ request to the __API gateway__.
 
 __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c can also be considered, but we are not covering them in this design.
@@ -689,6 +690,7 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
 ![API Load Balancer Flow](./Resources/HLDviewETA2.png)
 
 3. The __API gateway__ can relay the request to __load balancer__.
+
 4. The __Load balancer__ can direct the same request to __Data Fetch__ service.
 
 ![Initial Service Flow](./Resources/HLDviewETA3.png)
@@ -726,9 +728,10 @@ __*Note:*__
 ![Response Flow](./Resources/HLDviewETA5.png)
 
 13. The __API gateway__ can relay the response message to the __Client__.
+
 14. Mark can view the __ETA__ on his booking page.
 
-__Overall Flow Of View ETA__:
+__View ETA Final HLD__:
 
 ![ETA Overall Flow](./Resources/HLDviewETAOverall.png)
 
@@ -744,12 +747,14 @@ How Mark was able to find a driver for his booking? Let's look into it.
 ![User Request](./Resources/HLDfindADriver1.png)
 
 1. Mark can click __Book__ button after knowing ETA to his drop-off point.
+
 2. The __Client__ can send __booking__ request to the __API gateway__.
     - __Find A Driver__ request is a part of booking request.
 
 ![API Load Balancer Request](./Resources/HLDfindADriver2.png)
 
 3. The __API gateway__ can relay the request to the __load balancer__.
+
 4. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
 
 ![Service Request](./Resources/HLDfindADriver3.png)
@@ -786,34 +791,41 @@ How Mark was able to find a driver for his booking? Let's look into it.
 ![Request Service Req1](./Resources/HLDfindADriver6.png)
 
 8. The __Request__ service can send Mark's booking request to first driver(Kevin) in the active drivers list.
+
 9. The __Client__ can relay Kevin's rejection message to the __Request__ service.
 
 ![Request Service Req2](./Resources/HLDfindADriver7.png)
 
 10. As Kevin rejected the booking request, the __Request__ service can send Mark's booking request to John.
+
 11. The __Client__ can relay John's approval message to the __Request__ service.
+
 12. The __Client__ can save driver details to the __CDN__.
 
 ![Request Service Response](./Resources/HLDfindADriver8_1.png)
 
 13. The __Request service__ can stop sending requests to drivers and can send confirmed Driver details to the __Driver Finder__ service.
+
 14. The __Driver Finder__ service can update the ride status of John in database.
     - These details are useful in filtering out active drivers.
 
 ![Request Service Response](./Resources/HLDfindADriver8_2.png)
 
 15. The __Driver Finder__ service can give response back to the __Data Fetch__ service.
+
 16. The __Data Fetch__ service can store John's details associated to Mark's ride in __user record__ database.
     - These details are useful to maintain ride history.
 
 ![API Gateway Response](./Resources/HLDfindADriver9.png)
 
 17. The __API gateway__ can send the response back to the __Client__ with booking acceptance message.
+
 18. The __Client__ can retrieve John details from the __CDN__.
     *Note:* The Client can get the driver details from API gateway, but for faster load time, it can make use of CDN.
+
 19. Now, Mark is __able to view__ driver details via Client.
 
-__Overall Flow Of Find A Driver__:
+__Find A Driver Final HLD__:
 
 ![Find A Driver](./Resources/HLDfindADriverOverall.png)
 
@@ -824,17 +836,21 @@ How Mark and John were able to track their ride? Let's take a look.
 ![User Request](./Resources/HLDTrackTheRide1.png)
 
 1. __User can start their ride__ through __Client__ device to initiate __tracking__.
+
 2. The Client can __get static data__ from __CDN__ to populate on Client device.
+
 3. The __Client__ can make use of web-socket connection to forward the request to the __API Gateway__.
 
 ![API Gateway Flow](./Resources/HLDTrackTheRide2.png)
 
 4. The __API gateway__ can relay the request to the __load balancer__.
+
 5. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
 
 ![Data Fetch Request Flow](./Resources/HLDTrackTheRide3.png)
 
 6. The __Data Fetch__ service can send the Map data request to the __Map__ service.
+
 7. The __Data Fetch__ service can send the ETA request to the __Ride Estimator__ service.
 
 ![Ride Tracking Flow](./Resources/HLDTrackTheRide4.png)
@@ -873,29 +889,69 @@ How Mark and John were able to track their ride? Let's take a look.
 
 18. The __API Gateway__ can give a response to the __Client__.
     - As we are tracking the ride, responses can be asynchronous i.e: cab sharing servers can keep-on sending responses to client as Mark's or John's current location progresses.
+
 19. The __Client__ can store the information to the __CDN__.
+
 20. The static information from __CDN__ can be used to render the client's User Interface(UI) until, it receives the response from backend system.
+
 21. As Mark progressed with his ride, our __backend-system__ responded back with __updated ETA__ along with his __latest location__ details to __Client__ through __API Gateway__.
+
 22. The __Client__ can store the information to the __CDN__.
+
 23. The __Client retrieves__ static information that was saved in __CDN__.
     - And this process of retrieving data from backend system for data population continuous until ride completes
+
 24. The __API Gateway__ can relay the ride completion response to the __client__.
+
 25. The __Client__ can save the ride completion status to the __CDN__.
     - This can help Mark to view his ride status later on.
 
-__Overall Flow Of Track The Ride__:
+__Track The Ride Final HLD__:
 
 ![Track The Ride](./Resources/HLDTrackTheRideOverall.png)
 
 ## High Level Design :View Ride History
 
+How John checked his Ride History? Let's see.
+
 ![Client Request](./Resources/HLDViewRideHistory1.png)
+
+1. John can click __Profile__ option from Client's home page to see an option for his ride history called __Activity__.
+
+2. As John's profile page is static, meaning options won't change often, the Client can take help from CDN to load profile page options.
+    - If John is accessing his profile page for the first time, then Client can request the Cab Sharing Servers for profile page data.
+    - Also, you might be wondering, what will happen if there is a change in profile page options! This case can be handled in two ways-
+        1. The Cab sharing system can notify client via Notification asynchronous communication service and can re-load the page with his approval.
+        2. The Cab sharing system can collect all new features for client and release them as an when application upgrade happens (preferred for hand held devices like mobile applications).
+
+3. After loading __profile__ page, John can click __Activity__ option to send ride history request.
+
+4. The __Client__ can relay the __Ride history__ request to the __API Gateway__.
 
 ![API-Load balancer](./Resources/HLDViewRideHistory2.png)
 
+5. The __API gateway__ can relay the request to the __load balancer__.
+
+6. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
+
 ![Service flow](./Resources/HLDViewRideHistory3.png)
 
+7. The __Data Fetch__ service can request __User Record__ NoSQL database for John's previous ride history.
+
+8. The __User Record Database__ can send John's __ride history__ to the __Data Fetch__ service.
+
+__*Note:*__ John's ride history can have payment information associated to each and every ride of John.
+
 ![Response](./Resources/HLDViewRideHistory4.png)
+
+9. The __API Gateway__ can relay ride history response to the __Client__.
+
+10. __John can see__ his previous ride history along with payment information through __Client__.
+
+11. The __Client__ can save John's ride history to the __CDN__ until John completes his next ride.
+    - The reason for maintaining John's ride history until his next ride is, the Cab Sharing system can refresh the John's ride history based on his next ride status.
+
+__View Ride History Final HLD__:
 
 ![View Ride History](./Resources/HLDViewRideHistory.png)
 
