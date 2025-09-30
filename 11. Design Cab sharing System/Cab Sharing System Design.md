@@ -638,8 +638,9 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 ![Flow within Service Cluster](./Resources/HLDViewMap3.png)
 
-5. The __Data Fetch__ service can relay the request to the __map service__.
-    - The __map service__ is responsible to manage map data
+5. The __Data Fetch__ service can relay the request to a Load balancer within the service cluster. The Load balancer can direct the request to a available __Map__ service.
+    - The __Map__ service is responsible to manage map data.
+    - There can be __multiple Map services__ to address multiple requests simultaneously.
 
 6. The __Map Service__ can take help from __Map Database__ service to get the map details.
     - The __Map Database__ service is responsible for getting relevant map details and also for maintaining user's map information until the ride completes.
@@ -659,6 +660,8 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
     - The __user record__ database is responsible for maintaining user's information.
         - Internally, you can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in cab sharing system.
         *Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
+
+__*Note:*__ Maintenance of multiple Map services can be dependent on no of user requests.
 
 ![API Response](./Resources/HLDViewMap4.png)
 
@@ -695,41 +698,52 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
 
 ![Initial Service Flow](./Resources/HLDviewETA3.png)
 
-5. The __Data Fetch__ service can relay the request to the __Ride Estimator__ service.
-    - Here, Data Fetch service can __validate the input__ data __before sending__ it to the Ride Estimator service.
+5. The __Data Fetch__ service can relay the request to the __Load Balancer__.
+    - Here, Data Fetch service can __validate the input__ data __before relaying__ the request further.
+
+6. The Load balancer can direct the request to a available __Ride Estimator__ service as shown in the image above.
+    - The __Ride Estimator__ service is responsible to compute ETA by considering various factors which will be discussed in the steps below.
+    - There can be __multiple Ride Estimator__ services to address multiple requests simultaneously.
 
 ![ETA Service Flow](./Resources/HLDviewETA4.png)
 
-6. The __Ride Estimator__ service can get the map data from the __Map__ service based on Mark's pick-up and drop-off points.
+7. The __Ride Estimator__ service can send the map data request to a available  __Map__ service through a __Load Balancer__.
 
-7. The __Ride Estimator__ service can use __deep learning algorithms__ to predict __traffic control elements__ such as stop signals and traffic lights.
+8. The __Map__ service can respond with the map data based on Mark's pick-up and drop-off points.
 
-8. The __Ride Estimator__ service can get average speeds (based on the locations) from __hash table__ through __Estimator Database__ handler.
+9. The __Ride Estimator__ service can use __deep learning algorithms__ to predict __traffic control elements__ such as stop signals and traffic lights.
 
-9. The __Ride Estimator__ service can consider the map data as a __graph__ to compute accurate ETA.
-    - In Map graph, the road intersection is considered as a node and a road segment is considered as an edge.
-    - Let's say road intersections are more in Mark's ride path. In this case, we can partition the Map graph to calculate ETA efficiently.
+10. The __Ride Estimator__ service can get average speeds (based on the locations) from __hash table__ through __Estimator Database__ handler.
+
+11. The __Ride Estimator__ service can consider the map data as a __graph__ to compute accurate ETA.
+    - In Map graph, a road intersection is considered as a node and a road segment is considered as an edge.
+    - Let's say, road intersections are more in Mark's ride path. In this case, we can partition the Map graph to calculate ETA efficiently.
     *Note:* You can refer to this [link](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) for more details on Graph.
 
-10. The __Ride Estimator__ service can make use of __GPS signal__ service to get active & recent GPS observed points between Mark's pick-up and drop-off points.
+12. The __Ride Estimator__ service can make use of __GPS signal__ service to get active & recent GPS observed points between Mark's pick-up and drop-off points.
     *Note:* For more information on GPS signals, you can refer to this [link](https://en.wikipedia.org/wiki/GPS_signals)
 
-11. Now, to get the __accurate ETA__, we can do __map matching__ between estimated and GPS observed points as shown in the image above.
-    - In __Map matching__, if the estimated and GPS observed points are different, then step 9 will be repeated with the ride path paired with GPS observed points and can skip step 10 and step 11.
+13. Now, to get the __accurate ETA__, we can do __map matching__ between estimated and GPS observed points as shown in the image above.
+    - In __Map matching__, if the estimated and GPS observed points don't match, then step 11 will be repeated with the ride path paired with GPS observed points and can skip step 12 and step 13.
     - The final calculated ETA data can be relayed back to the __Data Fetch__ service.
 
-12. The computed __ETA__ along with user's details (such as user's current location, pick-up and drop-off points) can be registered in database through __Estimator Database__ handler for re-usability purposes.
+14. The computed __ETA__ along with user's details (such as user's current location, pick-up and drop-off points) can be registered in database through __Estimator Database__ handler for re-usability purposes.
+    *Note:*
+    1. Based on the business need you can limit or extend this storage.
+    2. For instance, if you want to limit, then you can save only ETA associated to pick-up and drop-off points to the Ride Estimator Database. Also, you can consider this storage if Mark changes his drop-off location.
 
 __*Note:*__
 - We can store average speeds in a hash table for fast look-up.
     - A hash table generalizes the simpler notion of an array.
     *Note:* You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
 
+[TBD] User Record update is pending for __View ETA__ HLD.
+
 ![Response Flow](./Resources/HLDviewETA5.png)
 
-13. The __API gateway__ can relay the response message to the __Client__.
+15. The __API gateway__ can relay the response message to the __Client__.
 
-14. Mark can view the __ETA__ on his booking page.
+16. Mark can view the __ETA__ on his booking page.
 
 __View ETA Final HLD__:
 
