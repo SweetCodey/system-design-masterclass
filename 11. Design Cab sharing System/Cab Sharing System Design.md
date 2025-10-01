@@ -778,10 +778,10 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 ![Service Request](./Resources/HLDfindADriver3.png)
 
-5. The __Data Fetch__ service can relay the same request to the __Driver Finder__ service.
+5. The __Data Fetch__ service can relay the same request to the available __Driver Finder__ service through a __Load balancer__.
     - The __Driver Finder__ service is responsible to find active drivers near Mark's location.
 
-6. The __Driver Finder__ service can take help from the __Map service__ to get map data of available drivers locations.
+6. The __Driver Finder__ service can take help from the available __Map service__ through a __Load balance__ to get map data of available drivers locations.
 
 ![Driver Finder Service](./Resources/HLDfindADriver4.png)
 
@@ -804,7 +804,7 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 ![Driver Finder Response](./Resources/HLDfindADriver5.png)
 
-7. The __Driver Finder__ service can relay a list of active drivers near to Mark's location to the __Request__ service.
+7. The __Driver Finder__ service can relay a list of active drivers near to Mark's location to the available __Request__ service through a __Load balancer__.
     - The __Request__ service is responsible for sending requests to users and record their responses.
 
 ![Request Service Req1](./Resources/HLDfindADriver6.png)
