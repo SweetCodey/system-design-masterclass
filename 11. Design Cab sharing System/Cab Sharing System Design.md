@@ -674,7 +674,7 @@ __*Note:*__ Maintenance of multiple Map services can be dependent on no of user 
 15. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
     - __In-memory cache__ can help us to update data only if the server map data changes.
 
-__View Map Final HLD__:
+#### Final HLD for View Map:
 
 ![View Map Overall Flow](./Resources/HLDViewMapOverall.png)
 
@@ -684,7 +684,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 
 ![User Request](./Resources/HLDviewETA1.png)
 
-1. Mark can click __ok__ button after entering pick-up and drop-off points.
+1. The __Client__ can get static Map data from __CDN__ for Mark and Mark can click __ok__ button after entering pick-up and drop-off points.
 
 2. The __Client__ can send __view ETA__ request to the __API gateway__.
 
@@ -737,15 +737,20 @@ __*Note:*__
     - A hash table generalizes the simpler notion of an array.
     *Note:* You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
 
-[TBD] User Record update is pending for __View ETA__ HLD.
+![Response Flow1](./Resources/HLDviewETA5.png)
 
-![Response Flow](./Resources/HLDviewETA5.png)
+15. The __Ride Estimator__ service can provide computed ETA output to the __Data Fetch__ service.
 
-15. The __API gateway__ can relay the response message to the __Client__.
+16. The __Data Fetch__ service can __save ETA__ associated to pick-up and drop-off points to the __User Record__ Database. Also, you can consider this storage if Mark changes his drop-off location.
+    *Note:* This storage cannot be required always unless you have a business need.
 
-16. Mark can view the __ETA__ on his booking page.
+![Response Flow2](./Resources/HLDviewETA6.png)
 
-__View ETA Final HLD__:
+17. The __API gateway__ can relay the response message to the __Client__.
+
+18. Mark can view the __ETA__ on his booking page.
+
+#### Final HLD for View ETA:
 
 ![ETA Overall Flow](./Resources/HLDviewETAOverall.png)
 
@@ -760,7 +765,7 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 ![User Request](./Resources/HLDfindADriver1.png)
 
-1. Mark can click __Book__ button after knowing ETA to his drop-off point.
+1. The __Client__ can get static Map data from __CDN__ for Mark and Mark can click __Book__ button after knowing ETA to his drop-off point.
 
 2. The __Client__ can send __booking__ request to the __API gateway__.
     - __Find A Driver__ request is a part of booking request.
@@ -839,7 +844,7 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 19. Now, Mark is __able to view__ driver details via Client.
 
-__Find A Driver Final HLD__:
+### Final HLD for finding a driver:
 
 ![Find A Driver](./Resources/HLDfindADriverOverall.png)
 
@@ -863,20 +868,21 @@ How Mark and John were able to track their ride? Let's take a look.
 
 ![Data Fetch Request Flow](./Resources/HLDTrackTheRide3.png)
 
-6. The __Data Fetch__ service can send the Map data request to the __Map__ service.
+6. The __Data Fetch__ service can send the Map data request to the available __Map__ service through a __Load Balancer__.
 
-7. The __Data Fetch__ service can send the ETA request to the __Ride Estimator__ service.
+7. The __Data Fetch__ service can send the ETA request to the available __Ride Estimator__ service through a __Load Balancer__.
 
 ![Ride Tracking Flow](./Resources/HLDTrackTheRide4.png)
 
 8. The __Map__ service can take help from __Map Database__ handler to get the map details.
     - The __Map Database__ handler can use S2 index to get user's region and also to find relevant database partition.
     - The __Map Database__ handler can use this partition to download the map data from __key value storage__.
-    - The __Map Database__ handler can relay the response to the __Map Service__.
+    - The __Map Database__ handler can relay the response to the __Map__ service.
 
 9. The __Map__ service can take help from the __GPS signal__ service to avoid the risk of missing road data.
 
-10. The __Map__ service can provide a copy of final map data output to the __Estimator__ service for computing ETA.
+10. The __Map__ service can provide a copy of final map data output to the __Ride Estimator__ service for computing ETA.
+    - The __Map__ service can send this information as per the request from the __Ride Estimator__ service.
 
 11. The __Estimator__ service can use __deep learning algorithms__ to predict traffic control elements, such as __stop signals__ and __traffic lights__.
     *Note:*
@@ -920,7 +926,7 @@ How Mark and John were able to track their ride? Let's take a look.
 25. The __Client__ can save the ride completion status to the __CDN__.
     - This can help Mark to view his ride status later on.
 
-__Track The Ride Final HLD__:
+#### Final HLD for Ride Tracking:
 
 ![Track The Ride](./Resources/HLDTrackTheRideOverall.png)
 
@@ -965,7 +971,7 @@ __*Note:*__ John's ride history can have payment information associated to each 
 11. The __Client__ can save John's ride history to the __CDN__ until John completes his next ride.
     - The reason for maintaining John's ride history until his next ride is, the Cab Sharing system can refresh the John's ride history based on his next ride status.
 
-__View Ride History Final HLD__:
+__Final View Ride History HLD__:
 
 ![View Ride History](./Resources/HLDViewRideHistory.png)
 
