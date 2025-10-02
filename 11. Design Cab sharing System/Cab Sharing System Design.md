@@ -36,6 +36,11 @@
 
 - [DEEP DIVE INSIGHTS](#deep-dive-insights)
 
+    - [14.DEEP DIVE INSIGHTS: Database Selection](#deep-dive-insights-database-selection)
+
+    - [15.DEEP DIVE INSIGHTS: Database Modeling](#deep-dive-insights-database-modeling)
+
+
 <hr style="border:2px solid gray">
 
 # DECIDING REQUIREMENTS
@@ -975,12 +980,32 @@ __Final View Ride History HLD__:
 
 ![View Ride History](./Resources/HLDViewRideHistory.png)
 
-<!-- We have used WebSocket connection to communicate with cab sharing servers and provided seamless operations to Mark & John by using gRPC to communicate between services. -->
-
 <hr style="border:2px solid gray">
 
 # DEEP DIVE INSIGHTS
+
+## DEEP DIVE INSIGHTS: Database Selection
+
+### General Guidelines
+
+The table below provides a high-level comparison of when to use __SQL__ vs __NoSQL__, marked with ✔ (preferred) and ✖ (not preferred).
+
+| Criteria                            | SQL  | NoSQL  |
+|-------------------------------------|:----:|:------:|
+| __Fast Data Access__                |  ✖   |   ✔    |
+| __Handles Large Scale__             |  ✖   |   ✔    |
+| __Fixed Structure Data__            |  ✔   |   ✖    |
+| __Flexible Structure Data__         |  ✖   |   ✔    |
+| __Complex Queries__                 |  ✔   |   ✖    |
+| __Simple Queries__                  |  ✖   |   ✔    |
+| __Frequent/Evolving Data Changes__  |  ✖   |   ✔    |
+
 [TBD]
+
+## DEEP DIVE INSIGHTS: Database Modeling
+
+[TBD]
+
 <hr style="border:2px solid gray">
 
 __*Note:*__
