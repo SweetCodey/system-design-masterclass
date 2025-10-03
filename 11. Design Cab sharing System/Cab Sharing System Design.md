@@ -66,7 +66,7 @@ Below is a structured table displaying various requirements and their descriptio
     </tr>
 </table>
 
-__*Note:*__ We won't be covering payment in this design as this design focuses on Cab sharing.
+>__*Note:*__ We won't be covering payment in this design as this design focuses on Cab sharing.
 
 ### Cab Driver Functional Requirements
 
@@ -130,7 +130,7 @@ __*Note:*__ We won't be covering payment in this design as this design focuses o
     </tr>
 </table>
 
-__*Note:*__ For now, we are not concentrating on the non-functional requirements such as User experience, Security and Storage reliability.
+>__*Note:*__ For now, we are not concentrating on the non-functional requirements such as User experience, Security and Storage reliability.
 
 <hr style="border:2px solid gray">
 
@@ -146,7 +146,7 @@ For Capacity Estimation, we will consider both **customers** and **cab drivers**
 - <strong>Daily Active Users</strong> (DAU) : ```36 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```180 million```
 
-__*Note:*__ DAU and MAU estimations for customers are considered from [Uber cab sharing Wiki](https://en.wikipedia.org/wiki/Uber#:~:text=It%20is%20the%20largest%20ridesharing%20company%20worldwide%20with%20over%20180%20million%20monthly%20active%20users%20and%206%20million%20active%20drivers%20and%20couriers.%20It%20coordinates%20an%20average%20of%2036%20million%20trips%20and%20delivery%20orders%20per%20day). If you want, then you can update these estimates as per your convenience.
+>__*Note:*__ DAU and MAU estimations for customers are considered from [Uber cab sharing Wiki](https://en.wikipedia.org/wiki/Uber#:~:text=It%20is%20the%20largest%20ridesharing%20company%20worldwide%20with%20over%20180%20million%20monthly%20active%20users%20and%206%20million%20active%20drivers%20and%20couriers.%20It%20coordinates%20an%20average%20of%2036%20million%20trips%20and%20delivery%20orders%20per%20day). If you want, then you can update these estimates as per your convenience.
 
 ### For Cab Drivers
 
@@ -154,7 +154,7 @@ __*Note:*__ DAU and MAU estimations for customers are considered from [Uber cab 
 - <strong>Daily Active Users</strong> (DAU) : ```3 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```93 million```
 
-__*Note:*__ DAU and MAU estimations for cab drivers are considered as a rough estimate based on the Google search results. If you want, then you can update these estimates as per your convenience.
+>__*Note:*__ DAU and MAU estimations for cab drivers are considered as a rough estimate based on the Google search results. If you want, then you can update these estimates as per your convenience.
 
 ## Throughput Estimation
 
@@ -325,7 +325,7 @@ Some of the possible ways of read requests to the system:
     </tr>
 </table>
 
-__*Note:*__ Average size of a Cab Sharing user record - 100 KB is considered as a rough estimate. If you want, then you can update it as per your convenience.
+>__*Note:*__ Average size of a Cab Sharing user record - 100 KB is considered as a rough estimate. If you want, then you can update it as per your convenience.
 
 ## Memory Estimation
 
@@ -347,7 +347,7 @@ Accessing data directly from the database takes time. To speed up data retrieval
 - <strong>Daily Storage Requirement</strong>: ```3.42 TB```
 - <strong>Cache Requirement(1% of Daily Storage)</strong>: ```(1/100) x 3.42 TB = 34.2 GB```
 
-__*Note:*__ You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
+>__*Note:*__ You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
 
 ### Scalability
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
@@ -462,7 +462,7 @@ Let's say our user(Mark) wants to book a ride using a cab sharing company. Mark 
 
 ![book a cab1](./Resources/bookACab1.png)
 
-__*Note:*__ Here, John can also reject the Mark's booking request. If so, Mark will have to repeat the process by re-initiating booking request.
+>__*Note:*__ Here, John can also reject the Mark's booking request. If so, Mark will have to repeat the process by re-initiating booking request.
 
 ### Let's put this analogy of 'Booking a cab' on paper:
 1. **User(Mark)** sends a booking request with his choice of pick-up and drop-off location(s) to the **Cab Sharing Server**.
@@ -470,7 +470,7 @@ __*Note:*__ Here, John can also reject the Mark's booking request. If so, Mark w
 3. **John** acknowledges the booking request with his acceptance or rejection and notifies to the **Cab Sharing Server**
 4. The **Cab Sharing Server** relays that acknowledgement to **Mark**.
 
-__*Note:*__ The process of mapping cab driver involves micro-service gRPC communication and we will talk about that in High-level design.
+>__*Note:*__ The process of mapping cab driver involves micro-service gRPC communication and we will talk about that in High-level design.
 
 #### First Part: Sending a booking request to the server
 
@@ -486,7 +486,7 @@ This tells to the server what action to perform. Since we want to book a cab for
 ### Endpoint
 This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server.
 
-__*Note:*__ 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
+>__*Note:*__ 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
 
 ### HTTP Body
 We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the request body:
@@ -525,7 +525,7 @@ __Solution:__ WebSockets
 
 WebSockets enable __bidirectional__ communication.
 
-__*Note:*__ For more details, you can refer to our WebSocket section of [Communication Protocols](../Course%20Notes/03%20-%20Appendix/03%20-%20Networking%20Buzzwords/03%20-%20Communication%20Protocols_%20Rules%20for%20Computer%20Communication.md).
+>__*Note:*__ For more details, you can refer to our WebSocket section of [Communication Protocols](../Course%20Notes/03%20-%20Appendix/03%20-%20Networking%20Buzzwords/03%20-%20Communication%20Protocols_%20Rules%20for%20Computer%20Communication.md).
 
 The below image represents the creation of bi-directional communication using a HTTP request.
 
@@ -575,17 +575,17 @@ Server will consider both Mark/John's current location and drop-off location coo
 
 ![Track the ride](./Resources/trackTheRide.png)
 
-__*Note:*__
-1. ETA calculation involves several steps which will get covered in the __Book A Cab__ high level design.
-2. __The map, ETA__ and __distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
-3. There can be more cases during this tracking process. Some of them are-
-    - Mark may change his pick-up location during __Wait For The Cab__ period. In this case-
-        - Server can notify both Mark and John about the dynamic change of John's ETA to Mark's location along with distance to reach.
-        - Server can give heads-up to John about Mark's new pick up location.
-    - Server can suggest __alternate ways__ to reach drop-off location by considering various factors, such as ETA, distance, traffic e.t.c.
-    - __During the trip__, Mark may change his __drop-off location__. In this case-
-        - Server can re-calculate ETA to the drop-off location along with relevant changes, such as price, alternate routes e.t.c.
-        - Server can notify these changes to both Mark and John.
+>__*Note:*__
+>1. ETA calculation involves several steps which will get covered in the __Book A Cab__ high level design.
+>2. __The map, ETA__ and __distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
+>3. There can be more cases during this tracking process. Some of them are-
+>    - Mark may change his pick-up location during __Wait For The Cab__ period. In this case-
+>        - Server can notify both Mark and John about the dynamic change of John's ETA to Mark's location along with distance to reach.
+>        - Server can give heads-up to John about Mark's new pick up location.
+>    - Server can suggest __alternate ways__ to reach drop-off location by considering various factors, such as ETA, distance, traffic e.t.c.
+>    - __During the trip__, Mark may change his __drop-off location__. In this case-
+>        - Server can re-calculate ETA to the drop-off location along with relevant changes, such as price, alternate routes e.t.c.
+>        - Server can notify these changes to both Mark and John.
 
 ## API Design :View Ride History
 
@@ -614,7 +614,7 @@ google __Remote Procedure call__(gRPC) enables efficient communication between s
 - Protocol buffers(an interface definition language) used to represent the __service interface__ and the __payload message structure__.
 - gRPC server is used to __handle client calls__.
 
-__*Note:*__ We can relate gRPC to a general example [here](../Course%20Notes/03%20-%20Appendix/04%20-%20Communication%20Buzzwords/03%20-%20gRPC_%20A%20Restaurant%20Analogy.md)
+>__*Note:*__ We can relate gRPC to a general example [here](../Course%20Notes/03%20-%20Appendix/04%20-%20Communication%20Buzzwords/03%20-%20gRPC_%20A%20Restaurant%20Analogy.md)
 
 ## High Level Design :Book A Cab
 
@@ -666,7 +666,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
         - Internally, you can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in cab sharing system.
         *Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
 
-__*Note:*__ Maintenance of multiple Map services can be dependent on no of user requests.
+>__*Note:*__ Maintenance of multiple Map services can be dependent on no of user requests.
 
 ![API Response](./Resources/HLDViewMap4.png)
 
@@ -693,7 +693,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 
 2. The __Client__ can send __view ETA__ request to the __API gateway__.
 
-__*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c can also be considered, but we are not covering them in this design.
+>__*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c can also be considered, but we are not covering them in this design.
 
 ![API Load Balancer Flow](./Resources/HLDviewETA2.png)
 
@@ -737,7 +737,7 @@ __*Note:*__ When Mark clicks __ok button__, other options such as cab type e.t.c
     1. Based on the business need you can limit or extend this storage.
     2. For instance, if you want to limit, then you can save only ETA associated to pick-up and drop-off points to the Ride Estimator Database. Also, you can consider this storage if Mark changes his drop-off location.
 
-__*Note:*__
+>__*Note:*__
 - We can store average speeds in a hash table for fast look-up.
     - A hash table generalizes the simpler notion of an array.
     *Note:* You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
@@ -759,7 +759,7 @@ __*Note:*__
 
 ![ETA Overall Flow](./Resources/HLDviewETAOverall.png)
 
-__*Note:*__
+>__*Note:*__
 1. The average speed and ETA in the reference image are considered as an example. You can update them as per your convenience.
 2. While calculating ETA, __Haversine distance__ can be considered. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
 3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA. So, we are not considering ETA storage for entire ride path. Instant communication can be preferred.
@@ -965,7 +965,7 @@ How John checked his Ride History? Let's see.
 
 8. The __User Record Database__ can send John's __ride history__ to the __Data Fetch__ service.
 
-__*Note:*__ John's ride history can have payment information associated to each and every ride of John.
+>__*Note:*__ John's ride history can have payment information associated to each and every ride of John.
 
 ![Response](./Resources/HLDViewRideHistory4.png)
 
@@ -1014,7 +1014,7 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
             <ul>
                 <li><b>Large Scale</b> - Handles map search queries for millions of users daily, requiring efficient scalability.</li>
                 <li><b>Fast Access</b> - Map search results must load quickly; NoSQL supports no latency on high throughput.</li>
-                <li><b>Simple Query Pattern</b> - Retrieves map (value) by index(key), a perfect use case for NoSQL.</li>
+                <li><b>Simple Query Pattern</b> - Retrieves map (value) by region ID(key), a perfect use case for NoSQL.</li>
             </ul>
         </td>
         <td>NoSQL</td>
@@ -1059,9 +1059,23 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ## DEEP DIVE INSIGHTS: Database Modeling
 
-[TBD]
+### Map DB Schema
+
+![Map DB Schema](./Resources/DeepDiveDataModeling1.png)
+
+### Ride Estimator DB Schema
+
+![Ride Estimator DB Schema](./Resources/DeepDiveDataModeling2.png)
+
+### Driver Finder DB Schema
+
+<!-- ![Driver Finder DB Schema](./Resources/DeepDiveDataModeling3.png) -->
+
+### User Record DB Schema
+
+<!-- ![User Record DB Schema](./Resources/DeepDiveDataModeling4.png) -->
 
 <hr style="border:2px solid gray">
 
-__*Note:*__
+>__*Note:*__
 1. The Map and other reference icons are considered just as an example. We can always change them as per our convenience.
