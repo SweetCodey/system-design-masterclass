@@ -1000,7 +1000,62 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 | __Simple Queries__                  |  ✖   |   ✔    |
 | __Frequent/Evolving Data Changes__  |  ✖   |   ✔    |
 
-[TBD]
+### Database Decision Table
+
+<table>
+    <tr>
+        <th>Database</th>
+        <th>Deciding Factors</th>
+        <th>Decision</th>
+    </tr>
+    <tr>
+        <td>Map DB</td>
+        <td>
+            <ul>
+                <li><b>Large Scale</b> - Handles map search queries for millions of users daily, requiring efficient scalability.</li>
+                <li><b>Fast Access</b> - Map search results must load quickly; NoSQL supports no latency on high throughput.</li>
+                <li><b>Simple Query Pattern</b> - Retrieves map (value) by index(key), a perfect use case for NoSQL.</li>
+            </ul>
+        </td>
+        <td>NoSQL</td>
+    </tr>
+    <tr>
+        <td>Ride Estimator DB</td>
+        <td>
+            <ul>
+                <li><b>Large Scale</b> - Handles ride estimator computation queries for millions of users daily, requiring efficient scalability.</li>
+                <li><b>Fast Access</b> - Ride Estimator computation results must load quickly; NoSQL supports no latency on high throughput.</li>
+                <li><b>Simple Query Pattern</b> - Retrieves average speed (value) by location(key) , a perfect use case for NoSQL.</li>
+            </ul>
+        </td>
+        <td>NoSQL</td>
+    </tr>
+    <tr>
+        <td>Driver Finder DB</td>
+        <td>
+            <ul>
+                <li><b>Large Scale</b> - Handles driver search queries for millions of users daily, requiring efficient scalability.</li>
+                <li><b>Fast Access</b> - Driver Finder results must load quickly as per customer request.</li>
+                <li><b>Simple Query Pattern</b> - Retrieves driver locations (value) by region(key)</li>
+                <li><b>Frequent Data Changes</b> - Happens to maintain active drivers, a perfect use case for NoSQL.</li>
+            </ul>
+        </td>
+        <td>NoSQL</td>
+    </tr>
+    <tr>
+        <td>User Record DB</td>
+        <td>
+            <ul>
+                <li><b>Large Scale</b> - Handles ride history search queries for millions of users daily, requiring efficient scalability.</li>
+                <li><b>Fast Access</b> - User records must load quickly as per user request.</li>
+                <li><b>Simple Query Pattern</b> - Retrieves user records by Id</li>
+                <li><b>Frequent Data Changes</b> - User dz  ata can be appended after completing a ride.</li>
+                <li><b>Flexible Structure Data</b> - The user data can have multiple data associations based on the type of a ride, this is possible if data structure is flexible.</li>
+            </ul>
+        </td>
+        <td>NoSQL</td>
+    </tr>
+</table>
 
 ## DEEP DIVE INSIGHTS: Database Modeling
 
