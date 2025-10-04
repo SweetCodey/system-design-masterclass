@@ -738,9 +738,8 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
     2. For instance, if you want to limit, then you can save only ETA associated to pick-up and drop-off points to the Ride Estimator Database. Also, you can consider this storage if Mark changes his drop-off location.
 
 >__*Note:*__
-- We can store average speeds in a hash table for fast look-up.
-    - A hash table generalizes the simpler notion of an array.
-    *Note:* You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
+>- We can store average speeds in a hash table for fast look-up.
+>    - A hash table generalizes the simpler notion of an array. You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
 
 ![Response Flow1](./Resources/HLDviewETA5.png)
 
@@ -760,9 +759,9 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 ![ETA Overall Flow](./Resources/HLDviewETAOverall.png)
 
 >__*Note:*__
-1. The average speed and ETA in the reference image are considered as an example. You can update them as per your convenience.
-2. While calculating ETA, __Haversine distance__ can be considered. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
-3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA. So, we are not considering ETA storage for entire ride path. Instant communication can be preferred.
+>1. The average speed and ETA in the reference image are considered as an example. You can update them as per your convenience.
+>2. While calculating ETA, __Haversine distance__ can be considered. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
+>3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA. So, we are not considering ETA storage for entire ride path. Instant communication can be preferred.
 
 ### HLD :Find A Driver
 
@@ -1069,7 +1068,7 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ### Driver Finder DB Schema
 
-<!-- ![Driver Finder DB Schema](./Resources/DeepDiveDataModeling3.png) -->
+![Driver Finder DB Schema](./Resources/DeepDiveDataModeling3.png)
 
 ### User Record DB Schema
 
@@ -1078,4 +1077,4 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 <hr style="border:2px solid gray">
 
 >__*Note:*__
-1. The Map and other reference icons are considered just as an example. We can always change them as per our convenience.
+>1. The Map and other reference icons are considered just as an example. We can always change them as per our convenience.
