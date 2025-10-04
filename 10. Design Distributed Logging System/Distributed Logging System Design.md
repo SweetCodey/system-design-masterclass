@@ -134,3 +134,55 @@ With the help of the above, a developer can:
 
 So, that gives us the final design as:
 ![Final Design](Resources/Final_Design.png)
+
+## DEEP DIVE INSIGHTS
+
+### Protobuf/Avro Serialization
+
+* Why do we need serialization?
+    * Logs are being generated continuously by many microservices. If we send them as raw JSON or plain text payloads become large (lots of repeating keys like "timestamp": in every log) and network traffic increases, which means higher latency and cost. Serialization solves this. It means converting data into a compact binary format before sending it over the network.
+* For this we usually use Protobuf or Avro for serialization because both convert structured data into smaller, faster, binary messages using a predefined schema.
+    * **Protobuf (Protocol Buffers)** is developed by Google and uses .proto schema files. It’s compact, language-independent, and works great with gRPC.
+    * **Avro** is common in the Hadoop ecosystem and works well with Kafka. It stores schema along with the data, making it easy to evolve fields over time.
+* How it works in our design?
+![Protobuf Avro Serialization](Resources/Protobuf_Avro_Serialization.png)
+    * Microservice produces a log event (say as JSON internally).
+    * Log Agent serializes it into Protobuf/Avro before sending to Kafka.
+        * Example: Instead of sending full JSON ``{"service":"payments", "ts":"2025-09-25T12:00Z", "level":"ERROR"}``, it sends a binary-encoded message that is much smaller.
+    * Kafka stores serialized logs in topics (like ``logs.raw``).
+    * Consumers (Flink, Elasticsearch, TSDB) use the same schema to deserialize back into human-readable form or structured objects.
+    * This ensures **low latency, high throughput** log pipelines.
+
+### Flink Beginner’s Guide
+
+* What is Apache Flink?
+    * It is a framework for **real-time stream processing**. It processes data as it arrives (not in batches) and can perform transformations, aggregations, filtering, and enrichment on the fly. In short, think of Flink as a data transformer that reads from Kafka, cleans and enriches the data, and sends it to the right places.
+* How Flink transforms our log data?
+![Apache Flink](Resources/Apache_Flink.png)
+    * Let’s say Kafka receives this raw log event:
+``{"service":"payments","status":500,"latency":3100,"region":"us-east-1"}``
+        * Step 1: Flink reads it from logs.raw.
+        * Step 2: Flink enriches it i.e. adds derived fields:
+``{"service":"payments","status":500,"status_class":"5xx","latency":3100,"region":"us-east-1","timestamp":"2025-09-25T12:00Z"}``
+        * Step 3: Flink filters out unnecessary fields (e.g., debug logs).
+        * Step 4: Flink computes aggregates like:
+``{"service":"payments","window":"5min","error_rate":0.12,"avg_latency":2800}``
+        * Step 5:
+            * Sends enriched logs → OpenSearch
+            * Sends aggregated metrics → TimescaleDB
+            * Stores hourly batches → S3
+* How does metrics aggregation happen?
+    * Flink groups the logs by time windows to calculate metrics like error rate or latency trends. Here are the three common windowing strategies:
+        * Tumbling Window: Fixed, non-overlapping time intervals. Example:
+             If you want the average latency every 10 minutes, Flink groups all logs that arrive between
+            ``12:00–12:10``, ``12:10–12:20``, ``12:20–12:30``, and so on. So, we will have one average latency each for each of those window.
+![Tumbling Window](Resources/Tumbling_Window.png)
+        * Hopping Window: Fixed window size, but windows overlap because they start at regular hops. Example: A 10-minute window with a 5-minute hop means:
+            * First window: ``12:00–12:10``
+            * Second window: ``12:05–12:15``
+            * Third window: ``12:10–12:20``
+            * So a single log at ``12:12`` contributes to two windows. This is useful for rolling averages or moving trends.
+![Hopping Window](Resources/Hopping_Window.png)
+        * Sliding Window: This is like a continuously moving window. It updates with every new event. Example: If you want the latest error rate over the past 10 minutes, the window slides by every incoming log. Flink recomputes metrics dynamically as new data arrives. This is used for real-time monitoring dashboards.
+![Sliding Window](Resources/Sliding_Window.png)
+
