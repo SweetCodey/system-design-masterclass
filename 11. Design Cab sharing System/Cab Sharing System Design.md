@@ -1062,9 +1062,17 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ![Map DB Schema](./Resources/DeepDiveDataModeling1.png)
 
+- **Database Type:** NoSQL  
+- **Common Queries:** Find the map by region ID.
+- **Indexing:** Region ID
+
 ### Ride Estimator DB Schema
 
 ![Ride Estimator DB Schema](./Resources/DeepDiveDataModeling2.png)
+
+- **Database Type:** NoSQL
+- **Common Queries:** Find the ETA by current and drop-off points.
+- **Indexing:** Current and drop-off location ID.
 
 ### Driver Finder DB Schema
 
@@ -1072,7 +1080,7 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ### User Record DB Schema
 
-<!-- ![User Record DB Schema](./Resources/DeepDiveDataModeling4.png) -->
+![User Record DB Schema](./Resources/DeepDiveDataModeling4.png)
 
 <hr style="border:2px solid gray">
 
