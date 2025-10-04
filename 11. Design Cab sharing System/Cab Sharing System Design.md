@@ -1060,27 +1060,35 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ### Map DB Schema
 
-![Map DB Schema](./Resources/DeepDiveDataModeling1.png)
+![Map DB Schema](./Resources/DeepDiveMapDataModeling.png)
 
-- **Database Type:** NoSQL  
-- **Common Queries:** Find the map by region ID.
-- **Indexing:** Region ID
+| __Attribute__         |   __Details__                     |
+|-----------------------|-----------------------------------|
+| __Database Type:__    |   NoSQL                           |
+| __Common Queries:__   |   Find the map by region ID       |
+| __Indexing:__         |   `Region ID`                     |
 
 ### Ride Estimator DB Schema
 
-![Ride Estimator DB Schema](./Resources/DeepDiveDataModeling2.png)
+![Ride Estimator DB Schema](./Resources/DeepDiveETADataModeling.png)
 
-- **Database Type:** NoSQL
-- **Common Queries:** Find the ETA by current and drop-off points.
-- **Indexing:** Current and drop-off location ID.
+| __Attribute__         |   __Details__                                  |
+|-----------------------|------------------------------------------------|
+| __Database Type:__    |   NoSQL                                        |
+| __Common Queries:__   |   Find the ETA by current and drop-off points. |
+| __Indexing:__         |   `Current location ID`, `Drop-off location ID`|
 
 ### Driver Finder DB Schema
 
-![Driver Finder DB Schema](./Resources/DeepDiveDataModeling3.png)
+![Driver Finder DB Schema](./Resources/DeepDiveDriverFinderDataModeling.png)
+
+[TBD]
 
 ### User Record DB Schema
 
-![User Record DB Schema](./Resources/DeepDiveDataModeling4.png)
+![User Record DB Schema](./Resources/DeepDiveUserRecordDataModeling.png)
+
+[TBD]
 
 <hr style="border:2px solid gray">
 
