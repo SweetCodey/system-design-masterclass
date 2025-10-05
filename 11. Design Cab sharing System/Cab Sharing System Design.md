@@ -40,6 +40,7 @@
 
     - [15.DEEP DIVE INSIGHTS: Database Modeling](#deep-dive-insights-database-modeling)
 
+    - [16.DEEP DIVE INSIGHTS: Into Book A Cab Service](#deep-dive-insights-into-book-a-cab-service)
 
 <hr style="border:2px solid gray">
 
@@ -464,7 +465,7 @@ Let's say our user(Mark) wants to book a ride using a cab sharing company. Mark 
 
 >__*Note:*__ Here, John can also reject the Mark's booking request. If so, Mark will have to repeat the process by re-initiating booking request.
 
-### Let's put this analogy of 'Booking a cab' on paper:
+### Let's look into the analogy of 'Mark booking a cab':
 1. **User(Mark)** sends a booking request with his choice of pick-up and drop-off location(s) to the **Cab Sharing Server**.
 2. The **Cab Sharing Server** maps booking request with a **Cab Driver(John)** who is near to the **Mark's pick-up location**.
 3. **John** acknowledges the booking request with his acceptance or rejection and notifies to the **Cab Sharing Server**
@@ -1105,6 +1106,10 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 | __Indexing:__         |   `User ID`                                    |
 
 >__*Note:*__ Because of this common query, we were able to get the John's ride history as per his User ID. So, we create an index on the User ID field. This sets a shortcut to quickly find the information by User ID.
+
+## DEEP DIVE INSIGHTS: Into Book A Cab Service
+
+[TBD]
 
 <hr style="border:2px solid gray">
 
