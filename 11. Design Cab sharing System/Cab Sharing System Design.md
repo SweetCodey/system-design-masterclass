@@ -1068,6 +1068,8 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 | __Common Queries:__   |   Find the map by region ID       |
 | __Indexing:__         |   `Region ID`                     |
 
+>__*Note:*__ Because of this common query, we were able to get the map data for Mark and John as per their Region ID. So, we create an index on the Region ID field. This sets a shortcut to quickly find the information by Region ID.
+
 ### Ride Estimator DB Schema
 
 ![Ride Estimator DB Schema](./Resources/DeepDiveETADataModeling.png)
@@ -1078,17 +1080,31 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 | __Common Queries:__   |   Find the ETA by current and drop-off points. |
 | __Indexing:__         |   `Current location ID`, `Drop-off location ID`|
 
+>__*Note:*__ Because of this common query, we were able to get the historical ETA for Mark and John as per their Current Location ID and Drop-off Location ID. So, we create an index on the Current Location ID and Drop-off Location ID fields. This sets a shortcut to quickly find the information by Current Location ID and Drop-off Location ID.
+
 ### Driver Finder DB Schema
 
 ![Driver Finder DB Schema](./Resources/DeepDiveDriverFinderDataModeling.png)
 
-[TBD]
+| __Attribute__         |   __Details__                                  |
+|-----------------------|------------------------------------------------|
+| __Database Type:__    |   NoSQL                                        |
+| __Common Queries:__   |   Find the Driver(s) by region ID.             |
+| __Indexing:__         |   `Region ID`                                  |
+
+>__*Note:*__ Because of this common query, we were able to get the Drivers list in Mark's region as per his Region ID. So, we create an index on the Region ID field. This sets a shortcut to quickly find the information by Region ID.
 
 ### User Record DB Schema
 
 ![User Record DB Schema](./Resources/DeepDiveUserRecordDataModeling.png)
 
-[TBD]
+| __Attribute__         |   __Details__                                  |
+|-----------------------|------------------------------------------------|
+| __Database Type:__    |   NoSQL                                        |
+| __Common Queries:__   |   Find the user record by user ID.             |
+| __Indexing:__         |   `User ID`                                    |
+
+>__*Note:*__ Because of this common query, we were able to get the John's ride history as per his User ID. So, we create an index on the User ID field. This sets a shortcut to quickly find the information by User ID.
 
 <hr style="border:2px solid gray">
 
