@@ -652,6 +652,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
     - The __Map Database__ service is responsible for getting relevant map details and also for maintaining user's map information until the ride completes.
 
 7. The __Map Database__ service can use S2 index to get user's region and also to find relevant database partition.
+    - S2 is a library used to work with geographical data. For more details, refer to this [link](http://s2geometry.io/).
 
 8. The __Map Database__ service can use this partition to download the map data from __key value storage__.
     - The __Key value storage__ is an example of __NoSQL__ database. For more details, refer to our [Database and Storage Basics](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md)
@@ -1109,7 +1110,36 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ## DEEP DIVE INSIGHTS: Into Book A Cab Service
 
-[TBD]
+### View Map
+
+We've seen how the Map service provided services to Mark and John by gathering data from different sources. Now, let's dive deeper into the sources.
+
+#### The process of getting map information
+
+__Intro:__
+
+- [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap): OpenStreetMap (OSM) is a free, open map database updated and maintained by a community of volunteers via open collaboration. For more information, you can click on the hyperlink.
+
+- [S2 Library](http://s2geometry.io/): Unlike many geometry libraries, google's S2 is primarily designed to work with spherical geometry, i.e: shapes drawn on a sphere rather than on a planar 2D map.
+    - Some of the S2 features:
+        - S2 divides the map into grids called cells and gives each cell a unique ID.
+        - Flexible support for spatial indexing, including the ability to estimate inconsistent regions as a collection of discrete S2 cells. This feature makes it easy to build distributed spacial indexes.
+        - Fast in-memory spacial indexing of collections of points, polylines, and polygons.
+
+- [Amazon DynamoDB](https://en.wikipedia.org/wiki/Amazon_DynamoDB) is a managed NoSQL database service provided by Amazon Web Services (AWS). It supports key-value and document data structures. It is primarily used for scalability and performance.
+
+__Usage:__
+- We can use OSM for internal map data. It gives a free and editable map of the world.
+- And can use Google’s S2 library on top of OSM to efficiently index and query map data.
+- OSM can store road metadata and road segment sequences in each cell. It helps to understand turn restrictions on the road.
+- OSM let the client dynamically build a road network graph for low memory usage. This means the client downloads the S2 cells based on the user's location. Besides the client buffers nearby cells to have enough map data for navigation.
+- We can store map data in serialized format on DynamoDB. And query the S2 geospatial index to find the relevant DynamoDB partition. The map data then gets downloaded from DynamoDB. The map data gets deserialized and filtered before returning it to the client.
+
+This is how Mark and John were able to see their map information.
+
+#### 
+
+#### 
 
 <hr style="border:2px solid gray">
 
