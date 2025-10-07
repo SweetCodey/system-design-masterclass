@@ -667,6 +667,7 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
     - The __user record__ database is responsible for maintaining user's information.
         - Internally, you can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in cab sharing system.
         *Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
+            - As there is a chance of stale data, we can use [ZooKeeper service](https://en.wikipedia.org/wiki/Apache_ZooKeeper) to maintain synchronization between database and its replica(s).
 
 >__*Note:*__ Maintenance of multiple Map services can be dependent on no of user requests.
 
@@ -684,6 +685,19 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 #### Final HLD for View Map:
 
 ![View Map Overall Flow](./Resources/HLDViewMapOverall.png)
+
+#### Map Cache Flow
+
+To provide map data with low latency, we can make use CDN effectively. The below image gives us an idea how CDN decreases latency in loading Mark's/John's Map details.
+
+![View Map CDN Cache](./Resources/HLDCDNCache.png)
+
+1. Mark thought of opening his cab sharing application and __Client__ can request __CDN__ for Mark's __Map information__. 
+2. The __CDN__ worried because it doesn't have Mark's Map information, so it requested __Cab Sharing__ servers to provide relevant information.
+3. The __Cab Sharing__ servers can get the __map data__ from __key-value__ storage 
+4. The __Cab Sharing__ servers can provide the response back to the __CDN__.
+
+>__*Note:*__ The Client can __validate__ the CDN __cache correctness__ based on various __factors__ such as Mark's or John's current location e.t.c.,
 
 ### HLD :View ETA
 
@@ -1112,7 +1126,7 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ### View Map
 
-We've seen how the Map service provided services to Mark and John by gathering data from different sources. Now, let's dive deeper into the sources.
+We've seen how the Map service provided services to Mark and John by gathering data from different sources. Now, let's dive deeper into those sources.
 
 #### The process of getting map information
 
@@ -1137,9 +1151,43 @@ __Usage:__
 
 This is how Mark and John were able to see their map information.
 
-#### 
+### View ETA
 
-#### 
+We've seen how the ETA service provided services to Mark and John by following several steps. Now, let's look into into those steps.
+
+#### The process of computing ETA
+
+__Intro:__
+
+- [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)): There are two types of graphs: __directed__ and __undirected__.
+    - __Directed Graph__: A directed graph G is a pair (V, E), where V is a finite set and E is a binary relation on V. The set V is called vertex set of G, and its elements are called vertices. The set E is called the edge set of G, and its elements are called edges.
+    - __Undirected Graph__: In an undirected graph G = (V, E), the edge set E consists of unordered pairs of vertices, rather than ordered pairs.
+
+- __Weighted Graph__: Graphs for which each edge has an associated weight, typically given by a weight function w: E -> R. For example, let G = (V, E) be a weighted graph with weight function w. We simply store the weight w(u, v) of the edge (u, v) -> E with vertex v in u's adjacency list.
+
+- [Routing Algorithm(Dijkstra)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm): Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a weighted graph, which may represent, for example, a road network.
+
+__Usage:__
+1. Routing Algo:
+    - We can relate map with a graph: every road intersection is modeled as a node, while every road segment is modeled as a directed edge.
+    - ETA computation becomes finding the shortest path in a directed weighted graph.
+    - Dijkstra's algorithm is known for finding the shortest path in a graph. But the time complexity of Dijkstra's algorithm is O(n logn). And n is the number of road intersections or nodes in the graph.
+    - Busiest areas like San Francisco Bay can have half a million road intersections, so Dijkstra's algo is not enough at our scale. Solution is to partition the map graph and then precomputed the best path within each partition. Thus interacting with boundaries of graph partitions is enough to find the best path.
+    - Every single node in the map graph must be traversed to find the best path between 2 points. So time complexity would be the area of the circle: pi * r^2
+    - While partitioning and precomputing make it more efficient.
+    - It becomes possible to find the best path by interacting with only the nodes on the Map graph boundary.
+    - So time complexity would be the perimeter of the circle: 2 * pi * r
+    - Put another way, the time complexity to find the best path in the San Francisco Bay Area gets reduced from 500 Thousand to 700.
+
+2. Traffic Information:
+[TBD]
+
+3. Map Matching:
+[TBD]
+
+### Find A Driver
+
+[TBD]
 
 <hr style="border:2px solid gray">
 
