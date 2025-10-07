@@ -720,7 +720,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 ![Initial Service Flow](./Resources/HLDviewETA3.png)
 
 5. The __Data Fetch__ service can relay the request to the __Load Balancer__.
-    - Here, Data Fetch service can __validate the input__ data __before relaying__ the request further.
+    - Here, Data Fetch service can __re-validate the input__ data __before relaying__ the request further and this validation is optional because first input validation can be covered at API Gateway.
 
 6. The Load balancer can direct the request to a available __Ride Estimator__ service as shown in the image above.
     - The __Ride Estimator__ service is responsible to compute ETA by considering various factors which will be discussed in the steps below.
