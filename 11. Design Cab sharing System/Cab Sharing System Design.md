@@ -699,6 +699,9 @@ To provide map data with low latency, we can make use CDN effectively. The below
 
 >__*Note:*__ The Client can __validate__ the CDN __cache correctness__ based on various __factors__ such as Mark's or John's current location e.t.c.,
 
+#### Technology Chosen:
+[TBD]
+
 ### HLD :View ETA
 
 How Mark was able to view ETA to the drop-off point? Let's find out.
@@ -778,6 +781,9 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 >1. The average speed and ETA in the reference image are considered as an example. You can update them as per your convenience.
 >2. While calculating ETA, __Haversine distance__ can be considered. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
 >3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA. So, we are not considering ETA storage for entire ride path. Instant communication can be preferred.
+
+#### Technology Chosen:
+[TBD]
 
 ### HLD :Find A Driver
 
@@ -867,6 +873,9 @@ How Mark was able to find a driver for his booking? Let's look into it.
 ### Final HLD for finding a driver:
 
 ![Find A Driver](./Resources/HLDfindADriverOverall.png)
+
+#### Technology Chosen:
+[TBD]
 
 ## High Level Design :Track The Ride
 
@@ -1130,7 +1139,7 @@ We've seen how the Map service provided services to Mark and John by gathering d
 
 #### The process of getting map information
 
-__Intro:__
+__Introduction:__
 
 - [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap): OpenStreetMap (OSM) is a free, open map database updated and maintained by a community of volunteers via open collaboration. For more information, you can click on the hyperlink.
 
@@ -1205,12 +1214,24 @@ __Usage:__
     - Imagine the Kalman filter as a __person who makes a correct guess__ about something's location. The __new and old information__ is taken into consideration for __guessing__.
 - Besides we can use the [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm) to __find the most probable road segments__. It's a dynamic programming approach.
     - Imagine the Viterbi algorithm as a person who __figures out the correct story__ even if __some words were spelled wrong__. We can do that by __looking at the nearby words__ and __fixing the mistakes__ so that the story makes more sense.
-- Mark may avoid his future trips if the actual trip time is higher than ETA. Also, more than 30 million trips can be completed daily as per our consideration.
-- So at our scale, a bad ETA could cost cab sharing company billions of USD in loss. The current approach can allow us to scale to half a million requests per second.
+- Mark may __avoid__ his future trips if the __actual trip time is higher__ than ETA. Also, __more than 30 million__ trips can be completed daily as per our consideration.
+- So at our scale, a bad ETA could cost cab sharing company billions of USD in loss. The __current approach__ can allow us to __scale__ to half a million requests per second.
 
 ### Find A Driver
 
-[TBD]
+- We can __store driver locations__ in a __Redis cluster__ for scalability and low latency. A Redis cluster contains many __Redis instances__ as shown in the HLD image. This means __driver locations__ are __spread__ across many Redis instances. Thus preventing global __write lock__ and __contention__ issues when many rides get __ordered__ at the same time.
+
+- But sharding Redis based on region causes a __hot shard problem__ because of more drivers in big cities.
+    - So we can use __Google’s S2 library__ and __divide__ the __map into grids__.
+        - And S2 is hierarchical. That means the __cell__ size __varies__ from __square centimeters__ to __square kilometers__.
+        - We can choose __Geohash__ (level 5) by default to find nearby drivers. It represents a __square kilometer__, so only a __few cars will fit__ inside a single shard. And the hot shard problem wouldn't occur.
+
+- Redis cluster may contain drivers who __stopped__ driving for the rest of the day. But we __want__ only __active__ drivers. This means drivers who are still driving during the day.
+    - A simple approach is to create __in-memory time buckets__ periodically. Then __store__ the __list of active drivers__ in it.
+    - And __remove old buckets__ every 20-30 seconds(approx). So only __active drivers will stay__ in the latest bucket.
+    - __Yet it results__ in __constant allocation__ and __freeing up of memory__.
+        - So we can use a Redis __sorted set__ in __each Geohash__ to __find nearby drivers__. And store the __last timestamp__ reported by the drivers in a __sorted__ order. While inactive driver data is expired using the [ZREMRANGEBYSCORE](https://redis.io/docs/latest/commands/zremrangebyscore//) command. That means only data of those drivers who haven’t reported in the last 30 seconds will expire. Simply put, we can __overwrite memory__ __instead of reallocating__ it. Imagine the sorted set as key-value pairs sorted by score.
+    - Besides we can store the driver location in a hash data structure. It's also queried to ensure that a driver doesn’t show up in 2 different Geohashes while driving through.
 
 <hr style="border:2px solid gray">
 
