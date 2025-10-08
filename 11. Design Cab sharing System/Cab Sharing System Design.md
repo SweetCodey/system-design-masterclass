@@ -1157,33 +1157,56 @@ We've seen how the ETA service provided services to Mark and John by following s
 
 #### The process of computing ETA
 
-__Intro:__
+__Introduction:__
 
 - [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)): There are two types of graphs: __directed__ and __undirected__.
     - __Directed Graph__: A directed graph G is a pair (V, E), where V is a finite set and E is a binary relation on V. The set V is called vertex set of G, and its elements are called vertices. The set E is called the edge set of G, and its elements are called edges.
     - __Undirected Graph__: In an undirected graph G = (V, E), the edge set E consists of unordered pairs of vertices, rather than ordered pairs.
 
-- __Weighted Graph__: Graphs for which each edge has an associated weight, typically given by a weight function w: E -> R. For example, let G = (V, E) be a weighted graph with weight function w. We simply store the weight w(u, v) of the edge (u, v) -> E with vertex v in u's adjacency list.
-
+- __Weighted Graph__: Graphs for which each edge has an associated weight, typically given by a weight function w: E -> R. For example, let G = (V, E) be a weighted graph with weight function w. We simply store the weight w(u, v) of the edge (u, v) ∈ E with vertex v in u's adjacency list.
+    - ∈ denotes set membership, and is read "is in", "belongs to", or "is a member of".
 - [Routing Algorithm(Dijkstra)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm): Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a weighted graph, which may represent, for example, a road network.
 
 __Usage:__
 1. Routing Algo:
-    - We can relate map with a graph: every road intersection is modeled as a node, while every road segment is modeled as a directed edge.
-    - ETA computation becomes finding the shortest path in a directed weighted graph.
-    - Dijkstra's algorithm is known for finding the shortest path in a graph. But the time complexity of Dijkstra's algorithm is O(n logn). And n is the number of road intersections or nodes in the graph.
-    - Busiest areas like San Francisco Bay can have half a million road intersections, so Dijkstra's algo is not enough at our scale. Solution is to partition the map graph and then precomputed the best path within each partition. Thus interacting with boundaries of graph partitions is enough to find the best path.
-    - Every single node in the map graph must be traversed to find the best path between 2 points. So time complexity would be the area of the circle: pi * r^2
+    - We can __relate__ map with a graph: every __road intersection__ is modeled as a __node__, while every __road segment__ is modeled as a __directed edge__.
+    - ETA computation becomes finding the shortest path in a directed __weighted graph__.
+    - __Dijkstra's algorithm__ is known for finding the shortest path in a graph. But the time complexity of Dijkstra's algorithm is O(n logn). And n is the number of road intersections or nodes in the graph.
+    - __Busiest areas__ like San Francisco Bay can have half a __million road intersections__, so Dijkstra's algo is not enough at our scale. __Solution__ is to __partition the map graph__ and then precomputed the best path within each partition. Thus interacting with boundaries of graph partitions is enough to find the best path.
+    - Every single node in the map graph of a sphere __must be traversed__ to find the best path between 2 points. So time complexity would be the area of the circle: pi * r^2
     - While partitioning and precomputing make it more efficient.
     - It becomes possible to find the best path by interacting with only the nodes on the Map graph boundary.
     - So time complexity would be the perimeter of the circle: 2 * pi * r
     - Put another way, the time complexity to find the best path in the San Francisco Bay Area gets reduced from 500 Thousand to 700.
 
 2. Traffic Information:
-[TBD]
+
+- The traffic on the road segments must be considered to find the fastest path between 2 points.
+- While traffic is a function of the __time of the day__, __weather__, and __number of vehicles__ on the road.
+- We can __use__ traffic information __to populate__ the __edge weights__ of the graph. Because it can make the ETA more __accurate__.
+- Besides we can combine aggregated __historical speed information__ that was stored in the hash table with real-time speed information. Because extra traversal data makes traffic information __more accurate__.
 
 3. Map Matching:
-[TBD]
+
+- __GPS signals__ can get noisy especially when the vehicle enters a enclosed areas like tunnel(s).
+- Also the __multi-path effect__ could __worsen__ the GPS signal. The multi-path effect occurs when buildings reflect the GPS signal. A __poor__ GPS signal __decreases__ the ETA accuracy.
+- So they do __map matching__ to find the best ETA. Map matching works by __mapping raw GPS signals__ to __actual road segments__.
+
+|   GPS Signals     |   Road Segments   |
+|-------------------|-------------------|
+|   Latitude        |   Latitude        |
+|   Longitude       |   Longitude       |
+|   Direction       |   Direction       |
+|   Speed           |                   |
+|                   |   Road Name       |
+|                   |   Segment ID      |
+
+- We can use the [Kalman filter](https://en.wikipedia.org/wiki/Kalman_filter) for map matching. It takes GPS signals and matches them to road segments.
+    - Imagine the Kalman filter as a __person who makes a correct guess__ about something's location. The __new and old information__ is taken into consideration for __guessing__.
+- Besides we can use the [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm) to __find the most probable road segments__. It's a dynamic programming approach.
+    - Imagine the Viterbi algorithm as a person who __figures out the correct story__ even if __some words were spelled wrong__. We can do that by __looking at the nearby words__ and __fixing the mistakes__ so that the story makes more sense.
+- Mark may avoid his future trips if the actual trip time is higher than ETA. Also, more than 30 million trips can be completed daily as per our consideration.
+- So at our scale, a bad ETA could cost cab sharing company billions of USD in loss. The current approach can allow us to scale to half a million requests per second.
 
 ### Find A Driver
 
