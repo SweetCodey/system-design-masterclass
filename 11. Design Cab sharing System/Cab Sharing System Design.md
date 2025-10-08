@@ -700,7 +700,8 @@ To provide map data with low latency, we can make use CDN effectively. The below
 >__*Note:*__ The Client can __validate__ the CDN __cache correctness__ based on various __factors__ such as Mark's or John's current location e.t.c.,
 
 #### Technology Chosen:
-[TBD]
+__Google’s S2 library__: Unlike many geometry libraries, google's S2 is primarily designed to work with spherical geometry
+__Amazon DynamoDB__: Supports key-value and document data structures. It is primarily used for scalability and performance.
 
 ### HLD :View ETA
 
@@ -781,9 +782,6 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 >1. The average speed and ETA in the reference image are considered as an example. You can update them as per your convenience.
 >2. While calculating ETA, __Haversine distance__ can be considered. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
 >3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA. So, we are not considering ETA storage for entire ride path. Instant communication can be preferred.
-
-#### Technology Chosen:
-[TBD]
 
 ### HLD :Find A Driver
 
@@ -875,7 +873,8 @@ How Mark was able to find a driver for his booking? Let's look into it.
 ![Find A Driver](./Resources/HLDfindADriverOverall.png)
 
 #### Technology Chosen:
-[TBD]
+__Google’s S2 library__: As described in the description above, we use this library here to divide a map into grids.
+__Redis cluster__: Redis is fastest, and most feature-rich cache, data structure server, and document and vector query engine.
 
 ## High Level Design :Track The Ride
 
@@ -1164,9 +1163,7 @@ This is how Mark and John were able to see their map information.
 
 We've seen how the ETA service provided services to Mark and John by following several steps. Now, let's look into into those steps.
 
-#### The process of computing ETA
-
-__Introduction:__
+__Conceptual Introduction:__
 
 - [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)): There are two types of graphs: __directed__ and __undirected__.
     - __Directed Graph__: A directed graph G is a pair (V, E), where V is a finite set and E is a binary relation on V. The set V is called vertex set of G, and its elements are called vertices. The set E is called the edge set of G, and its elements are called edges.
@@ -1176,7 +1173,8 @@ __Introduction:__
     - ∈ denotes set membership, and is read "is in", "belongs to", or "is a member of".
 - [Routing Algorithm(Dijkstra)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm): Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a weighted graph, which may represent, for example, a road network.
 
-__Usage:__
+#### The process of computing ETA
+
 1. Routing Algo:
     - We can __relate__ map with a graph: every __road intersection__ is modeled as a __node__, while every __road segment__ is modeled as a __directed edge__.
     - ETA computation becomes finding the shortest path in a directed __weighted graph__.
@@ -1218,6 +1216,13 @@ __Usage:__
 - So at our scale, a bad ETA could cost cab sharing company billions of USD in loss. The __current approach__ can allow us to __scale__ to half a million requests per second.
 
 ### Find A Driver
+
+We saw how the Driver Finder service provided services to Mark, to find John by following a process. Now, let's zoom into that sequence.
+
+__Conceptual Introduction:__
+- [Redis](https://redis.io/docs/latest/): Redis is preferred real-time data-driven applications like Cab sharing system. It is fastest, and most feature-rich cache, data structure server, and document and vector query engine.
+
+__The process of finding a driver:__
 
 - We can __store driver locations__ in a __Redis cluster__ for scalability and low latency. A Redis cluster contains many __Redis instances__ as shown in the HLD image. This means __driver locations__ are __spread__ across many Redis instances. Thus preventing global __write lock__ and __contention__ issues when many rides get __ordered__ at the same time.
 
