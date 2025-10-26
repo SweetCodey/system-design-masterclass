@@ -79,6 +79,13 @@ The MasterClass is divided into the following modules, each with its own directo
 - Distributed storage for log data
 - Monitoring and alerting based on log patterns
 
+### [11 - Cab Sharing System Design ](./11.%20Design%20Cab%20sharing%20System)![cab Icon](./11.%20Design%20Cab%20sharing%20System/Resources/cabIcon.png)
+
+- Cab sharing service (booking, tracking, ride history)
+- Booking processing
+- Cab tracking
+- Driver ride history
+
 ### Course Notes 📂
 
 - Contains notes from the course.
