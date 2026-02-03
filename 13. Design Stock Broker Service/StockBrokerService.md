@@ -103,7 +103,9 @@ A stock watchlist allows users to save stocks they are interested in. This helps
 
 #### Create Watchlist
 
-This API allows the user to create a watchlist with the given watchlist name and stock symbols. We chose REST APIs because they are simple, widely supported, and work with any web or mobile app over HTTP.
+This API allows the user to create a watchlist with the given watchlist name and stock symbols. 
+We use REST because watchlist creation is a simple request–response operation. 
+It doesn’t need real-time updates or two-way (bidirectional) communication. Unlike price streaming and order updates, latency isn’t critical for this flow. A stateless HTTP API fits this use case well.
 
 ![Create Watchlist](Resources/StockBroker-API_WatchList_Create.png)
 
@@ -430,7 +432,7 @@ The following steps are executed when a user buys or sells shares using the brok
 4. The **Funds Service** receives the request, checks the user's funds from the **Funds Database**, and blocks the funds so that the user cannot withdraw during an active order.
 5. The **Funds Service** returns the response to **OMS**.
 6. **OMS** validates that the user has sufficient funds. If the balance is sufficient, it creates a new order record in the **Order Database** (Step 6a) with a unique `orderId` to track the order. The `orderId` should be idempotent, so that retries with the same id shouldn't create duplicate orders. The order is also added to the **Order Cache** (Step 6b). We use a cache to store the latest order status so frequent user polling can be served quickly without repeatedly hitting the database.
-7. **OMS** publishes the order to the **Order Queue** for asynchronous execution.
+7. **OMS** publishes the order to the **Order Execution Queue** for asynchronous execution.
 8. After publishing to the queue, **OMS** returns an acknowledgement to the user device with the generated `orderId` so the user can track the order status. This is shown in steps 8a and 8b.
 9. The **Order Executor Service (OES)** consumes the order from the queue.
 10. **OES** sends the order to the **Stock Exchange** for execution.
@@ -467,6 +469,17 @@ The portfolio flow allows users to view their holdings and positions. Similar to
 
 We cannot make a "single database" choice for the entire stock broker system. Each functionality of the system will have a specific database choice based on the requirement.
 
+| Guideline                                                     | Recommendation       |
+|---------------------------------------------------------------|----------------------|
+| When eventual consistency is not accepted                     | Use SQL (Relational) |
+| When eventual consistency is accepted                         | Use NoSQL            |
+| When you need faster access                                   | Prefer NoSQL         |
+| When data correctness is critical (no partial failures)       | Use SQL              |
+| When row level locking is required to block concurrent writes | Use SQL              |
+| When it is read-heavy                                         | Prefer NoSQL         |
+| When you have simpler queries                                 | 	NoSQL works well    |
+
+Based on the above guidelines, we made the database choices for our stock broker service.
 <table>
     <tr>
         <th>Database</th>
@@ -496,7 +509,7 @@ We cannot make a "single database" choice for the entire stock broker system. Ea
                 <li><b>Eventual Consistency Acceptable</b> - Minor delays are tolerable.</li>
             </ul>
         </td>
-        <td>NoSQL (Key–Value)</td>
+        <td>NoSQL (Key–Value / Document)</td>
     </tr>
     <tr>
         <td>Portfolio DB</td>
@@ -543,6 +556,7 @@ We cannot make a "single database" choice for the entire stock broker system. Ea
 * Database Type: Relational Database
 * Common Queries: Read the user's holdings and positions
 * Indexing: `userId` + `symbol`
+* We query the database with the userId to fetch all the holdings and positions of the user
 
 ![PortfolioSchema](Resources/StockBroker-DIVEDEEP_DB_PORTFOLIO.png)
 
