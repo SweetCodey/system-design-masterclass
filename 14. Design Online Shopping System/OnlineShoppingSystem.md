@@ -70,12 +70,14 @@ In an ideal online shopping scenario, the user goes through a sequence of flows 
 * **View recommendations:** Users should receive personalized recommendations based on browsing and order history.
 
 ### Non-Functional Requirements
-* **Low latency:** Search results should be returned within 500 ms.
-* **High availability:** The service should remain available during peak shopping events like Black Friday and Prime Day.
+* **Low latency:** Search results should be returned within 100 ms.
+* **High availability:** The service should remain available (99.99 %) during peak shopping events like Black Friday and Prime Day.
 * **Strong consistency:** Inventory must be strongly consistent to prevent overselling.
 * **Security:** User data, payment information, and order details must be encrypted and protected.
-* **Scalability:** The system should scale automatically to handle traffic spikes during sales and promotional events.
+* **Scalability:** The system should scale automatically to handle traffic spikes (10000+ TPS) during sales and promotional events.
+
 ---
+
 ## API Design
 ### Product Recommendations
 Recommendations allows the users to discover products they might be interested in based on their browsing history, and past purchases.
@@ -274,7 +276,7 @@ This API allows users to add a product and the quantity to their shopping cart.
 
 **HTTP Method & Endpoint**
 
-We use `POST` method because adding an item to the cart creates a new entry in our system. The endpoint would be `/v1/cart/{cartId}/items`.
+We use `POST` method because adding an item to the cart creates a new entry in our system. The endpoint would be `/v1/cart/{cartId}/items`. We are using the `/v1/cart/{cartId}/items` instead of `/v1/cart/{cartId}` because, we are adding/modifying items in the cart, not the cart itself (like changing cart status or metadata).
 
 **HTTP Body**
 
@@ -299,7 +301,9 @@ We use `POST` method because adding an item to the cart creates a new entry in o
 ```
 
 #### Update Item Quantity
-This API allows users to modify the quantity of items already present in the cart
+This API allows users to modify the quantity of items already present in the cart. 
+
+> Note: Setting the quantity to `0` is considered removing the item from the cart.
 
 ![Update Cart](Resources/API_UpdateCartItemQuantity.png)
 
@@ -324,28 +328,6 @@ item without replacing the entire item. The endpoint would be `/v1/cart/{cartId}
   "status": "success",
   "message": "Cart item quantity updated successfully",
   "cartItemCount": 4
-}
-```
-
-#### Remove from Cart
-
-This API allows users to remove an item from the cart.
-
-![Remove Cart Items](Resources/API_DeleteCartItem.png)
-
-**HTTP Method & Endpoint**
-
-We use the `DELETE` method since we are removing an item from the cart. The endpoint would be `/v1/cart/{cartId}/items/{itemId}`.
-
-**HTTP Response**
-
-```json
-{
-  "status": "success",
-  "cartItemId": "item_001",
-  "productId": "prod_12345",
-  "message": "Item removed from cart successfully",
-  "cartItemCount": 1
 }
 ```
 
@@ -481,15 +463,21 @@ In general, recommendations are shown based on data such as user's behavior, pur
 1. **Recommendation Generation**: Customer data is analyzed to generate recommendations
 2. **Recommendation Retrieval**: Customer's recommendation is fetched and shown on their landing page.
 
+#### Challenges of Recommendation Generation
+For an online shopping system with millions of customers, it is resource-intensive to precompute and persist recommendations for all the users. To avoid resource wastage, the customers can be split into two pools: 1) **Hot pool**, and 2) **General pool**
+
+1. **Hot-pool customers** are those who visit the shopping website or app on regular basis. For these users, recommendations can be precomputed and persisted because the probability of revisit is high. Identification of hot users can be based on weighted activity, where recent visits, searches, cart additions, and purchases contribute differently to an activity score.
+2. **General-pool customers** are those who have infrequent visits. Since their activity is low, the system can show recommendations based on trending products or compute recommendations on demand when they return to the shopping website or app.
+
 #### Recommendation Generation (Batch Processing)
 
 ![HLD Recommendation Generation](Resources/HLD_RecommendationGeneration.png)
 
-1. Every night (or on a fixed schedule), a batch job runs in the **Recommendation Service** to generate recommendations for all users.
+1. Every night (or on a fixed schedule), a batch job runs in the **Recommendation Service** to generate recommendations for hot pool users.
 2. The **Recommendation Service** fetches user activity data from the **User Activity Database** and past purchases from the **Order Database**. User activities include their search queries, product views, cart additions, etc,
 3. The service also fetches product metadata from the **Product Catalog Database**, including categories, brands, descriptions, and attributes.
 4. The **Recommendation Service** runs machine learning models (collaborative filtering, content-based filtering, etc) to compute personalized recommendations for each user. Refer [Recommendation Engine](#recommendation-engine) section for more details
-5. The generated recommendations are stored in a **Recommendations Cache** (like Redis) with a TTL (Ex: 4 hours) for fast retrieval.
+5. The generated recommendations are stored in a **Recommendations Cache** (like Redis) with a TTL (Ex: 24 hours) for fast retrieval.
 
 #### Recommendation Retrieval (Real-time)
 
@@ -497,9 +485,10 @@ In general, recommendations are shown based on data such as user's behavior, pur
 
 1. When the user visits the landing page, a request (`GET /v1/recommendations`) is sent to the Recommendation Service to fetch the latest recommendations.
 2. The API Gateway of the shopping service receives the request and routes it to the *Recommendation Service**.
-3. The **Recommendation Service** checks the **Recommendations Cache** for pre-computed recommendations for this user. If recommendations are found in the cache (cache hit), they are returned.
-4. On cache miss, the **Recommendation Service** falls back to location-based trending products fetched from **Trending Product Cache**. Trending data is cached because it changes infrequently and is read frequently, allowing low-latency access.
-5. The recommendations are returned to the user's device and displayed on the page.
+3. The **Recommendation Service** checks if the user is part of hot pool via the **Hot pool User Cache**
+4. For hot pool users, the **Recommendation Service** checks the **Recommendations Cache** for pre-computed recommendations for this user. If recommendations are found in the cache (cache hit), they are returned (Step 4a). On cache miss, the **Recommendation Service** falls back to location-based trending products fetched from **Trending Product Cache** (Step 4b). Trending data is cached because it changes infrequently and is read frequently, allowing low-latency access.
+5. For general pool users, the **Recommendation Service** performs online inference on the ML model with the necessary context such as user activity, product, and order to provide on-the-fly recommendations.
+6. The recommendations are returned to the user's device and displayed on the page.
 
 ### Product Search Flow
 The product search flow allows users to find the products using keywords, filters, and sorting options. 
@@ -513,18 +502,25 @@ The search engine indexes millions of products efficiently and returns the relev
 4. The search engine calculates a **relevance score** for each product based on factors like keyword matching, popularity, ratings, and user preferences. Products are ranked by this score.
 5. If the user has applied filters such as price range, brand, ratings, the search engine applies these filters to narrow down results.
 6. If the user selected sorting options like price low to high, newest arrivals, the results are sorted accordingly.
-7. The **Product Search Service** retrieves additional product details like images, prices, from the **Product Catalog Cache**. We use cache because product data is read frequently and changes infrequently, making it safe to cache for low-latency access.
-8. It also fetches the available quantity information from the **Inventory Cache**. Inventory cache is updated when data is updated in the `Inventory Database`
-   * Although inventory data must be strongly consistent to prevent overselling, we use cache because search page has higher traffic than cart or checkout. Hitting the inventory database for every search request is not scalable. Therefore, we display approximate availability from cache on the search page, and validate actual availability during the cart or checkout flow.
-9. The search service returns paginated results to the API Gateway, which sends them back to the user's device.
-10. The user's search query and clicked products are logged to the **User Activity Database** for future recommendation generation.
+7. The user activity is pushed to the `User Activity Stream` for tracking user behaviour. We use stream to track user activity instead of adding an entry directly in the user activity database. This is done to avoid latency due to database write that can slow down the search experience.
+8. The search service returns paginated results to the API Gateway, which sends them back to the user's device.
+
+
+**Async Updates**
+
+9. The `User Activity Data Service` consumes the user activity events from `User Activity Stream` (Step 9a) and performs necessary operations and persist in the `User Activity Database` (Step 9b)
+10. We store the product and inventory info in elastic search index. So, it might get outdated when the actual product and inventory information changes. So, all updates to product and inventory data are published to streams `Catalog Update Stream` and `Inventory Update Stream` respectively.
+    * The `Elastic Search Updater Service` reads the catalog update details from `Catalog Update Stream` (Step 10a) and inventory update details from `Inventory Update Stream` (Step 10b).
+    * The service then updates the elastic search index with the updated infromation (Step 10c)
+
+> For updating the index the `Elastic Search Updater Service` didn't read the data from Catalog or Inventory database. This is because we made the events `rich`, meaning the update data itself is added to the event. This avoids load to the actual databases.
 
 ### Cart Management Flow
 The cart management flow allows users to add products to their cart, update quantities, remove items, and view cart contents before checkout.
 
-#### 1. View Cart
+![HLD Cart Management](Resources/HLD_CartManagement.png)
 
-![HLD View Cart](Resources/HLD_ViewCart.png)
+#### 1. View Cart Flow
 
 1. The user navigates to the cart page by clicking the cart icon. The request (`GET /v1/cart/{cartId}`) reaches the **API Gateway**. 2
 2. The **API Gateway** routes the request to the **Cart Service**. 
@@ -536,69 +532,53 @@ The cart management flow allows users to add products to their cart, update quan
 
 #### 2. Add to Cart Flow
 
-![HLD Add to Cart](Resources/HLD_AddToCart.png)
-
 1. The user clicks the "Add to Cart" button on a product page. The request (`POST /v1/cart/{cartId}/items`) reaches the **API Gateway** with the user ID, product ID, and desired quantity.
 2. The **API Gateway** routes the request to the **Cart Service**. 
 3. The **Cart Service** first checks if the product is in stock by querying the **Inventory Service**.
-4. The **Inventory Service** checks the **Inventory Database** for the product's available quantity. If sufficient stock is available, the **Inventory Service** returns a success response.
-5. The **Cart Service** adds the item to the user's cart in the **Cart Database**.
-6. The **Cart Service** returns a success response with the updated cart item count. The user sees a confirmation message like "Item added to cart (3 items)".
+4. The **Cart Service** adds the item to the user's cart in the **Cart Database**.
 
 #### 3. Update Item Quantity Flow
-
-![HLD Update Item](Resources/HLD_UpdateCart.png)
 
 1. The user modifies the quantity of items in the cart. The request (`PATCH /v1/cart/{cartId}/items/{itemId}`) reaches the **API Gateway** with the user ID, product ID, and desired quantity.
 2. The **API Gateway** routes the request to the **Cart Service**.
 3. The **Cart Service** first checks if the sufficient quantities are available in stock by querying the **Inventory Service**.
-4. The **Inventory Service** checks the **Inventory Database** for the product's available quantity. If sufficient stock is available, the **Inventory Service** returns a success response.
-5. The **Cart Service** updates the item quantity in the **Cart Database**.
-6. The **Cart Service** returns a success response with the updated cart item count.
-
-#### 4. Remove from Cart Flow
-
-![HLD Remove from cart](Resources/HLD_DeleteCartItem.png)
-
-1. The user clicks the "Remove" button next to a cart item. The request (`DELETE /v1/cart/{cartId}/items/{itemId}`) reaches the **API Gateway**. 
-2. The **API Gateway** routes the request to the **Cart Service**. 
-3. The **Cart Service** deletes the specified item from the **Cart Database**. 
-4. The **Cart Service** returns a success response with the updated cart item count.
+4. The **Cart Service** updates the item quantity in the **Cart Database**.
 
 ### Checkout Flow
-The Order/checkout flow is treated as an **atomic operation**: inventory reservation, payment processing, and order creation must either all succeed or all fail as a single logical unit. If any of the step fails, the system rolls back prior actions (for example, releasing reserved inventory) and no order is created.
+The Order/checkout flow is treated as an **coordinated operation**: inventory reservation, payment processing, and order creation must either all succeed or all fail as a single logical unit. If any step fails, the system executes compensation actions (e.g., releasing reserved inventory, issuing refunds) to maintain consistency. This follows the [Saga design pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga).
 
 ![HLD Checkout](Resources/HLD_CheckoutFlow.png)
 
 #### 1. Checkout Initiation
 1. The user goes to the checkout page, confirms shipping address and payment method, clicks **Place Your Order**. The client sends `POST /v1/orders` request with cart ID, address ID, and payment method ID.
 2. The **API Gateway** of the shopping service authenticates the user and routes the request to the **Order Service**.
+3. The **Order Service** creates an order entry in the **Order Database** with the `PAYMENT_PENDING` state.
 
 #### 2. Cart Validation & Inventory Reservation 
 1. The **Order Service** invokes the **Cart Service** to fetch the cart items. The Cart Service fetches the data from **Cart Database** and return them.
 2. The **Order Service** requests the **Inventory Service** to reserve stock for all the cart items.
 3. The **Inventory Service** locks (reserves) the quantities for the cart items so that no other customer can buy them until this order is created/failed. 
-For example, If 5 units of an item are available and a customer reserves 3 during checkout, only the remaining 2 units are available for other customers.  
+For example, If 5 units of an item are available and a customer reserves 3 during checkout, only the remaining 2 units are available for other customers.
+    * The inventory is usually reserved with a TTL (Ex: 10 mins) to avoid reserving the inventory indefinitely if the customer abandons checkout or service crash. A background job periodically releases expired reservations back to available stock.
 4. If any item is unavailable, the reservation fails and checkout is aborted.
 
 #### 3. Payment Processing & Order Creation
 1. Once inventory is successfully reserved, the **Order Service** initiates the payment by invoking the **Payment Service** with the customers payment method ID. The Payment Service talks to the bank to
 deduct money from the customer's account. In most cases, OTP authentication is required. In such case, the Payment Service redirects the customers to the bank page to enter the OTP.
 2. If the payment fails:
+   * The order entry in the **Order Database** is updated with the status `CONFIRMED`
    * Reserved inventory is immediately released.
-   * No order is created.
 3. If the payment succeeds:
-   * A new order record is created in the **Order Database**.
+   * The order entry in the **Order Database** is updated with the status `FAILED`
    * Reserved inventory is converted to committed sales and the quantities are decremented from available stock.
 
 #### 4. Post-Order Flow
 1. The **Order Service** invokes the **Cart Service** to clear the cart.
-2. The **Order Service** creates the order entry in the order database.
-3. It publishes the `Order Placed` event to the **Order Events Stream**. This is done so that interested services can receive the order event and perform the necessary action.
-4. The **Fulfillment Service** consumes the event via **Fulfillment Queue** and begins picking, packing, and shipping.
-5. The **Notification Service** consumes the event via **Notification Queue** to send order confirmation to the customer.
-6. The **Notification Service** sends the order details to the customer via SMS, email, and push notification (app).
-7. Finally, the order service, shows the order confirmation status to the customer.
+2. It publishes the `Order Placed` event to the **Order Events Stream**. This is done so that interested services can receive the order event and perform the necessary action.
+3. The **Fulfillment Service** consumes the event via **Fulfillment Queue** and begins picking, packing, and shipping.
+4. The **Notification Service** consumes the event via **Notification Queue** to send order confirmation to the customer.
+5. The **Notification Service** sends the order details to the customer via SMS, email, and push notification (app).
+6. Finally, the order service, shows the order confirmation status to the customer.
 
 #### How the items are reserved during checkout
 The inventory data are stored in the inventory database. Each entry of the database will have the item ID, item Name, and its available quantity.
@@ -613,18 +593,20 @@ After the order is placed, users want to track the delivery status. The tracking
 1. The user clicks "Track Order" on the order confirmation page or navigates to "My Orders". The request (`GET /v1/orders/{orderId}`) reaches the **API Gateway** of the shopping service.
 2. The **API Gateway** routes the request to the **Order Service**.
 3. The **Order Service** fetches the order details from the **Order Cache**, including status, items, shipping address, and payment summary. The cache is updated when the data is updated in the **Order Database**
-4. The **Order Service** also invokes the **Fulfillment Service** to fetch the latest shipment tracking information.
-5. The **Fulfillment Service** retrieves tracking details from the **Fulfillment Cache**, which includes carrier name, tracking number, current location, and estimated delivery date. The cache is updated when the data is updated in the **Fulfillment Database**
-6. The **Order Service** combines order data and tracking data into a single response and send it back the user's device.
+4. The **Order Service** returns order and tracking data to the user's device.
 
-**Real-time Updates:** As the order moves through different stages, the **Fulfillment Service** receives updates from shipping carriers (UPS, FedEx, etc.) and These updates are stored in the **Fulfillment Database** 
-and trigger notifications to the user via email or push notifications.
+**Async Tracking Updates**
+  * Whenever there is an update in the order tracking (Step A), the **Fulfillment Service**, pushes the event to `Order Tracking Stream` (Step B)
+  * The **Order Service** consumes the event and update the order and tracking details in **Order Database** (Step C)
+  * When order details are updated, the data is update in the **Order Cache** (Step D)
 
 ---
 
 ## Deep Dive Insights
 ### Database Selection
 We cannot make a "single database" choice for the entire online shopping system. Each functionality of the system will have a specific database choice based on the requirement.
+
+> These are general guidelines to build intuition, not absolute rules. The right choice always depends on the specific access patterns, scale, and consistency requirements.
 
 | Guideline                                                     | Recommendation       |
 |---------------------------------------------------------------|----------------------|
@@ -687,6 +669,27 @@ service.
         </td>
         <td>Relational (ACID)</td>
     </tr>
+    <tr>
+        <td>Fulfillment DB</td>
+        <td>
+            <ul>
+                <li><b>Workflow State Management</b> – Tracks shipment lifecycle (packed, dispatched, delivered, returned).</li>
+                <li><b>Moderate Consistency Needs</b> – Updates must be reliable but can be asynchronous across services.</li>
+            </ul>
+        </td>
+        <td>No SQL</td>
+    </tr>
+    <tr>
+        <td>User Activity DB</td>
+        <td>
+            <ul>
+                <li><b>Write-Heavy Stream</b> – Massive volume of events (views, searches, clicks).</li>
+                <li><b>Append-Only Pattern</b> – Historical logs are rarely updated or deleted.</li>
+                <li><b>Eventual Consistency</b> – Slight delays in aggregation are acceptable.</li>
+            </ul>
+        </td>
+        <td>NoSQL (Wide-Column / Time-Series)</td>
+    </tr>
 </table>
 
 ### Database Modelling
@@ -723,6 +726,21 @@ service.
     * Fetch order details by `orderId`
     * Fetch all orders of a user by `userId`
 * Indexing: `orderId`, `userId`
+
+#### Fulfillment Schema
+![Fulfillment Schema](Resources/DiveDeep_FulfillmentSchema.png)
+* Database Type: Relational Database
+* Common Queries:
+    * Fetch fulfillemnt details by `orderId`
+* Indexing: `orderId`
+
+#### User Activity Schema
+![User Activity Schema](Resources/DiveDeep_UserActivitySchema.png)
+* Database Type: Relational Database
+* Common Queries:
+    * Fetch all activities of user by `userId`
+    * Fetch all activities of user by `userId` of a specific `type` (Ex: PRODUCT_VIEW)
+* Indexing: `userId`, `type`
 
 ### Search Algorithm
 
@@ -794,19 +812,19 @@ prod_12345    | 1                  | 10
 
 1. Customer A's checkout reads inventory. Available quantity is 1 and the version number is 10.
 2. At the same time, Customer B's checkout reads inventory. Available quantity is 1 and the version number is 10.
-3. Customer A's payment succeeds first. The system tries to update inventory using the below query. The query succeeds because the version is still 10. Version is incremented to 11.
+3. Customer A attempts to reserve inventory using optimistic locking. The system runs the following query. The query succeeds because the version is still 10. The quantity becomes 0 and the version is incremented to 11.
    ```sql
    UPDATE inventory SET available_quantity = 0, version = 11 WHERE product_id = 'prod_12345' AND version = 10
    ```
-4. Customer B's payment succeeds. The system tries to update inventory using the same query. This fails because version is now 11 and there is no entry with version 10. The database returns "0 rows updated".
+4. Since the reservation succeeds, Customer A’s payment is processed.
+5. Customer B attempts to reserve inventory using the same query. This fails because the version is now 11 and there is no entry with version 10. The database returns “0 rows updated”.
    ```sql
    UPDATE inventory SET available_quantity = 0, version = 11 WHERE product_id = 'prod_12345' AND version = 10
    ```
-5. The system detects this conflict and retries Customer B's checkout. During retry, we get the available quantity as 0 and the version number as 11
-6. Since there are 0 available quantity, Customer B receives"Out of Stock" error.
+6. The system detects this conflict and retries Customer B's checkout. During retry, we get the available quantity as 0 and the version number as 11
+6. Since there are 0 available quantity, Customer B receives "Out of Stock" error and payment is not processed
 
-Optimistic locking `detect conflicts and retry`. So, unlike pessimistic locking, we don't block all transactions in favor of
-one transaction. When a conflict it detected for other transactions, they retry again to resolve conflicts.
+Optimistic locking `detect conflicts and retry`. So, unlike pessimistic locking, we don't block all transactions in favor of one transaction. When a conflict it detected for other transactions, they retry again to resolve conflicts.
 
 ### Recommendation Engine
 
@@ -830,8 +848,6 @@ In online world, recommendation system drives significant amount of sales. The r
 </td>
 </tr>
 </table>
-
-
 
 
 
@@ -874,6 +890,12 @@ We perform the below steps to identify the similarity:
 ```
 3. When generating the recommendations for User A, find the users most similar to User A. In this case it is User D.
 4. Recommend products that User D liked but User A hasn't interacted with yet. In this case, it is Sony_WH.
+
+**Item-based Collaborative Filtering**
+
+In practice, many e-commerce system prefers item-based collaborative filtering over user-based approaches. Instead of finding similar users, the system identifies products that are frequently interacted with together. For example, if customers who buy an iPhone often purchase AirPods, the system learns that these items are related and recommends AirPods when a user views or buys an iPhone.
+
+Conceptually, user-based filtering answers `people like you also liked…`, while item-based filtering answers `people who liked this item also liked…`.
 
 #### Content-Based Filtering
 
