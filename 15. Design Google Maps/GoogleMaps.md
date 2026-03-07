@@ -1,3 +1,5 @@
+TK - Add table of contents
+
 ## Introduction
 
 ### What is a Maps Service
@@ -43,11 +45,53 @@ In an ideal scenario, a user goes through a sequence of flows such as searching 
 * **Low Latency** – Search, tile loading, and routing responses must be with in 100 ms.
 * **High Availability** – Core features should remain 99.99% during peak usage.
 * **Scalability** – System must handle millions of concurrent users.
-* **Geospatial Accuracy** – Location tracking and routing must be precise with an acceptable error of + or - 100 meters.
+* **Geospatial Accuracy** – Location tracking and routing must be precise with an acceptable error of + or - 40 meters.
 
 ---
 
 ## API Design
+### Search
+
+Search for places based on a text query and optional user location.
+
+![](Resources/API_Search.png)
+
+**HTTP Method & Endpoint**
+
+We use `GET` method as we are retrieving place data from the backend system. The endpoint would be `/v1/places/search`
+
+**HTTP Query Parameters**
+
+* query - Search text (e.g., "cafe coffee day", "coffee shop near me")
+* lat - User latitude
+* lon - User longitude
+* limit - Maximum results to return
+
+**HTTP Response**
+
+```json
+{
+  "results": [
+    {
+      "place_id": "plc_1021",
+      "name": "Star Coffee",
+      "lat": 13.0512,
+      "lon": 80.2811,
+      "rating": 4.5,
+      "distance_meters": 320
+    },
+    {
+      "place_id": "plc_984",
+      "name": "Bean House",
+      "lat": 13.0488,
+      "lon": 80.2795,
+      "rating": 4.2,
+      "distance_meters": 540
+    }
+  ]
+}
+```
+
 ### Rendering
 
 Rendering displays the map data into the user's device for visualization.
@@ -65,7 +109,11 @@ We use `GET` since we are retrieving the map data. The endpoint would be: `GET /
 
 **HTTP Response**
 
-The response will be binary data (pbf - Protocolbuffer Binary Format) containing layers such as roads, buildings, water, and places. Since it is binary, we cannot visualize the response. But after decoding, it looks something like below:
+Unlike traditional REST APIs that return JSON, the response here is sent as binary data using Protocolbuffer Binary Format (PBF).
+
+Think of it as a compressed package of map data containing layers like roads, buildings, water, and places. This format is much smaller and faster to transfer than JSON, which helps maps load quickly when users pan or zoom.
+
+Since the data is binary, it cannot be read directly. After decoding, it becomes a structured format (like the JSON shown below) describing map features such as roads, their type, name, and coordinates so the map can render them.
 
 ```json
 {
@@ -88,7 +136,8 @@ The response will be binary data (pbf - Protocolbuffer Binary Format) containing
 
 ### Routing
 
-Routing finds the fastest possible route from source to destination and provides turn by turn instructions to reach the destination. This is the core "Point A to Point B" service. It uses algorithms on the static road graph to return a polyline (a compressed string of coordinates).
+Routing finds the fastest route from a source to a destination and provides turn-by-turn directions to reach it. This is the core “Point A to Point B” service. The system calculates the best path using the road network and returns the route as a polyline. **Think of a polyline as a path drawn by connecting multiple points on a map.**
+
 
 ![](Resources/API_Routing.png)
 
@@ -115,7 +164,9 @@ If `GET` were used, these values would appear in the URL query string, making th
 
 **HTTP Response**
 
-The response contains an array consisting of multiple routes sorted in the order of durationSeconds (ETA) ascending.
+Think of the response as a list of possible routes from source to destination, ordered from the fastest to the slowest based on ETA.
+
+Each route includes the total distance, estimated travel time, the path of the route (polyline), and step-by-step driving instructions such as when to turn and which road to take.
 
 ```
 [
@@ -149,7 +200,10 @@ The response contains an array consisting of multiple routes sorted in the order
 ```
 
 ## High Level Design
+
 Below are some of the terms we frequently come across in the upcoming sections of the document.
+
+![](Resources/Glossary.png)
 
 - **Bounding Box** — A bounding box is a rectangle used to represent an area on the map so the backend system can fetch only what lies inside it (e.g., the part of Chennai visible on your screen).
 
@@ -166,6 +220,100 @@ Below are some of the terms we frequently come across in the upcoming sections o
 - **Tile** — A tile is a small square piece of the map that loads individually so only the visible area is fetched (e.g., the few squares you see when zooming into a neighborhood).
 
 - **Vector** — Vector maps represent the world as shapes like points, lines, and polygons instead of images, allowing dynamic styling (e.g., roads drawn as lines that stay sharp when zooming).
+
+***
+
+### Search
+Search in a map system means turning what a user types into useful locations on the map. For example, a user might type:
+
+- **"Marina Beach"** (Place Search)
+- **"Restaurants near me"** (Nearby Search)
+
+To understand how map search works, we can break it down into three key questions:
+
+1. How does the system translate text into geographic coordinates?
+2. How does the system quickly find nearby places?
+3. How are the best results chosen and ranked?
+
+Each of these steps must happen very quickly, typically within **~100 milliseconds**, so the map feels instant to the user.
+
+#### 1. How does the system translate text into geographic coordinates
+When a user searches for a specific location (for example **"Marina Beach"**), the system needs to convert that text into geographic coordinates. This process is called **Forward Geocoding**. Forward geocoding simply means converting human-readable text into **latitude and longitude**. For example, *"Marina Beach"* is translated into "13.0500° N, 80.2824° E"
+
+But, user inputs are rarely clean. People often type abbreviations, incomplete names, or misspellings. For example, *"marina bech"*, *"marina bch"*, or *"marina beach chennai"*.  Before searching the database, the system performs **parsing and normalization**. This step cleans the input by correcting common spelling mistakes and expanding abbreviations. For example, *"St"* to *"Street"*, *"Rd"* to *"Road"*
+
+After normalization, the system searches its place database, which contains information such as:
+- addresses
+- building locations
+- points of interest (POIs) like restaurants, parks, and shops
+
+A common challenge is that many places share the same name. For example, *"Springfield"* exists in many different cities. To resolve this ambiguity, the system assigns a **confidence score** to each candidate result. The score may consider:
+
+- the user’s current location
+- how popular the place is
+- how frequently people search for it
+
+For example, if a user in **Chennai** searches for *"Marina"*, the Chennai beach is far more likely to be returned. Whereas a user in **Banglore** searches for *"Marina"*, the Marina restaurant is returned.
+
+![](Resources/HLD_Search_Translation.png)
+
+#### 2. How does the system quickly find nearby places?
+Nearby search answers queries like: *"restaurants near me"*, *"pharmacy within 2 km"*. The system cannot scan every place in the world each time a user searches. That would be too slow. So, mapping systems organize geographic data using **spatial indexing**, which groups locations based on where they are on the map.
+
+Two commonly used techniques are **Quadtrees** and **Geohashing**.
+
+**Quadtrees**
+
+A **Quadtree** divides the map into four regions. If a region contains too many places, it is divided again into four smaller regions. This process continues until each region contains a manageable number of places.
+
+Dense areas like cities get split into many smaller regions, while sparse areas remain large. When a user searches for **restaurants within 2 km**, the system first identifies the regions that overlap with the search area and retrieves places stored in those regions. This quickly filters out most of the world.
+
+![](Resources/HLD_QuadTree.png)
+
+**Geohashing**
+
+A geohash converts latitude and longitude into a short string. Locations that are physically close tend to share the same prefix. 
+
+For example, the entire world can be split into 4 quadrants: 
+* A (Top Left - North West), 
+* B (Top Right - North East), 
+* C (Bottom Right - South East),
+* D (Bottom Left - South West). 
+
+Now each of those quadrants can be sub-divided into 4 quadrants. For example, A can be split into:
+* AA (North West)
+* AB (North East)
+* AC (South East)
+* AD (South West)
+
+This pattern is recursively applied for all quadrants until we reach a finite cell.
+
+![](Resources/HLD_GeoHash.png)
+
+If you observe the image, you can see that cells with common prefix are close to each other. For example, AAA is closer to AAD
+
+#### 3. How are the best results chosen and ranked?
+Once the system finds all nearby candidates, it still needs to decide **which results should appear first**. This is handled by a **ranking algorithm** that sorts places based on multiple signals. Three important factors are typically considered:
+
+- **Relevance** - Relevance measures how well a place matches the user’s query. When searching for *"pizza"*, A **pizza restaurant** is more relevant than a general restaurant that only serves pizza as one item.
+- **Proximity** - Proximity measures how close the place is to the user. When searching for *"Indian Restaurant"*, "Indian Restaurant A" which is 200 meters away is preferred than "Indian Restaurant B" which is 2 kms away.
+- **Prominence** - Prominence represents how well known or trusted a place is. Signals used to estimate prominence may include: **number of reviews**, **average rating**. For example, a **highly rated restaurant with thousands of reviews** may rank above a nearby restaurant that has very few reviews.
+
+#### End-to-End Search Flow
+
+![](Resources/HLD_Search.png)
+
+1. User enters a query (e.g., "coffee shops") and the client sends a `GET /v1/places/search` request with query text, and user's GPS location
+2. The API Gateway receives the request and routes it to the **Search Service**.  
+3. The **Search Service** parses the query, normalizes text, and extracts search intent or category. (Steps 3a, 3b, and 3c)
+4. The service checks cache layers for recent results matching the same query and geographic area.  
+5. On a cache miss, the Search Service queries the Spatial Database for candidate places.  
+6. The database uses a spatial index (Geohash, or Quadtree) to quickly identify nearby geographic cells.
+7. The system combines spatial filtering with text or category matching to retrieve candidate POIs (Point of Interest).  
+8. The Ranking Engine scores and sorts the candidate places based on relevance, proximity, and prominence.  
+9. The final ranked results are stored in cache to speed up similar future queries.  
+10. The Search Service returns the response through the API Gateway to the client.  
+11. The client renders the returned places as markers on the map interface.
 
 ### Rendering
 
@@ -208,7 +356,7 @@ Vectors are not images. They are geometric descriptions of the world. A place is
 
 ![](Resources/HLD_Rendering_Vector.png)
 
-Vector geometry is typically stored in spatial databases such as PostgreSQL with the PostGIS extension. During preprocessing, this geometry is organized into vector tiles, where each tile contains only the features that intersect that region and zoom level. These tiles are stored in object storage and served through CDNs, making them highly cacheable and efficient to distribute.
+Vector geometry is usually stored in databases like PostgreSQL with the PostGIS extension. PostgreSQL is a database used to store and query tabular data. To handle geographic data like locations, roads, and boundaries, it uses a special extension called PostGIS that adds spatial capabilities. During preprocessing, this geometry is organized into vector tiles, where each tile contains only the features that intersect that region and zoom level.
 
 As vectors are mathematical representations rather than fixed images, the map remains crisp at any zoom level and can be styled dynamically by the client. 
 
@@ -256,7 +404,7 @@ Projection also enables the tiling system described earlier. Once geographic coo
 
 1. User interacts with the map and the client calculates viewport bounds, applies **Web Mercator projection**, and determines required tile coordinates `(z, x, y)`. Client fetches the tile if it is already available in the **Local HTTP/IndexedDB cache**.
 2. If the tile is not in client cache, it requests tiles from the **CDN**, which serves cached tiles from the edge whenever possible.
-3. On a CDN miss, the request is routed to the **API Gateway** of the Rendering Service.
+3. On a CDN miss, the request is routed to the **API Gateway** of the Map Service.
 4. The API Gateway performs **authentication and rate limiting** before routing the request to the **Tile Service**.
 5. The **Tile Service** parses the tile coordinates and computes the bounding box (latitude and longitude) for that tile. Then it checks a **Distributed Cache (Tile Cache)** for a precomputed tile.
 6. On cache miss, the precomputed tile is fetched from **Tile Storage**.
