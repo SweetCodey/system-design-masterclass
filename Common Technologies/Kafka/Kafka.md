@@ -100,36 +100,21 @@ However, ZooKeeper did not store Kafka message data. Producers and consumers int
 
 ## Problems with ZooKeeper
 
-Although ZooKeeper worked well initially, it introduced several architectural and operational challenges.
+Although ZooKeeper worked well initially, it introduced some limitations as Kafka clusters grew.
 
-### 1. Extra Distributed System
+### 1. Extra System to Manage
 
-Running Kafka required maintaining two distributed systems:
+Running Kafka required maintaining two distributed systems: Kafka brokers and a ZooKeeper cluster. This increased operational complexity.
 
-- Kafka brokers
-- ZooKeeper ensemble
+### 2. Metadata Stored Outside Kafka
 
-This increased deployment and operational complexity.
+Cluster metadata such as broker registrations and partition leaders was stored in ZooKeeper instead of Kafka, creating additional coordination overhead.
 
-### 2. Metadata Split Across Systems
+### 3. Scaling Challenges
 
-Kafka metadata such as:
+Large Kafka clusters with thousands of topics and partitions generated heavy metadata traffic, which ZooKeeper was not designed to handle efficiently.
 
-- topic configurations
-- broker registrations
-- partition leaders
-
-was stored in ZooKeeper instead of Kafka itself, creating extra network communication and synchronization overhead.
-
-### 3. Scaling Limitations
-
-Large Kafka clusters with thousands of topics and partitions created heavy metadata traffic, which ZooKeeper was not designed to handle efficiently.
-
-### 4. Operational Complexity
-
-Teams had to monitor, scale, and maintain ZooKeeper clusters separately, making operations more complicated.
-
-Because of these limitations, Kafka introduced a new architecture.
+Because of these limitations, Kafka introduced **KRaft**, which manages cluster metadata directly inside Kafka.
 
 ---
 
