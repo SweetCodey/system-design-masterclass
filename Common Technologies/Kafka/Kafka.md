@@ -52,15 +52,16 @@ Finally, consumers can read events in batches and perform **bulk inserts** into 
 
 Now that we understand what Kafka solves, let's see how it actually does it internally.
 
-## Understanding Kafka Architecture
+# Understanding Kafka Architecture
 
 Let us go back to the simple picture we discussed earlier.
 
 Producers send data. Consumers read data. Kafka sits in the middle and manages the flow.
 
 ---
+## Kafka Clusters, Brokers, and ZooKeeper vs KRaft
 
-## Kafka Clusters, Brokers, and ZooKeeper
+## Kafka Clusters and Brokers
 
 But Kafka is not a single machine.
 
@@ -72,26 +73,98 @@ When a producer wants to send a message, it first connects to any broker in the 
 
 Consumers work differently. They **pull messages** from Kafka. A consumer connects to a broker, fetches messages from its assigned partitions, processes them, and then **updates its offset**. Updating the offset means the consumer records how much data it has already read, so it can continue from the correct position next time.
 
-In traditional Kafka setups, **Apache ZooKeeper** is used to manage the cluster. ZooKeeper helps with:
+While brokers handle message storage and client communication, Kafka also needs a mechanism to coordinate the cluster, maintain metadata, and manage leader elections. Over time, Kafka has used two different approaches for this coordination: **ZooKeeper** (historical) and **KRaft** (modern).
 
-- Tracking which brokers are alive
-- Managing broker IDs
-- Electing leaders for partitions
-- Maintaining cluster metadata
+---
 
-ZooKeeper does not handle message data. Producers and consumers interact only with brokers. ZooKeeper works behind the scenes to keep the cluster coordinated and consistent.
+## ZooKeeper (Historical Architecture)
 
-This distributed design — brokers handling data, clients discovering the correct broker, and consumers updating offsets — is what allows Kafka to operate reliably at scale.
+In early versions of Kafka, **Apache ZooKeeper** was used to coordinate the Kafka cluster.
 
-<img src="./Resources/image%20(2).png" width="500" alt="Kafka cluster with brokers and ZooKeeper">
+ZooKeeper acted as a central coordination service that stored cluster metadata and helped manage broker coordination. Kafka brokers communicated with ZooKeeper to keep track of the cluster state.
 
+ZooKeeper handled tasks such as:
 
-| Kafka Cluster | ZooKeeper |
-| --- | --- |
-| Stores messages | Does not store messages |
-| Handles producers & consumers | Does not handle client data |
-| Manages topics & partitions | Manages cluster coordination |
-| Part of data path | Not part of data path |
+- Tracking active brokers in the cluster
+- Maintaining broker IDs
+- Leader election for partitions
+- Storing cluster metadata and configurations
+
+However, ZooKeeper did not store Kafka message data. Producers and consumers interacted only with Kafka brokers, while ZooKeeper worked in the background to coordinate the system.
+
+### ZooKeeper-based Kafka Architecture
+
+<img src="./Resources/image%20(2).png" width="500" alt="ZooKeeper Architecture">
+
+---
+
+## Problems with ZooKeeper
+
+Although ZooKeeper worked well initially, it introduced several architectural and operational challenges.
+
+### 1. Extra Distributed System
+
+Running Kafka required maintaining two distributed systems:
+
+- Kafka brokers
+- ZooKeeper ensemble
+
+This increased deployment and operational complexity.
+
+### 2. Metadata Split Across Systems
+
+Kafka metadata such as:
+
+- topic configurations
+- broker registrations
+- partition leaders
+
+was stored in ZooKeeper instead of Kafka itself, creating extra network communication and synchronization overhead.
+
+### 3. Scaling Limitations
+
+Large Kafka clusters with thousands of topics and partitions created heavy metadata traffic, which ZooKeeper was not designed to handle efficiently.
+
+### 4. Operational Complexity
+
+Teams had to monitor, scale, and maintain ZooKeeper clusters separately, making operations more complicated.
+
+Because of these limitations, Kafka introduced a new architecture.
+
+---
+
+## KRaft (Modern Kafka Architecture)
+
+Modern Kafka clusters use **KRaft** (Kafka Raft Metadata Mode) for cluster coordination.
+
+KRaft removes the dependency on ZooKeeper and integrates metadata management directly into Kafka using the Raft consensus protocol.
+
+Instead of storing metadata in ZooKeeper, Kafka now maintains a **metadata log** that is replicated across a set of controller nodes known as the **KRaft quorum**.
+
+These controllers manage:
+
+- Cluster metadata
+- Broker coordination
+- Leader election
+- Configuration changes
+
+Because metadata is now managed within Kafka itself, the architecture becomes simpler, more scalable, and easier to operate.
+
+### KRaft-based Kafka Architecture
+
+<img src="./Resources/kraft-architecture.png" width="500" alt="KRaft Architecture">
+
+---
+
+## ZooKeeper vs KRaft
+
+| Feature | ZooKeeper (Older Kafka) | KRaft (Modern Kafka) |
+| --- | --- | --- |
+| Coordination | External ZooKeeper cluster | Built into Kafka |
+| Metadata Storage | Stored in ZooKeeper | Stored in Kafka metadata log |
+| Architecture | Kafka + ZooKeeper clusters | Single Kafka cluster |
+| Operational Complexity | Higher | Lower |
+| Status | Removed in Kafka 4.0 | Current default |
 
 ---
 
