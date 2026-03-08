@@ -1,4 +1,28 @@
-TK - Add table of contents
+# Google Maps
+
+<!-- toc -->
+
+- [Introduction](#introduction)
+  * [What is a Maps Service](#what-is-a-maps-service)
+  * [How Maps Work](#how-maps-work)
+- [Requirements](#requirements)
+  * [Functional Requirements](#functional-requirements)
+  * [Non-Functional Requirements](#non-functional-requirements)
+- [API Design](#api-design)
+  * [Search](#search)
+  * [Rendering](#rendering)
+  * [Routing](#routing)
+- [High Level Design](#high-level-design)
+  * [Search](#search-1)
+  * [Rendering](#rendering-1)
+  * [Routing](#routing-1)
+- [Deep Dive Insights](#deep-dive-insights)
+  * [Database Selection](#database-selection)
+  * [Database Modelling](#database-modelling)
+  * [Hidden Markov Model (HMM)](#hidden-markov-model-hmm)
+  * [Douglas-Peucker Line Simplification](#douglas-peucker-line-simplification)
+
+<!-- tocstop -->
 
 ## Introduction
 
@@ -31,7 +55,7 @@ In an ideal scenario, a user goes through a sequence of flows such as searching 
 **Search**
 
 * **Place Search** – Users can search for places by name or keywords and get ranked results. 
-* **Nearby Search** - Users can search nearby places like "restuarants near me" or "malls within 5 kms"
+* **Nearby Search** - Users can search nearby places like "restaurants near me" or "malls within 5 kms"
 
 **Rendering**
 * **Map Rendering** – Display map tiles based on the user’s current viewport.
@@ -42,7 +66,7 @@ In an ideal scenario, a user goes through a sequence of flows such as searching 
 
 ### Non-Functional Requirements
 
-* **Low Latency** – Search, tile loading, and routing responses must be with in 100 ms.
+* **Low Latency** – Search, tile loading, and routing responses must be within 100 ms.
 * **High Availability** – Core features should remain 99.99% during peak usage.
 * **Scalability** – System must handle millions of concurrent users.
 * **Geospatial Accuracy** – Location tracking and routing must be precise with an acceptable error of + or - 40 meters.
@@ -152,11 +176,11 @@ If `GET` were used, these values would appear in the URL query string, making th
   "routeId": 123, // Optional Id. Needed for re-routing
   "source": {
     "lat": 12.9941,
-    "lng": 80.1709
+    "lon": 80.1709
   },
   "destination": {
     "lat": 13.0418,
-    "lng": 80.2337
+    "lon": 80.2337
   },
   "mode": "car"
 }
@@ -240,6 +264,8 @@ Each of these steps must happen very quickly, typically within **~100 millisecon
 #### 1. How does the system translate text into geographic coordinates
 When a user searches for a specific location (for example **"Marina Beach"**), the system needs to convert that text into geographic coordinates. This process is called **Forward Geocoding**. Forward geocoding simply means converting human-readable text into **latitude and longitude**. For example, *"Marina Beach"* is translated into "13.0500° N, 80.2824° E"
 
+> Similar to Forward Geocoding, there exists **Reverse Geocoing** where user taps a location on a map and get the place details.
+
 But, user inputs are rarely clean. People often type abbreviations, incomplete names, or misspellings. For example, *"marina bech"*, *"marina bch"*, or *"marina beach chennai"*.  Before searching the database, the system performs **parsing and normalization**. This step cleans the input by correcting common spelling mistakes and expanding abbreviations. For example, *"St"* to *"Street"*, *"Rd"* to *"Road"*
 
 After normalization, the system searches its place database, which contains information such as:
@@ -253,7 +279,7 @@ A common challenge is that many places share the same name. For example, *"Sprin
 - how popular the place is
 - how frequently people search for it
 
-For example, if a user in **Chennai** searches for *"Marina"*, the Chennai beach is far more likely to be returned. Whereas a user in **Banglore** searches for *"Marina"*, the Marina restaurant is returned.
+For example, if a user in **Chennai** searches for *"Marina"*, the Chennai beach is far more likely to be returned. Whereas a user in **Bengaluru** searches for *"Marina"*, the Marina restaurant is returned.
 
 ![](Resources/HLD_Search_Translation.png)
 
@@ -386,6 +412,8 @@ Dynamic layers are map overlays that show frequently changing information like l
 
 By separating fast-changing data from the static map, the system avoids constantly regenerating base tiles whenever traffic or other live conditions update.
 
+> Traffic data is not only used for real-time layers but also for historical prediction. For example, based on historical traffic patterns on GST Road, the map system may predict that traffic is usually heavy around 10 AM.
+
 #### 3. How is a Spherical Shape Rendered on a Flat 2D Screen
 
 The Earth is spherical, but screens are flat. To display geographic data on a 2D surface, mapping systems use a mathematical transformation called a **map projection**.
@@ -400,6 +428,8 @@ Projection also enables the tiling system described earlier. Once geographic coo
 
 #### End-to-End Rendering Flow
 
+Below end to end rendering flow is based on vector based map retrieval and rendering
+
 ![](Resources/HLD_Rendering_Flow.png)
 
 1. User interacts with the map and the client calculates viewport bounds, applies **Web Mercator projection**, and determines required tile coordinates `(z, x, y)`. Client fetches the tile if it is already available in the **Local HTTP/IndexedDB cache**.
@@ -409,8 +439,8 @@ Projection also enables the tiling system described earlier. Once geographic coo
 5. The **Tile Service** parses the tile coordinates and computes the bounding box (latitude and longitude) for that tile. Then it checks a **Distributed Cache (Tile Cache)** for a precomputed tile.
 6. On cache miss, the precomputed tile is fetched from **Tile Storage**.
 7. If the tile does not exist, the **Tile Service** queries the **Spatial Database** using **Quadtree or R-Tree indexing**. It retrieves raw geometry, clips it to tile bounds, and performs **line simplification** (e.g., via Douglas-Peucker algorithm).
-    * **Quad Tree** - A spatial data structures used to quickly find geographic features (like buildings or roads) within a specific map tile without searching the entire global database. A Quad-Tree recursively divides a 2D area into four squares to pinpoint locations, while an R-Tree groups nearby objects into "minimum bounding rectangles" for efficient range queries. (TK - Add dive-deep)
-    * **Douglas-Peucker Line Simplification** - This algorithm reduces the number of points in a complex curve (like a jagged coastline or a winding road) to create a simpler, "smoother" version that uses less data. It identifies and keeps only the most essential points that define the shape's overall structure, discarding minor details that wouldn't be visible at lower zoom levels. (TK - Add dive-deep)
+    * **Quad Tree** - A spatial data structures used to quickly find geographic features (like buildings or roads) within a specific map tile without searching the entire global database. A Quad-Tree recursively divides a 2D area into four squares to pinpoint locations, while an R-Tree groups nearby objects into "minimum bounding rectangles" for efficient range queries.
+    * **Douglas-Peucker Line Simplification** - This algorithm reduces the number of points in a complex curve (like a jagged coastline or a winding road) to create a simpler, "smoother" version that uses less data. It identifies and keeps only the most essential points that define the shape's overall structure, discarding minor details that wouldn't be visible at lower zoom levels.
 8. The generated tile is stored in **Tile Storage** and cached in the **Tile Cache**.
 9. The **Tile Service** returns the tile data via the API Gateway.
 10. The tile data is cached in the CDN and sent to the client. Client decodes vector tiles, applies **Style JSON**, and renders via **WebGL/GPU**.
@@ -452,7 +482,7 @@ We know that roads are modeled as a graph, where intersections are nodes and roa
 
 Dijkstra starts from the source and repeatedly expands the node with the smallest accumulated distance. It continues this process until the destination is reached, guaranteeing the shortest path.
 
-![](Resources/Routing_Djikstra.png)
+![](Resources/Routing_Dijsktra.png)
 
 The limitation is that Dijkstra has no awareness of the destination’s direction (**uninformed search**). It expands outward uniformly, exploring many unnecessary nodes. In large road networks with millions of nodes, this leads to excessive computation and higher latency.
 
@@ -462,7 +492,7 @@ Since modern map systems must compute routes in milliseconds and often recompute
 
 Assume you are driving from Chennai Airport to Marina Beach. The road network includes small residential streets, arterial roads, and highways. If we ran Dijsktra, it would expand in all directions even though Marina Beach lies northeast of the airport.
 
-A* is a superior modified version of Djikstra's algorithm. It uses straight-line distance to Marina Beach as a **heuristic**. That is, at each intersection (node), it evaluates:
+A* is a superior modified version of Dijsktra's algorithm. It uses straight-line distance to Marina Beach as a **heuristic**. That is, at each intersection (node), it evaluates:
 * How far have I driven so far?
 * How far does this road appear from Marina Beach?
 
@@ -472,13 +502,13 @@ If one road heads generally toward the coast and another heads inland, A* priori
 
 **Contraction Hierarchies**
 
-Assume another scenario, where you are driving from Chennai to Banglore. The road netwrok includes thousands of local streets, city arterial roads, and national highways. In reality, long-distance travel looks like: `local road → city arterial → National highway → city arterial → local road`. So, you do not evaluate every residential street between the two cities.
+Assume another scenario, where you are driving from Chennai to Bengaluru. The road netwrok includes thousands of local streets, city arterial roads, and national highways. In reality, long-distance travel looks like: `local road → city arterial → National highway → city arterial → local road`. So, you do not evaluate every residential street between the two cities.
 
-So, if we use A*, it still explores many nodes in large-scale routing (e.g., Chennai → Bangalore). It improves direction but does not shrink the graph.
+So, if we use A*, it still explores many nodes in large-scale routing (e.g., Chennai → Bengaluru). It improves direction but does not shrink the graph.
 
 Contraction hierarchies instead of improving the search strategy, it changes the graph itself. Contraction hierachies work by preprocessing the road network graph and add shortcut edges by bypassing unnecessary edges such as small residential intersections.
 
-So, instead of exploring hundreds of local streets, arterials, hundreds more streets, and highway, the graph contains `Chennai Arterial → National Highway Entry → National Highway Exit → Bangalore Arterial`. At query time, Contraction Hierarchies run a **bidirectional djikstra** search — one from the source and one from the destination — and only move through higher-level roads in the hierarchy. By avoiding lower-level streets and meeting in the middle, the algorithm explores far fewer nodes than a full graph search.
+So, instead of exploring hundreds of local streets, arterials, hundreds more streets, and highway, the graph contains `Chennai Arterial → National Highway Entry → National Highway Exit → Bengaluru Arterial`. At query time, Contraction Hierarchies run a **bidirectional Dijsktra** search — one from the source and one from the destination — and only move through higher-level roads in the hierarchy. By avoiding lower-level streets and meeting in the middle, the algorithm explores far fewer nodes than a full graph search.
 
 
 ![](Resources/HLD_Routing_Contraction_Hierarchies.png)
@@ -490,7 +520,7 @@ So, instead of exploring hundreds of local streets, arterials, hundreds more str
 
 Consider a scenario where you are driving from Chennai Airport to T Nagar during evening traffic. The initial route is `Airport → GST Road → Kathipara → Anna Salai → T Nagar` and the estimated time is **40 mins**. While you drive, your phone sends location updates every few seconds via GPS (Global Positioning System). Each update contains atitude, longitude, speed, and direction. 
 
-Raw GPS data is noisy. You may appear slightly off the road. So the system performs **map matching**. It snaps your GPS coordinate to the most likely road segment using proximity, and direction. Now the system knows “You are on GST Road, heading north”. Typically we use **Hidden Markov Model (HMM)** for map matching. A Hidden Markov Model is a probabilistic model used to infer a sequence of hidden states from noisy observations, assuming each state depends only on the previous one. (TK - Add dive deep)
+Raw GPS data is noisy. You may appear slightly off the road. So the system performs **map matching**. It snaps your GPS coordinate to the most likely road segment using proximity, and direction. Now the system knows “You are on GST Road, heading north”. Typically we use **Hidden Markov Model (HMM)** for map matching. A Hidden Markov Model is a probabilistic model used to infer a sequence of hidden states from noisy observations, assuming each state depends only on the previous one. Refer deep dive section [Hidden Markov Model](#hidden-markov-model-hmm) for more details.
 
 ![](Resources/Routing_HMM.png)
 
@@ -516,10 +546,148 @@ Every few seconds, the device sends updated GPS coordinates. The map matching lo
 6. The **Navigation Service** fetches the traffic weights of the edges from in-memory **Traffic Cache**. We use the cache instead of invoking **Traffic Service** to provide ultra low-latency response for route calculation.
     * a) **Traffic Stream Processor Service** listens to the **Traffic Stream** for traffic events published by the **Traffic Service**
     * b) The traffic events from the **Traffic Stream** are processed and stored in the **Traffic Cache** with a shorter TTL (Eg: 3 mins) as traffic rapidly change.
-7. The **Navigation Service** use the real-time traffic weights and runs the customization phase of CCH where the shortcut weights are recomputed based on the traffic weigths.
-8. The **Navigation Service** runs bi-directional Djikstra's on the CCH hierarchy to find the best route. Finally it expands the shortcut edges back into original road segments to produce full geometry.
+7. The **Navigation Service** use the real-time traffic weights and runs the customization phase of CCH where the shortcut weights are recomputed based on the traffic weights.
+8. The **Navigation Service** runs bi-directional Dijsktra's on the CCH hierarchy to find the best route. Finally it expands the shortcut edges back into original road segments to produce full geometry.
 9. For turn by turn direction, the path segments are converted to human-readable maneuvers using road metadata (e.g., turn angle, road name, restrictions).
 10. Finally, the response is returned to the client via the API Gateway. (Step 10a and 10b)
 
-## Dive Deep Insights
-TK - Yet to start
+> Usually, a map system shows multiple possible routes from the source to the destination and recommends the best route based on ETA. To achieve this, the system runs **K-shortest path algorithms** on the road graph to generate multiple routes. For example, when **K = 3**, the top three shortest routes are generated between the source and destination.
+
+## Deep Dive Insights
+### Database Selection
+
+Unlike most application systems that primarily store structured records such as users or orders, a maps platform must manage **geographic data representing real-world locations**. This requires specialized storage and querying system to efficiently handle spatial operations. Therefore, database selection in a maps system must consider **spatial database technologies** designed specifically for geographic data.
+
+
+| Guideline                                                      | Recommendation                   |
+| -------------------------------------------------------------- | -------------------------------- |
+| When storing geographic objects and performing spatial queries | Use Spatial Database             |
+| When serving static tiles at massive scale                     | Use Object Storage + CDN         |
+| When ingesting high-volume location streams                    | Use Time-Series / Wide Column DB |
+
+Based on the above guidelines, we made the database choices for our map service.
+
+<table>
+    <tr>
+        <th>Database</th>
+        <th>Deciding Factors</th>
+        <th>Decision</th>
+    </tr>
+    <tr>
+        <td>Places DB</td>
+        <td>
+            <ul>
+                <li><b>Geospatial Queries</b> – Find places within a bounding box or radius.</li>
+                <li><b>Text + Spatial Search</b> – Combine name search with geographic filtering.</li>
+                <li><b>Indexing Support</b> – Needs spatial indexes such as R-Tree.</li>
+            </ul>
+        </td>
+        <td>Spatial DB (PostgreSQL + PostGIS)</td>
+    </tr>
+    <tr>
+        <td>Traffic DB</td>
+        <td>
+            <ul>
+                <li><b>Continuous Updates</b> – Millions of devices sending speed updates.</li>
+                <li><b>Time-Based Data</b> – Historical traffic patterns are analyzed.</li>
+                <li><b>High Write Throughput</b> – Append-heavy workload.</li>
+            </ul>
+        </td>
+        <td>Time-Series DB (Cassandra / ClickHouse)</td>
+    </tr>
+    <tr>
+        <td>Tile Storage</td>
+        <td>
+            <ul>
+                <li><b>Massive Read Volume</b> – Billions of tile requests daily.</li>
+                <li><b>Immutable Data</b> – Tiles are pre-generated and rarely updated.</li>
+                <li><b>Global Distribution</b> – Must be served from edge locations.</li>
+            </ul>
+        </td>
+        <td>Object Storage + CDN</td>
+    </tr>
+</table>
+
+### Database Modelling
+#### Place Schema
+
+* Database Type - Spatial Database (PostgreSQL + PostGIS)
+* Common Queries
+  * Fetch place details by place_id
+  * Search places within a radius
+* Indexing
+  * GIST(location)
+
+> GIST (Generalized Search Tree) acts like a map divided into "nested boxes" that group nearby locations together. When you search, the database instantly skips any boxes that don't overlap your area, only "doing the math" for the few points left inside.
+
+![](Resources/DiveDeep_PlaceSchema.png)
+
+#### Traffic Schema
+* Database Type - Database Type: Time-Series / Wide Column
+* Common Queries
+  * Fetch latest speed for road segment
+  * Fetch historical traffic trends
+* Indexing
+  * segment_id (road segment)
+  * timestamp
+
+![](Resources/DiveDeep_TrafficSchema.png)
+
+### Hidden Markov Model (HMM)
+
+When the map application receives GPS coordinates from the phone, the coordinates are not perfectly accurate. GPS has an error of 5–10 meters, meaning the location point given by GPS may appear slightly off the actual road. In dense areas where roads run close to each other (for example, a main road and a service road), simply snapping the GPS point to the nearest road can produce incorrect results.
+
+To handle this, navigation systems use a Hidden Markov Model (HMM) for map matching—the process of aligning noisy GPS points with the correct road segment.
+
+#### Key Idea
+The key idea behind HMM is that the true road a vehicle is on is hidden, while the GPS coordinates we observe are noisy signals of that hidden state. Instead of deciding the road using a single GPS point, the system evaluates a sequence of points over time and determines which road sequence best explains the movement.
+
+#### Working of HMM
+Consider a situation where two parallel roads are only 15 meters apart. A vehicle sends three GPS points while driving. Because of GPS noise, the first two points may appear close to both roads. If the system only looked at distance, it might incorrectly snap the points to the service road.
+
+HMM avoids this by considering two signals:
+
+* **Emission probability** - It reflects how well a GPS point fits a candidate road. If the point lies very close to a road segment, the probability that the vehicle is on that road increases.
+* **Transition probability** - It evaluates whether movement between two points is realistic on the road network. If moving from one candidate road to another would require an impossible turn, a disconnected segment, or a large detour, the probability becomes very low.
+
+Instead of making independent decisions for each point, HMM evaluates entire sequences of possible road assignments. For example:
+
+* Road A → Road A → Road A
+* Road B → Road B → Road A
+* Road A → Road B → Road A
+* (other sequences stripped)
+
+![](Resources/DiveDeep_HMM.png)
+
+Each sequence is scored using both emission and transition probabilities. Even if the first point is closer to Road B, the sequence staying consistently on Road A may receive a higher overall probability because the movement is smooth and follows the road network.
+
+### Douglas-Peucker Line Simplification
+
+Maps are noisy. A single road can be stored as hundreds or thousands of GPS points because survey data captures every tiny bend, jitter, and measurement error. Rendering all those points at every zoom level would be wasteful and slow. The **Douglas–Peucker Line Simplification** algorithm exists to solve exactly that problem: `keep the points that define the shape, discard the ones that don’t meaningfully change it`.
+
+Imagine a winding road represented by many points:
+
+> A ---- p1 ---- p2 ---- p3 ---- ... ---- B
+
+If you draw a straight line from A → B, most intermediate points will lie close to that line. Some points, however, will deviate significantly because the road bends there. Those are the points worth keeping.
+
+#### Working of Douglas-Peucker Line Simplification
+The algorithm works recursively:
+
+1. Take the first and last point of the line segment.
+2. Draw a straight line between them.
+3. For every intermediate point, compute its perpendicular distance from this line.
+4. Find the point with the maximum distance. Two cases occur:
+    * If the maximum distance is below a threshold (ε). All intermediate points are discarded. The line can be safely approximated as a straight segment.
+    * If the distance exceeds ε. That point represents a meaningful bend and must be preserved. The algorithm splits the line at that point and repeats the process on both segments.
+
+![](Resources/DiveDeep_Douglas.png)
+
+The curve is progressively broken into segments until every segment approximates the original shape within the allowed tolerance.
+
+#### Why Mapping Systems Depend on It
+Douglas–Peucker is heavily used in geospatial pipelines because it attacks several performance bottlenecks simultaneously:
+
+* Reduces storage size
+* Improves rendering speed. Fewer vertices mean faster GPU drawing.
+* Speeds up spatial operations
