@@ -66,10 +66,10 @@ In an ideal scenario, a user goes through a sequence of flows such as searching 
 
 ### Non-Functional Requirements
 
-* **Low Latency** – Search, tile loading, and routing responses must be within 100 ms.
-* **High Availability** – Core features should remain 99.99% during peak usage.
-* **Scalability** – System must handle millions of concurrent users.
-* **Geospatial Accuracy** – Location tracking and routing must be precise with an acceptable error of + or - 40 meters.
+* **Low Latency** – Search, tile loading, and routing responses must be within 100 ms. If map tiles or search results take longer to load, the map feels sluggish when users pan or zoom.
+* **High Availability** – Core features should remain 99.99% during peak usage. If the system becomes unavailable during navigation or route calculation, users may lose directions mid-journey, which directly impacts reliability and trust in the service
+* **Scalability** – System must handle millions of concurrent users. Large spikes occur during rush hours, holidays, or major events, and the system must scale horizontally
+* **Geospatial Accuracy** – Location tracking and routing must be precise with an acceptable error of + or - 40 meters. If location accuracy is poor, navigation instructions may trigger too early or too late, causing users to miss turns or appear on the wrong road.
 
 ---
 
@@ -90,6 +90,10 @@ We use `GET` method as we are retrieving place data from the backend system. The
 * lat - User latitude
 * lon - User longitude
 * limit - Maximum results to return
+* cursor - The encoded bookmark from the previous response. Leave empty for the first request.
+
+> Think of a cursor as a digital bookmark that tells the database exactly where you stopped reading, rather than just a page number. It uses a specific piece of data (like a distance or ID) from the last item you saw to find the very next one. For example, Instead of asking for "Page 2," you tell the map, "Give me the next 10 coffee shops that are further than 500 meters away." This ensures that even if a new shop opens up nearby while you're scrolling, you won't see the same results twice.
+
 
 **HTTP Response**
 
@@ -112,7 +116,12 @@ We use `GET` method as we are retrieving place data from the backend system. The
       "rating": 4.2,
       "distance_meters": 540
     }
-  ]
+  ],
+  "pagination": {
+    "next_cursor": "NTQwfHBsY185ODQ=", // Encoded value of the last checkpoint
+    "has_more": true,
+    "total_count_estimate": 100
+  }
 }
 ```
 
@@ -160,6 +169,7 @@ Since the data is binary, it cannot be read directly. After decoding, it becomes
 
 ### Routing
 
+#### Fetch Route
 Routing finds the fastest route from a source to a destination and provides turn-by-turn directions to reach it. This is the core “Point A to Point B” service. The system calculates the best path using the road network and returns the route as a polyline. **Think of a polyline as a path drawn by connecting multiple points on a map.**
 
 
@@ -171,7 +181,7 @@ We use the endpoint `/v1/routes` to calculate a route between a source and a des
 If `GET` were used, these values would appear in the URL query string, making them more likely to be logged by servers, proxies, browser history, and intermediary systems. `POST` places the data in the request body, reducing unintended exposure and avoiding URL length limitations when sending complex routing parameters such as waypoints or preferences.
 
 **HTTP Request**
-```
+```json
 {
   "routeId": 123, // Optional Id. Needed for re-routing
   "source": {
@@ -192,7 +202,7 @@ Think of the response as a list of possible routes from source to destination, o
 
 Each route includes the total distance, estimated travel time, the path of the route (polyline), and step-by-step driving instructions such as when to turn and which road to take.
 
-```
+```json
 [
   {
   "routeId": 123,
@@ -222,6 +232,54 @@ Each route includes the total distance, estimated travel time, the path of the r
   }
 ]
 ```
+
+#### Navigation Update
+During navigation the phone keeps whispering its position to the backend every few seconds. The server listens, snaps the location onto the road network (map matching), checks whether the user is still following the planned route, updates ETA, and decides whether a reroute is needed
+
+![](Resources/API_NavigationUpdate.png)
+
+**HTTP Method & Endpoint**
+The `POST` method is used because the request typically contains a sequence of GPS points. Sending this structured data in the request body avoids URL length limitations and allows multiple points to be processed in a single request. The endpoint would be `/v1/navigation/update`
+
+**HTTP Request Body**
+
+```json
+{
+  "routeId": 123,
+  "trace": [
+    {
+      "lat": 13.0087,
+      "lon": 80.2105,
+      "timestamp": 1710000000
+    },
+    {
+      "lat": 13.0093,
+      "lon": 80.2113,
+      "timestamp": 1710000003
+    },
+    {
+      "lat": 13.0101,
+      "lon": 80.2121,
+      "timestamp": 1710000006
+    }
+  ],
+  "speed": 41,
+  "heading": 92
+}
+```
+
+**HTTP Response**
+
+```json
+{
+  "onRoute": true,
+  "etaSeconds": 1320,
+  "distanceRemainingMeters": 7900,
+  "reroute": false
+}
+```
+
+---
 
 ## High Level Design
 
@@ -264,7 +322,7 @@ Each of these steps must happen very quickly, typically within **~100 millisecon
 #### 1. How does the system translate text into geographic coordinates
 When a user searches for a specific location (for example **"Marina Beach"**), the system needs to convert that text into geographic coordinates. This process is called **Forward Geocoding**. Forward geocoding simply means converting human-readable text into **latitude and longitude**. For example, *"Marina Beach"* is translated into "13.0500° N, 80.2824° E"
 
-> Similar to Forward Geocoding, there exists **Reverse Geocoing** where user taps a location on a map and get the place details.
+> Similar to Forward Geocoding, there exists **Reverse Geocoding** where user taps a location on a map and get the place details.
 
 But, user inputs are rarely clean. People often type abbreviations, incomplete names, or misspellings. For example, *"marina bech"*, *"marina bch"*, or *"marina beach chennai"*.  Before searching the database, the system performs **parsing and normalization**. This step cleans the input by correcting common spelling mistakes and expanding abbreviations. For example, *"St"* to *"Street"*, *"Rd"* to *"Road"*
 
@@ -340,6 +398,8 @@ Once the system finds all nearby candidates, it still needs to decide **which re
 9. The final ranked results are stored in cache to speed up similar future queries.  
 10. The Search Service returns the response through the API Gateway to the client.  
 11. The client renders the returned places as markers on the map interface.
+
+> GPS coordinates reveal the user’s real-world location and are considered as sensitive data (PII - Personally Identifiable Information). All routing and navigation requests should be transmitted over **HTTPS (TLS) to ensure encryption in transit**. Raw GPS traces used for navigation should be retained only briefly for processing (e.g., map matching and ETA updates) and then discarded. If location data is stored for analytics such as traffic estimation, it should be aggregated and anonymized to prevent identifying individual users.
 
 ### Rendering
 
@@ -490,9 +550,9 @@ Since modern map systems must compute routes in milliseconds and often recompute
 
 **A\*  (A-Star)**
 
-Assume you are driving from Chennai Airport to Marina Beach. The road network includes small residential streets, arterial roads, and highways. If we ran Dijsktra, it would expand in all directions even though Marina Beach lies northeast of the airport.
+Assume you are driving from Chennai Airport to Marina Beach. The road network includes small residential streets, arterial roads, and highways. If we ran Dijkstra, it would expand in all directions even though Marina Beach lies northeast of the airport.
 
-A* is a superior modified version of Dijsktra's algorithm. It uses straight-line distance to Marina Beach as a **heuristic**. That is, at each intersection (node), it evaluates:
+A* is a superior modified version of Dijkstra's algorithm. It uses straight-line distance to Marina Beach as a **heuristic**. That is, at each intersection (node), it evaluates:
 * How far have I driven so far?
 * How far does this road appear from Marina Beach?
 
@@ -502,13 +562,13 @@ If one road heads generally toward the coast and another heads inland, A* priori
 
 **Contraction Hierarchies**
 
-Assume another scenario, where you are driving from Chennai to Bengaluru. The road netwrok includes thousands of local streets, city arterial roads, and national highways. In reality, long-distance travel looks like: `local road → city arterial → National highway → city arterial → local road`. So, you do not evaluate every residential street between the two cities.
+Assume another scenario, where you are driving from Chennai to Bengaluru. The road network includes thousands of local streets, city arterial roads, and national highways. In reality, long-distance travel looks like: `local road → city arterial → National highway → city arterial → local road`. So, you do not evaluate every residential street between the two cities.
 
 So, if we use A*, it still explores many nodes in large-scale routing (e.g., Chennai → Bengaluru). It improves direction but does not shrink the graph.
 
-Contraction hierarchies instead of improving the search strategy, it changes the graph itself. Contraction hierachies work by preprocessing the road network graph and add shortcut edges by bypassing unnecessary edges such as small residential intersections.
+Contraction hierarchies instead of improving the search strategy, it changes the graph itself. Contraction hierarchies work by preprocessing the road network graph and add shortcut edges by bypassing unnecessary edges such as small residential intersections.
 
-So, instead of exploring hundreds of local streets, arterials, hundreds more streets, and highway, the graph contains `Chennai Arterial → National Highway Entry → National Highway Exit → Bengaluru Arterial`. At query time, Contraction Hierarchies run a **bidirectional Dijsktra** search — one from the source and one from the destination — and only move through higher-level roads in the hierarchy. By avoiding lower-level streets and meeting in the middle, the algorithm explores far fewer nodes than a full graph search.
+So, instead of exploring hundreds of local streets, arterials, hundreds more streets, and highway, the graph contains `Chennai Arterial → National Highway Entry → National Highway Exit → Bengaluru Arterial`. At query time, Contraction Hierarchies run a **bidirectional Dijkstra** search — one from the source and one from the destination — and only move through higher-level roads in the hierarchy. By avoiding lower-level streets and meeting in the middle, the algorithm explores far fewer nodes than a full graph search.
 
 
 ![](Resources/HLD_Routing_Contraction_Hierarchies.png)
@@ -518,7 +578,7 @@ So, instead of exploring hundreds of local streets, arterials, hundreds more str
 
 #### 3. How does navigation adjust in real time
 
-Consider a scenario where you are driving from Chennai Airport to T Nagar during evening traffic. The initial route is `Airport → GST Road → Kathipara → Anna Salai → T Nagar` and the estimated time is **40 mins**. While you drive, your phone sends location updates every few seconds via GPS (Global Positioning System). Each update contains atitude, longitude, speed, and direction. 
+Consider a scenario where you are driving from Chennai Airport to T Nagar during evening traffic. The initial route is `Airport → GST Road → Kathipara → Anna Salai → T Nagar` and the estimated time is **40 mins**. While you drive, your phone sends location updates every few seconds via GPS (Global Positioning System). Each update contains latitude, longitude, speed, and direction. 
 
 Raw GPS data is noisy. You may appear slightly off the road. So the system performs **map matching**. It snaps your GPS coordinate to the most likely road segment using proximity, and direction. Now the system knows “You are on GST Road, heading north”. Typically we use **Hidden Markov Model (HMM)** for map matching. A Hidden Markov Model is a probabilistic model used to infer a sequence of hidden states from noisy observations, assuming each state depends only on the previous one. Refer deep dive section [Hidden Markov Model](#hidden-markov-model-hmm) for more details.
 
@@ -538,18 +598,21 @@ Every few seconds, the device sends updated GPS coordinates. The map matching lo
 
 ![](Resources/HLD_Routing_Flow.png)
 
-1. Client calls `POST /v1/routes` endpoint with source, destination, and travel mode (Eg: Bike, Car, etc)
+1. Client calls `POST /v1/routes` endpoint with source, destination, travel mode (Eg: Bike, Car, etc), raw GPS coordinates
 2. The API Gateway of the Navigation Service handles the request and route it to the Navigation Service.
 3. The **Navigation Service** uses HMM algorithm to snap the raw latitude and longitude to the nearest road segments using spatial index (Eg: R-tree). It then converts the coordinates into graph node IDs
 4. The **Navigation Service** checks the **Route Cache** for cached route for the combination of source node, destination node, and travel mode. If a route exists, it returns immediately.
-5. If route doesn't exist in cache, the **Navigation Service** loads the graph from **Road Graph Cache**. This contains the pre-computed CCH heirarchy structure
+5. If route doesn't exist in cache, the **Navigation Service** loads the graph from **Road Graph Cache**. This contains the pre-computed CCH hierarchy structure
 6. The **Navigation Service** fetches the traffic weights of the edges from in-memory **Traffic Cache**. We use the cache instead of invoking **Traffic Service** to provide ultra low-latency response for route calculation.
     * a) **Traffic Stream Processor Service** listens to the **Traffic Stream** for traffic events published by the **Traffic Service**
     * b) The traffic events from the **Traffic Stream** are processed and stored in the **Traffic Cache** with a shorter TTL (Eg: 3 mins) as traffic rapidly change.
 7. The **Navigation Service** use the real-time traffic weights and runs the customization phase of CCH where the shortcut weights are recomputed based on the traffic weights.
-8. The **Navigation Service** runs bi-directional Dijsktra's on the CCH hierarchy to find the best route. Finally it expands the shortcut edges back into original road segments to produce full geometry.
+8. The **Navigation Service** runs bi-directional Dijkstra's on the CCH hierarchy to find the best route. Finally it expands the shortcut edges back into original road segments to produce full geometry.
 9. For turn by turn direction, the path segments are converted to human-readable maneuvers using road metadata (e.g., turn angle, road name, restrictions).
 10. Finally, the response is returned to the client via the API Gateway. (Step 10a and 10b)
+11. The device keep sending the GPS coordinates to `/v1/navigation/update` endpoint which is then routed to the **Navigation Service** via the API Gateway (Step 11a and 11b)
+12. The navigation service performs map matching via HMM and tells if the user is deviating and re-route is needed. The response is returned to the client via the API Gateway (Step 12a and 12b)
+13. If re-route is needed, the client invokes the API Gateway with `/v1/routes` for calculating the new route.
 
 > Usually, a map system shows multiple possible routes from the source to the destination and recommends the best route based on ETA. To achieve this, the system runs **K-shortest path algorithms** on the road graph to generate multiple routes. For example, when **K = 3**, the top three shortest routes are generated between the source and destination.
 
