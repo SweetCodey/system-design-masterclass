@@ -1,0 +1,65 @@
+name: System Design Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if PR contains design documents
+        id: check_design
+        run: |
+          # Get list of changed files in the PR
+          CHANGED_FILES=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Check if any changed file is a .md file inside a numbered design folder
+          # Pattern: "N. Design Something/SomeName.md" or similar
+          DESIGN_FILES=$(echo "$CHANGED_FILES" | grep -E '^[0-9]+\. .+/.+\.md$' || true)
+
+          if [ -z "$DESIGN_FILES" ]; then
+            echo "No design documents found in this PR. Skipping review."
+            echo "has_design=false" >> $GITHUB_OUTPUT
+          else
+            echo "Design documents found:"
+            echo "$DESIGN_FILES"
+            echo "has_design=true" >> $GITHUB_OUTPUT
+            # Save design files list for the next step (newline-separated -> comma-separated)
+            DESIGN_FILES_CSV=$(echo "$DESIGN_FILES" | tr '\n' ',' | sed 's/,$//')
+            echo "design_files=$DESIGN_FILES_CSV" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        if: steps.check_design.outputs.has_design == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        if: steps.check_design.outputs.has_design == 'true'
+        run: pip install anthropic
+
+      - name: Run design review
+        if: steps.check_design.outputs.has_design == 'true'
+        run: python .github/scripts/review_design.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_FULL_NAME: ${{ github.repository }}
+          DESIGN_FILES: ${{ steps.check_design.outputs.design_files }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
