@@ -24,7 +24,7 @@ REPO_FULL_NAME = os.environ["REPO_FULL_NAME"]
 DESIGN_FILES = os.environ["DESIGN_FILES"]  # comma-separated
 PR_HEAD_SHA = os.environ["PR_HEAD_SHA"]
 
-MODEL = "claude-opus-4-0-20250514"
+MODEL = "claude-opus-4-6"
 
 # ── Skill Files ─────────────────────────────────────────────────────────────────
 
