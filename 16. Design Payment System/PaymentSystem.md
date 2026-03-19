@@ -1,10 +1,11 @@
-# Payment System
+# PAYMENT SYSTEM
 
 <!-- toc -->
 
 - [Introduction](#introduction)
   * [What is a payment system?](#what-is-a-payment-system)
   * [Why we need a payment system?](#why-we-need-a-payment-system)
+- [Glossary](#glossary)
 - [Requirements](#requirements)
   * [Functional Requirements](#functional-requirements)
   * [Non-Functional Requirements](#non-functional-requirements)
@@ -12,10 +13,16 @@
   * [Initiate](#initiate)
   * [Pay](#pay)
   * [Payment Status](#payment-status)
-- [Glossary](#glossary)
+  * [Refund](#refund)
 - [High Level Design](#high-level-design)
   * [Payment Initiation](#payment-initiation)
   * [Payment Execution](#payment-execution)
+    + [Payment Registration](#payment-registration)
+    + [Payment Authorization](#payment-authorization)
+      - [Payment State Machine](#payment-state-machine)
+    + [Payment Status Handling](#payment-status-handling)
+      - [Authorization vs Settlement](#authorization-vs-settlement)
+    + [Refund Processing](#refund-processing)
 - [Deep Dive Insights](#deep-dive-insights)
   * [Database Selection](#database-selection)
   * [Database Modelling](#database-modelling)
@@ -44,21 +51,87 @@ For example, credit and debit card payments require card networks such as Visa o
 
 ---
 
+## Glossary
+
+We will encounter the following terms in the later sections of this article, so familiarizing yourself with them will help in understanding the content.
+
+![](Resources/Glossary.png)
+
+* **Merchant** – The business that sells products or services and receives the payment from customers. *(Example: Amazon, Swiggy)*
+* **Issuing Bank** – The bank that issued the customer’s debit or credit card and checks whether the customer has enough funds to approve the payment. *(Example: HDFC Bank issuing a credit card)*
+* **Acquiring Bank** – The bank that enables the merchant to accept card payments and receives the funds on behalf of the merchant. *(Example: ICICI Bank providing payment services to a merchant)*
+* **Payment Gateway** – The system that collects payment details from the customer and securely sends the payment request to the processor. *(Example: Stripe checkout page)*
+* **Payment Processor** – The system that communicates with card networks and banks to process and authorize the payment. *(Example: Stripe processing a card transaction)*
+* **Payment Network** – The network that connects issuing banks and acquiring banks and routes card transactions between them. *(Example: Visa, Mastercard)*
+
+---
+
 ## Requirements
 ### Functional Requirements
-* **Payment Method Support** - The system should allow merchants to accept payments via multiple payment methods such as card, netbanking, UPI, etc.
-* **Manage Payment Transaction** - The system should create a transaction when a user initiates a payment and track its lifecycle (created, authorized, failed, refunded).
-* **Payment Authorization** - The system should send payment requests to the appropriate payment networks, or banks and receive authorization or rejection responses.
-* **Idempotent Payment Processing** - The system should prevent duplicate charges when the same payment request is retried due to network failures or client retries.
+
+<table>
+  <tr>
+    <th>Requirement</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><b>Payment method support</b></td>
+    <td>Allow merchants to accept payments via multiple payment methods such as card, netbanking, UPI, etc.</td>
+  </tr>
+  <tr>
+    <td><b>Manage payment transaction</b></td>
+    <td>Create a transaction when a user initiates a payment and track its lifecycle (created, auth_pending, authorized, failed, refunded).</td>
+  </tr>
+  <tr>
+    <td><b>Payment authorization</b></td>
+    <td>Send payment requests to the appropriate payment networks/banks and receive authorization or rejection responses.</td>
+  </tr>
+  <tr>
+    <td><b>Refunds</b></td>
+    <td>Allow merchants to initiate refunds against a successful payment and track the refund lifecycle.</td>
+  </tr>
+  <tr>
+    <td><b>Webhook notifications</b></td>
+    <td>Notify merchant backend asynchronously for key payment events (e.g., payment.authorized, payment.failed, payment.refunded) so merchant systems can update order state reliably.</td>
+  </tr>
+  <tr>
+    <td><b>Idempotent write operations</b></td>
+    <td>Prevent duplicate charges/duplicate resources when the same request is retried due to network failures or client retries (especially for write operations like initiating or paying).</td>
+  </tr>
+</table>
 
 ### Non-Functional Requirements
-* **Consistency** - The system must maintain correct and consistent transaction states. A payment should never result in conflicting states such as both success and failure, and duplicate charges must be avoided.
-* **Security** - The payment system handles sensitive financial data. Payment information must be protected using strong encryption both in transit and at rest.
-* **Availability** – The system should remain highly available (e.g., 99.99% uptime) so that merchants can continue accepting payments even during peak traffic
-* **Scalability** – The system should be able to handle large spikes in transaction volume, especially during peak shopping periods or promotional events.
-* **Idempotency** – The system should ensure that retrying the same payment request does not result in duplicate transactions or multiple charges.
-* **Durability** - The system should guarantee that no transaction record is ever lost when infrastructure fails
-* **Auditability** – The system should maintain detailed logs and records of all payment activities to support auditing, dispute resolution, and regulatory compliance.
+
+<table>
+  <tr>
+    <th>Requirement</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><b>Consistency</b></td>
+    <td>Maintain correct and consistent transaction states. A payment should never result in conflicting states such as both success and failure.</td>
+  </tr>
+  <tr>
+    <td><b>Security</b></td>
+    <td>Protect sensitive financial data using strong encryption in transit and at rest, with strict access controls and least-privilege.</td>
+  </tr>
+  <tr>
+    <td><b>Availability</b></td>
+    <td>Remain highly available (e.g., 99.99% uptime) so that merchants can continue accepting payments even during peak traffic.</td>
+  </tr>
+  <tr>
+    <td><b>Scalability</b></td>
+    <td>Handle large spikes in transaction volume, especially during peak shopping periods or promotional events.</td>
+  </tr>
+  <tr>
+    <td><b>Durability</b></td>
+    <td>Guarantee that no transaction record is ever lost when infrastructure fails.</td>
+  </tr>
+  <tr>
+    <td><b>Auditability</b></td>
+    <td>Maintain detailed logs and records of all payment activities to support auditing, dispute resolution, and regulatory compliance.</td>
+  </tr>
+</table>
 
 ---
 
@@ -69,7 +142,7 @@ This endpoint starts the payment process by creating a transaction record in the
 ![](Resources/API_Initiate.png)
 
 #### HTTP Method & Endpoint
-We use the **POST** method to create a new payment resource. The endpoint is `/v1/payments/`
+We use the **POST** method to create a new payment resource. The endpoint is `/v1/payments`
 
 #### HTTP Request Header
 * **Authorization**: Merchant Secret Key (Bearer token). This authenticates the merchant and the payment gateway
@@ -90,6 +163,8 @@ We use the **POST** method to create a new payment resource. The endpoint is `/v
     }
 }
 ```
+
+> Note: `amount` and `tax` are strings intentionally to avoid floating point precision issues. In production systems, money is typically stored/processed as an integer in the smallest currency unit (e.g., paise/cents) or as a fixed-precision decimal (Ex: 19.99 not 19.999999999).
 
 #### HTTP Response
 ```json
@@ -130,7 +205,7 @@ We use the **POST** method to securely register a new payment instrument. The en
 }
 ```
 
-> For simplicity, card details in the request body are added as plain text. As the card details are sensitive information, the real payment system will encrypt the data using **client-side encryption** before sending it to the server. We will discuss more about this in the [high level design section](#payment-registration)
+> For simplicity, card details in the request body are added as plain text. As the card details are sensitive information, the real payment system will encrypt the data using **client-side encryption** before sending it to the server. We will discuss more about this in the [high level design section](#payment-registration).
 
 **HTTP Response**
 
@@ -141,7 +216,7 @@ We use the **POST** method to securely register a new payment instrument. The en
     "expiry": {
         "month": "08",
         "year": "2027"
-    },
+    }
 }
 ```
 
@@ -160,6 +235,7 @@ We use the **POST** method to execute the transaction. The endpoint is `/v1/paym
 #### HTTP Request Header
 
 * **sessionToken**: Required for user authentication.
+* **Idempotency-Key**: A unique string to prevent double charge if the client retries this request.
 
 #### HTTP Request Body
 
@@ -219,18 +295,38 @@ We use the **GET** method to retrieve the current state. The endpoint is `/v1/pa
 
 ---
 
-## Glossary
+### Refund
 
-We will encounter the following terms in the later sections of this article, so familiarizing yourself with them will help in understanding the content.
+Refunds are initiated by the **merchant backend** (for example from a customer support tool) after a payment has succeeded/authorized. Refund is a critical write operation, so it must be idempotent.
 
-![](Resources/Glossary.png)
+![](Resources/API_Refund.png)
 
-* **Merchant** – The business that sells products or services and receives the payment from customers. *(Example: Amazon, Swiggy)*
-* **Issuing Bank** – The bank that issued the customer’s debit or credit card and checks whether the customer has enough funds to approve the payment. *(Example: HDFC Bank issuing a credit card)*
-* **Acquiring Bank** – The bank that enables the merchant to accept card payments and receives the funds on behalf of the merchant. *(Example: ICICI Bank providing payment services to a merchant)*
-* **Payment Gateway** – The system that collects payment details from the customer and securely sends the payment request to the processor. *(Example: Stripe checkout page)*
-* **Payment Processor** – The system that communicates with card networks and banks to process and authorize the payment. *(Example: Stripe processing a card transaction)*
-* **Payment Network** – The network that connects issuing banks and acquiring banks and routes card transactions between them. *(Example: Visa, Mastercard)*
+#### HTTP Method & Endpoint
+
+We use the **POST** method to create a refund resource for a payment. The endpoint is `/v1/payments/{paymentId}/refunds`.
+
+#### HTTP Request Header
+
+* **Authorization**: Merchant Secret Key (Bearer token). This authenticates the merchant and the payment gateway.
+* **Idempotency-Key**: A unique string to prevent duplicate refunds if the merchant retries the request.
+
+#### HTTP Request Body
+
+```json
+{
+    "reason": "CUSTOMER_REQUEST"
+}
+```
+
+#### HTTP Response
+
+```json
+{
+    "refundId": "refund123",
+    "paymentId": "payment123",
+    "status": "REFUND_PENDING"
+}
+```
 
 ---
 
@@ -252,6 +348,7 @@ Payment initiation is the stage where a payment request is created by the mercha
 4. The **Payment Gateway** checks in the **Payment Database** if an existing payment session is available for the idempotency key sent by the merchant. If present, it fetches and returns the response immediately.
 5. If not present, The **Payment Gateway** creates a payment entry on the **Payment Database** to track the life cycle of the payment for the checkout flow.
 6. The **Payments Gateway Backend** creates a random session token and persists it in the **Session Cache**. The session token should be short lived and hence a TTL of 15 minutes is set on the cache entry. The session token will be linked to the paymentId in the session cache.
+    * There is a high risk of data loss when Session Cache cluster crash. To avoid this we can have a fallback backup like **Append Only File - AOF** in Redis which adds every cache entry to an append only log file. If the cache cluster crash, it is reconstructed from the AOF.
 7. The **Payment Gateway** generates the payment selection URL and returns it to the **Merchant Backend** via the **Payments API Gateway** (Step 7a and 7b).
 8. The **Merchant Backend** redirects the user to the payment selection URL sent by the Payment Gateway.
 
@@ -263,6 +360,8 @@ While rendering the page, the **Payment Gateway** also provides a public encrypt
 ![](Resources/HLD_PaymentFlow.png)
 
 #### Payment Registration
+
+<a id="payment-registration"></a>
 
 The payment registration flow handles the process of securely saving a user’s payment method, such as a credit or debit card. The saved method can be used later to make payments.
 
@@ -290,7 +389,7 @@ The encrypted card data (or a temporary token representing the card) is then sen
 
 #### Payment Authorization
 
-Payment authorization is the  step where the bank checks the payment request and verifies if the transaction can be approved. The bank may also ask for additional verification such as an OTP. Once the transaction is approved, the funds are reserved.
+Payment authorization is the step where the bank checks the payment request and verifies if the transaction can be approved. The bank may also ask for additional verification such as an OTP. Once the transaction is approved, the funds are reserved.
 
 ![](Resources/HLD_Payment.png)
 
@@ -313,7 +412,7 @@ Payment authorization is the  step where the bank checks the payment request and
     * Although the user experiences a simple redirect and OTP verification, several systems — including the payment processor, card network directory server, and the bank’s Access Control Server — coordinate behind the scenes to complete this authentication step.
 13. The **Issuing Bank** verifies the OTP and returns the authorization result (`AUTHORIZED` or `DECLINED`).
 
-**Payment State Machine**
+#### Payment State Machine
 
 Payment transactions move through multiple well-defined states during their lifecycle. For example, a payment may start as `CREATED`, move to `AUTH_PENDING` when the user initiates the payment, and transition to `AUTHORIZED` or `FAILED` after the bank processes the request. Maintaining a clear payment state machine helps the system avoid invalid transitions and ensures that each transaction progresses through a predictable and auditable lifecycle.
 
@@ -329,19 +428,34 @@ The Payment Status flow tracks the lifecycle of a transaction and exposes the la
     * For simplicity, this design initially uses `merchantId` as the partition key. This can cause **hot partitions** if a large merchant generates huge traffic. To fix it, the payment event stream can be partitioned using `paymentId` as the partition key. This ensures that all events related to a single payment are processed in order while distributing different payments evenly across multiple partitions for better throughput.
 3. The **Payment Event Consumer** running inside the Payment Gateway subscribes to the queue and receives the event.
 4. The **Payment Event Consumer** updates the corresponding payment record in the **Payment Database** using the information in the event.
-5. The frontend periodically calls `/v1/payments/{paymentId}/status` to check the payment status.
+5. The frontend periodically calls `/v1/payments/{paymentId}` to check the payment status.
 6. The request is routed to the **Payment Gateway** via **Payments API Gateway**
 7. The **Payment Gateway** simply reads the latest payment status from the **Payment Database**
 8. The status is returned to the client via the **Payments API Gateway**. (Step 8a and 8b)
 9. The payment gateway also sends an asynchronous webhook notification (e.g., payment.succeeded or payment.failed) to the merchant backend so the merchant system can update the order status.
 
-**Authorization vs Settlement**
+#### Authorization vs Settlement
 
 When a payment is authorized, the issuing bank only places a temporary hold on the customer’s account. The actual transfer of funds happens later during the settlement process, where the issuing bank sends the money through the card network to the acquiring bank.
 
 Payment systems also perform **reconciliation**, where the gateway compares its transaction records with settlement reports received from acquiring banks to ensure that all approved payments are correctly settled and no discrepancies exist.
 
 ![](Resources/HLD_Settlement.png)
+
+### Refund Processing
+
+Refund processing reverses funds after a successful payment. It is usually triggered by the merchant backend (returns, cancellations, failed fulfillment), not by the customer browser.
+
+![](Resources/HLD_Refund.png)
+
+1. The **Merchant Backend** calls `POST /v1/payments/{paymentId}/refunds` with `Authorization` and an `Idempotency-Key`.
+2. The **Payments API Gateway** routes the request to the **Payments Gateway Backend**.
+3. The **Payment Gateway** validates the merchant, verifies the payment is in a refundable state, and creates a refund record in the **Payment Database** with state `REFUND_PENDING`.
+4. The **Payment Gateway** returns the response with the reference `refundId` to the merchant via the **Payments API Gateway** (Step 4a and 4b).
+5. The **Payment Gateway** calls the **Payment Processor** with the refund request (payment reference, amount, merchant identifiers).
+6. The **Payment Processor** submits the refund to the network/bank and publishes a refund event (e.g., `payment.refunded` or `payment.refund_failed`) to the **Payment Event Stream** (Steps 6a, 6b, and 6c).
+7. The **Payment Event Consumer** updates the refund record and the payment state in the **Payment Database** (`REFUNDED` / `REFUND_FAILED`) (Steps 7a and 7b).
+8. The **Payment Gateway** sends a webhook notification to the merchant backend (e.g., `payment.refunded`) so the merchant system can update order state.
 
 ---
 
@@ -419,9 +533,11 @@ Based on the above guidelines, we made the database choices for our payment serv
                 <li><b>Used for auditing and compliance</b>.</li>
             </ul>
         </td>
-        <td>NoSQL (Wide Column)</td>
+        <td>NoSQL (Wide Column, e.g., Cassandra)</td>
     </tr>
 </table>
+
+> A log-based streaming system (like Kafka) is an append-only distributed log where producers publish events and consumers read them in order. It fits payments well because it can handle high write throughput, allows replay for system recovery, and decouples event producers (processor) from multiple consumers (gateway, analytics).
 
 ### Database Modelling
 #### Payment Schema
@@ -460,7 +576,7 @@ Based on the above guidelines, we made the database choices for our payment serv
 
 ![Audit Log Schema](Resources/DiveDeep_AuditSchema.png)
 
-* **Database Type:** NoSQL (Wide Column / Time-series)
+* **Database Type:** NoSQL (Wide Column / Time-series, e.g., Cassandra)
 * **Common Queries:**
   * Retrieve audit logs for a `paymentId`
   * Fetch events within a time range for compliance checks
@@ -519,4 +635,9 @@ WAL is actually fast because it performs **sequential writes** and they are chea
 
 ![](Resources/DiveDeep_WAL.png)
 
-Building a payment system requires careful attention to consistency, security, and durability. Even though the user experiences a simple “Pay Now” button, many distributed systems work together behind the scenes to ensure that every transaction is processed safely and reliably.
+
+In addition, this design can recover from the exact “gateway crashed before saving approval” scenario using the **Payment Event Stream** and **reconciliation**:
+
+* The **Payment Processor** publishes an immutable event (e.g., `payment.authorized`) to the Payment Event Stream once it receives the bank/network decision.
+* The **Payment Event Consumer** in the gateway is a durable subscriber: if it crashes, it resumes by replaying events from the stream and applies them idempotently to the Payment Database.
+* A periodic **reconciliation job** compares gateway records vs processor/acquirer settlement/authorization reports to detect and fix any missing updates (e.g., gateway missed an event due to prolonged outage).
