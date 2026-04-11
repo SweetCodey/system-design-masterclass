@@ -160,7 +160,7 @@ This is exactly what **Secondary Indexes** solve.
 
 You create a **GSI** with `City` as the new partition key:
 
-<img src="./Resources/GSI.png" width="500" alt="GSI">
+<img src="./Resources/GSI.png" width="700" alt="GSI">
 
 
 Notice: only rows that **have a City value** appear in the GSI. The InTransit and Delivered rows for PK102 have no city, so they are not indexed.
@@ -341,7 +341,7 @@ Let's trace a write request step by step.
 
 **Scenario:** Package PK102 just got delivered. The system writes the delivery event.
 
-<img src="./Resources/quorum.png" width="500" alt="Quorum">
+<img src="./Resources/quorum.png" width="800" alt="Quorum">
 
 This is called a **quorum write** (W = 2 out of 3).
 
