@@ -1,17 +1,5 @@
 # Amazon DynamoDB: How It Handles Millions of Requests Without Slowing Down
 
-## TL;DR
-
-Amazon DynamoDB is a **distributed key-value database designed for extreme scale**.
-
-It maintains **single-digit millisecond latency** even under massive workloads by:
-
-- **Distributing data across many machines**
-- **Replicating data for high availability**
-- **Using simple key-value access instead of complex joins**
-- **Scaling horizontally by adding more nodes**
-
-This architecture allows DynamoDB to process **millions of requests per second** without slowing down.
 
 # **The Real Problem**
 
@@ -238,7 +226,7 @@ DynamoDB solves this with **consistent hashing**.
 
 The idea is elegant: imagine the entire hash output space (say, 0 to 2³² − 1) arranged as a **ring** (circle). Each node is placed at a position on this ring by hashing its identifier.
 
-<img src="./Resources/consistent.png" width="500" alt="Consistent Hashing">
+<img src="./Resources/consistent.png" width="900" alt="Consistent Hashing">
 
 When a **write or read** comes in for a key:
 
