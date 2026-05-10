@@ -1,47 +1,34 @@
 # CAB SHARING SYSTEM DESIGN
 
 - [DECIDING REQUIREMENTS](#deciding-requirements)
-
     - [1. Functional Requirements](#functional-requirements)
-
     - [2. Non Functional Requirements](#non-functional-requirements)
 
 - [CAPACITY ESTIMATION](#capacity-estimation)
-
     - [3. DAU-MAU](#dau-mau-estimation)
-
     - [4. Throughput](#throughput-estimation)
-
     - [5. Storage](#storage-estimation)
-
     - [6. Memory](#memory-estimation)
-
     - [7. Network And Bandwidth Estimation](#network-and-bandwidth-estimation)
 
 - [API DESIGN](#api-design)
-
     - [8. API Design:Book A Cab](#api-design-book-a-cab)
-
     - [9. API Design:Track The Ride](#api-design-track-the-ride)
-
     - [10. API Design:View Ride History](#api-design-view-ride-history)
 
 - [HIGH LEVEL DESIGN](#high-level-design)
-
     - [11. High Level Design:Book A Cab](#high-level-design-book-a-cab)
-
     - [12. High Level Design:Track The Ride](#high-level-design-track-the-ride)
-
     - [13. High Level Design:View Ride History](#high-level-design-view-ride-history)
 
 - [DEEP DIVE INSIGHTS](#deep-dive-insights)
-
     - [14.DEEP DIVE INSIGHTS: Database Selection](#deep-dive-insights-database-selection)
-
     - [15.DEEP DIVE INSIGHTS: Database Modeling](#deep-dive-insights-database-modeling)
-
     - [16.DEEP DIVE INSIGHTS: Into Book A Cab Service](#deep-dive-insights-into-book-a-cab-service)
-
+        - [16.1.Into Book A Cab Service: View Map](#into-book-a-cab-service-view-map)
+        - [16.2.Into Book A Cab Service: View ETA](#into-book-a-cab-service-view-eta)
+        - [16.3.Into Book A Cab Service: Find A Driver](#into-book-a-cab-service-find-a-driver)
+        - [16.4.Into Book A Cab Service: View Ride History](#into-book-a-cab-service-view-ride-history)
 <hr style="border:2px solid gray">
 
 # DECIDING REQUIREMENTS
@@ -143,19 +130,19 @@ For Capacity Estimation, we will consider both **customers** and **cab drivers**
 
 ### For Customers
 
-#### How many users are using your software?
+#### How many users are using the cab sharing software?
 - <strong>Daily Active Users</strong> (DAU) : ```36 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```180 million```
 
->__*Note:*__ DAU and MAU estimations for customers are considered from [Uber cab sharing Wiki](https://en.wikipedia.org/wiki/Uber#:~:text=It%20is%20the%20largest%20ridesharing%20company%20worldwide%20with%20over%20180%20million%20monthly%20active%20users%20and%206%20million%20active%20drivers%20and%20couriers.%20It%20coordinates%20an%20average%20of%2036%20million%20trips%20and%20delivery%20orders%20per%20day). If you want, then you can update these estimates as per your convenience.
+>__*Note:*__ DAU and MAU estimations for customers are considered from [Uber cab sharing Wiki](https://en.wikipedia.org/wiki/Uber#:~:text=It%20is%20the%20largest%20ridesharing%20company%20worldwide%20with%20over%20180%20million%20monthly%20active%20users%20and%206%20million%20active%20drivers%20and%20couriers.%20It%20coordinates%20an%20average%20of%2036%20million%20trips%20and%20delivery%20orders%20per%20day). If we want, then we can update these estimates as per our convenience.
 
 ### For Cab Drivers
 
-#### How many cab drivers are using your software?
+#### How many cab drivers are using the cab sharing software?
 - <strong>Daily Active Users</strong> (DAU) : ```3 million```
 - <strong>Monthly Active Users</strong> (MAU) : ```93 million```
 
->__*Note:*__ DAU and MAU estimations for cab drivers are considered as a rough estimate based on the Google search results. If you want, then you can update these estimates as per your convenience.
+>__*Note:*__ DAU and MAU estimations for cab drivers are considered as a rough estimate based on the Google search results. If we want, then we can update these estimates as per our convenience.
 
 ## Throughput Estimation
 
@@ -326,7 +313,7 @@ Some of the possible ways of read requests to the system:
     </tr>
 </table>
 
->__*Note:*__ Average size of a Cab Sharing user record - 100 KB is considered as a rough estimate. If you want, then you can update it as per your convenience.
+>__*Note:*__ Average size of a Cab Sharing user record - 100 KB is considered as a rough estimate. If we want, then we can update it as per our convenience.
 
 ## Memory Estimation
 
@@ -348,7 +335,7 @@ Accessing data directly from the database takes time. To speed up data retrieval
 - <strong>Daily Storage Requirement</strong>: ```3.42 TB```
 - <strong>Cache Requirement(1% of Daily Storage)</strong>: ```(1/100) x 3.42 TB = 34.2 GB```
 
->__*Note:*__ You may wonder, why we considered 1% of daily storage as cache requirement! This is because we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
+>__*Note:*__ The reason for considering 1% of daily storage as cache requirement is - we need to store geo-spatial data only relevant to the user i.e. area closer to their location.
 
 ### Scalability
 The memory size should scale as the system grows to accommodate increasing storage and data access demands.
@@ -487,7 +474,7 @@ This tells to the server what action to perform. Since we want to book a cab for
 ### Endpoint
 This tells the server where to perform that action. Since we are booking a ride for a user, we will use the `/v1/bookings` endpoint of the server.
 
->__*Note:*__ 'v1' means version 1. It is good practice to version your APIs. You can customize the endpoint based on your convenience.
+>__*Note:*__ 'v1' means version 1. It is a good practice to version our APIs. We can customize the endpoint based on our convenience.
 
 ### HTTP Body
 We have told the server to book a ride for a user, but we haven't provided the details of the booking itself. This information is sent in the request body:
@@ -526,7 +513,7 @@ __Solution:__ WebSockets
 
 WebSockets enable __bidirectional__ communication.
 
->__*Note:*__ For more details, you can refer to our WebSocket section of [Communication Protocols](../Course%20Notes/03%20-%20Appendix/03%20-%20Networking%20Buzzwords/03%20-%20Communication%20Protocols_%20Rules%20for%20Computer%20Communication.md).
+>__*Note:*__ For more details, we can refer to our WebSocket section of [Communication Protocols](../Course%20Notes/03%20-%20Appendix/03%20-%20Networking%20Buzzwords/03%20-%20Communication%20Protocols_%20Rules%20for%20Computer%20Communication.md).
 
 The below image represents the creation of bi-directional communication using a HTTP request.
 
@@ -578,7 +565,7 @@ Server will consider both Mark/John's current location and drop-off location coo
 
 >__*Note:*__
 >1. ETA calculation involves several steps which will get covered in the __Book A Cab__ high level design.
->2. __The map, ETA__ and __distance(in miles)__ in the above images are considered as an example. You can re-consider these factors as per your convenience.
+>2. __The map, ETA__ and __distance(in miles)__ in the above images are considered as an example. We can re-consider these factors as per our convenience.
 >3. There can be more cases during this tracking process. Some of them are-
 >    - Mark may change his pick-up location during __Wait For The Cab__ period. In this case-
 >        - Server can notify both Mark and John about the dynamic change of John's ETA to Mark's location along with distance to reach.
@@ -631,20 +618,20 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 2. The __Client__ can send view request to the __API gateway__ via WebSocket connection.
     - An API gateway acts as a single entry point for all incoming requests.
-    *Note:* For more details, you can refer to our [API gateway template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/10%20-%20API%20Gateway.md)
+    *Note:* For more details, we can refer to our [API gateway template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/10%20-%20API%20Gateway.md)
 
 ![API Gateway Service Flow](./Resources/HLDViewMap2.png)
 
-3. The __API gateway__ can relay the request to the __load balancer__.
+3. The __API gateway__ can relay the request to the active __load balancer__ of any Zone based on it's availability.
     - A load balancer acts like a traffic manager, directing incoming user requests to different servers.
-    *Note:* For more details, you can refer to our [ultimate system design template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/04%20-%20Load%20Balancer.md)
+    *Note:* For more details, we can refer to our [ultimate system design template](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/04%20-%20Load%20Balancer.md)
 
 4. The __Load balancer__ can relay the request to the __Data Fetch__ service.
     - The Data Fetch service can take request and pass it to appropriate service within cluster for a response.
 
 ![Flow within Service Cluster](./Resources/HLDViewMap3.png)
 
-5. The __Data Fetch__ service can relay the request to a Load balancer within the service cluster. The Load balancer can direct the request to a available __Map__ service.
+5. The __Data Fetch__ service can relay the request to any active Load balancer of any available zone within the service cluster. The Load balancer can direct the request to a available __Map__ service.
     - The __Map__ service is responsible to manage map data.
     - There can be __multiple Map services__ to address multiple requests simultaneously.
 
@@ -665,9 +652,6 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 12. The __Data Fetch__ can save user's map information to the __user record__ database.
     - The __user record__ database is responsible for maintaining user's information.
-        - Internally, you can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in cab sharing system.
-        *Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
-            - As there is a chance of stale data, we can use [ZooKeeper service](https://en.wikipedia.org/wiki/Apache_ZooKeeper) to maintain synchronization between database and its replica(s).
 
 >__*Note:*__ Maintenance of multiple Map services can be dependent on no of user requests.
 
@@ -675,29 +659,12 @@ How Mark was able to view the map which allowed him to choose pick-up and drop-o
 
 13. The __API gateway__ can send the response back to the __Client__. Now, Mark can view the booking page with a __Map view__.
 
-14. The __Client__ can save map information to the __CDN__.
-    - The __Content Delivery Network(CDN)__ stores copies of your website’s data that doesn’t change too often.
-    *Note:* For more details on CDN, you can refer to the CDN section of [Database Storages](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md).
-
-15. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
+14. We can use in-memory cache to __avoid__ additional __network data usage__ on duplicate download of map data by drivers.
     - __In-memory cache__ can help us to update data only if the server map data changes.
 
 #### Final HLD for View Map:
 
 ![View Map Overall Flow](./Resources/HLDViewMapOverall.png)
-
-#### Map Cache Flow
-
-To provide map data with low latency, we can make use CDN effectively. The below image gives us an idea how CDN decreases latency in loading Mark's/John's Map details.
-
-![View Map CDN Cache](./Resources/HLDCDNCache.png)
-
-1. Mark thought of opening his cab sharing application and __Client__ can request __CDN__ for Mark's __Map information__. 
-2. The __CDN__ worried because it doesn't have Mark's Map information, so it requested __Cab Sharing__ servers to provide relevant information.
-3. The __Cab Sharing__ servers can get the __map data__ from __key-value__ storage 
-4. The __Cab Sharing__ servers can provide the response back to the __CDN__.
-
->__*Note:*__ The Client can __validate__ the CDN __cache correctness__ based on various __factors__ such as Mark's or John's current location e.t.c.,
 
 #### Technology Chosen:
 __Google’s S2 library__: Unlike many geometry libraries, google's S2 is primarily designed to work with spherical geometry
@@ -709,7 +676,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 
 ![User Request](./Resources/HLDviewETA1.png)
 
-1. The __Client__ can get static Map data from __CDN__ for Mark and Mark can click __ok__ button after entering pick-up and drop-off points.
+1. Mark can open the application to enter pick-up and drop-off points, and can click __ok__ button.
 
 2. The __Client__ can send __view ETA__ request to the __API gateway__.
 
@@ -717,7 +684,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 
 ![API Load Balancer Flow](./Resources/HLDviewETA2.png)
 
-3. The __API gateway__ can relay the request to __load balancer__.
+3. The __API gateway__ can relay the request to __load balancer__ of any zone based on it's availability.
 
 4. The __Load balancer__ can direct the same request to __Data Fetch__ service.
 
@@ -743,30 +710,27 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 11. The __Ride Estimator__ service can consider the map data as a __graph__ to compute accurate ETA.
     - In Map graph, a road intersection is considered as a node and a road segment is considered as an edge.
     - Let's say, road intersections are more in Mark's ride path. In this case, we can partition the Map graph to calculate ETA efficiently.
-    *Note:* You can refer to this [link](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) for more details on Graph.
+    *Note:* We can refer to this [link](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) for more details on Graph.
 
 12. The __Ride Estimator__ service can make use of __GPS signal__ service to get active & recent GPS observed points between Mark's pick-up and drop-off points.
-    *Note:* For more information on GPS signals, you can refer to this [link](https://en.wikipedia.org/wiki/GPS_signals)
+    *Note:* For more information on GPS signals, we can refer to this [link](https://en.wikipedia.org/wiki/GPS_signals)
 
 13. Now, to get the __accurate ETA__, we can do __map matching__ between estimated and GPS observed points as shown in the image above.
     - In __Map matching__, if the estimated and GPS observed points don't match, then step 11 will be repeated with the ride path paired with GPS observed points and can skip step 12 and step 13.
     - The final calculated ETA data can be relayed back to the __Data Fetch__ service.
 
 14. The computed __ETA__ along with user's details (such as user's current location, pick-up and drop-off points) can be registered in database through __Estimator Database__ handler for re-usability purposes.
-    *Note:*
-    1. Based on the business need you can limit or extend this storage.
-    2. For instance, if you want to limit, then you can save only ETA associated to pick-up and drop-off points to the Ride Estimator Database. Also, you can consider this storage if Mark changes his drop-off location.
 
 >__*Note:*__
 >- We can store average speeds in a hash table for fast look-up.
->    - A hash table generalizes the simpler notion of an array. You can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
+>    - A hash table generalizes the simpler notion of an array. We can refer to our __hashing__ section of [Extras file](../1.%20System%20Design%20Basics/Extras.md) for more information.
 
 ![Response Flow1](./Resources/HLDviewETA5.png)
 
 15. The __Ride Estimator__ service can provide computed ETA output to the __Data Fetch__ service.
 
-16. The __Data Fetch__ service can __save ETA__ associated to pick-up and drop-off points to the __User Record__ Database. Also, you can consider this storage if Mark changes his drop-off location.
-    *Note:* This storage cannot be required always unless you have a business need.
+16. The __Data Fetch__ service can __save ETA__ associated to pick-up and drop-off points to the __User Record__ Database. Also, we can consider this storage if Mark changes his drop-off location.
+    *Note:* This storage cannot be required always unless we have a business need.
 
 ![Response Flow2](./Resources/HLDviewETA6.png)
 
@@ -779,7 +743,7 @@ How Mark was able to view ETA to the drop-off point? Let's find out.
 ![ETA Overall Flow](./Resources/HLDviewETAOverall.png)
 
 >__*Note:*__
->1. The average speed and ETA in the reference image are considered as an example. You can update them as per your convenience.
+>1. The average speed and ETA in the reference image are considered as an example. We can update them as per our convenience.
 >2. While calculating ETA, __Haversine distance__ can be considered. Think of it like a formula to compute the shortest distance between two points on a sphere. More details are [here](https://en.wikipedia.org/wiki/Haversine_formula)
 >3. As ETA can keep on changing between two locations based on various factors and also storage can be huge in case of ETA. So, we are not considering ETA storage for entire ride path. Instant communication can be preferred.
 
@@ -789,14 +753,14 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 ![User Request](./Resources/HLDfindADriver1.png)
 
-1. The __Client__ can get static Map data from __CDN__ for Mark and Mark can click __Book__ button after knowing ETA to his drop-off point.
+1. Mark can click __Book__ button after knowing ETA to his drop-off point.
 
 2. The __Client__ can send __booking__ request to the __API gateway__.
     - __Find A Driver__ request is a part of booking request.
 
 ![API Load Balancer Request](./Resources/HLDfindADriver2.png)
 
-3. The __API gateway__ can relay the request to the __load balancer__.
+3. The __API gateway__ can relay the request to the __load balancer__ of any zone based on it's availability.
 
 4. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
 
@@ -810,7 +774,7 @@ How Mark was able to find a driver for his booking? Let's look into it.
 ![Driver Finder Service](./Resources/HLDfindADriver4.png)
 
 - The __Driver Finder__ service can use Key-Value(Redis cluster) storage to store driver locations.
-    - Redis key-value store is an example of NoSQL database. For more details, you can refer to [Database Concept](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/02%20-%20Database.md).
+    - Redis key-value store is an example of NoSQL database. For more details, we can refer to [Database Concept](../Course%20Notes/03%20-%20Appendix/01%20-%20The%20Ultimate%20System%20Design%20Template/02%20-%20Database.md).
 - The __Key Value Storage__ can have many __instances__, meaning driver locations are __distributed__ among all instances.
 - We may encounter two issues with this storage:
     1. __Hot Shard Problems__
@@ -818,7 +782,7 @@ How Mark was able to find a driver for his booking? Let's look into it.
         - Solution:
             - We can use S2 library to divide a map into regions that can vary in size.
             - So that only few cars will fit inside a single shard.
-        *Note:* For more details on sharding, you can refer to our __Database Sharding__ under [System Design Basics](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md)
+        *Note:* For more details on sharding, we can refer to our __Database Sharding__ under [System Design Basics](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md)
 
     2. __In-active Drivers__
         - The drivers who __stopped driving__ for the rest of the day.
@@ -863,10 +827,7 @@ How Mark was able to find a driver for his booking? Let's look into it.
 
 17. The __API gateway__ can send the response back to the __Client__ with booking acceptance message.
 
-18. The __Client__ can retrieve John details from the __CDN__.
-    *Note:* The Client can get the driver details from API gateway, but for faster load time, it can make use of CDN.
-
-19. Now, Mark is __able to view__ driver details via Client.
+18. Now, Mark is __able to view__ driver details via Client.
 
 ### Final HLD for finding a driver:
 
@@ -884,75 +845,61 @@ How Mark and John were able to track their ride? Let's take a look.
 
 1. __User can start their ride__ through __Client__ device to initiate __tracking__.
 
-2. The Client can __get static data__ from __CDN__ to populate on Client device.
-
-3. The __Client__ can make use of web-socket connection to forward the request to the __API Gateway__.
+2. The __Client__ can make use of web-socket connection to forward the request to the __API Gateway__.
 
 ![API Gateway Flow](./Resources/HLDTrackTheRide2.png)
 
-4. The __API gateway__ can relay the request to the __load balancer__.
+3. The __API gateway__ can relay the request to the __load balancer__ of a zone based on it's availability.
 
-5. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
+4. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
 
 ![Data Fetch Request Flow](./Resources/HLDTrackTheRide3.png)
 
-6. The __Data Fetch__ service can send the Map data request to the available __Map__ service through a __Load Balancer__.
+5. The __Data Fetch__ service can send the Map data request to the available __Map__ service through a __Load Balancer__ of a zone based on it's availability.
 
-7. The __Data Fetch__ service can send the ETA request to the available __Ride Estimator__ service through a __Load Balancer__.
+6. The __Data Fetch__ service can send the ETA request to the available __Ride Estimator__ service through a __Load Balancer__ of a zone based on it's availability.
 
 ![Ride Tracking Flow](./Resources/HLDTrackTheRide4.png)
 
-8. The __Map__ service can take help from __Map Database__ handler to get the map details.
+7. The __Map__ service can take help from __Map Database__ handler to get the map details.
     - The __Map Database__ handler can use S2 index to get user's region and also to find relevant database partition.
     - The __Map Database__ handler can use this partition to download the map data from __key value storage__.
     - The __Map Database__ handler can relay the response to the __Map__ service.
 
-9. The __Map__ service can take help from the __GPS signal__ service to avoid the risk of missing road data.
+8. The __Map__ service can take help from the __GPS signal__ service to avoid the risk of missing road data.
 
-10. The __Map__ service can provide a copy of final map data output to the __Ride Estimator__ service for computing ETA.
+9. The __Map__ service can provide a copy of final map data output to the __Ride Estimator__ service for computing ETA.
     - The __Map__ service can send this information as per the request from the __Ride Estimator__ service.
 
-11. The __Estimator__ service can use __deep learning algorithms__ to predict traffic control elements, such as __stop signals__ and __traffic lights__.
+10. The __Estimator__ service can use __deep learning algorithms__ to predict traffic control elements, such as __stop signals__ and __traffic lights__.
     *Note:*
     1. The traffic control elements will be considered only once between pick-up and drop-off points.
-    2. If Mark changes either pick-up point (at the start) or drop-off point (at the end), then you can repeat this step to get updated data.
+    2. If Mark changes either pick-up point (at the start) or drop-off point (at the end), then we can repeat this step to get updated data.
 
-12. The __Estimator__ service can get location based average speeds from the hash table through __Estimator Database__ handler.
+11. The __Estimator__ service can get location based average speeds from the hash table through __Estimator Database__ handler.
 
-13. The __Estimator__ service can extract __GPS signal__ details for missing road information.
+12. The __Estimator__ service can extract __GPS signal__ details for missing road information.
     - This information is useful, if the estimated path encounters any run time changes like John takes different route to reach drop-off location or Mark updates the ride with stopping points in between.
 
-14. The __Estimator__ service will make use of __Map__ data to compute the ETA as per user's current location.
+13. The __Estimator__ service will make use of __Map__ data to compute the ETA as per user's current location.
     - The partition of Map graph is still useful to compute ETA by considering road intersections and road segments efficiently.
 
 ![Ride Tracking Response](./Resources/HLDTrackTheRide5.png)
 
-15. The __Map__ service can relay the response back to the __Data Fetch__ service.
-16. The __Ride Estimator__ service can provide the computed ETA to the __Data Fetch__ service.
-17. The __Data Fetch__ service can save user's current, drop-off location coordinates and respective ETA to the __user record__ database.
+14. The __Map__ service can relay the response back to the __Data Fetch__ service.
+15. The __Ride Estimator__ service can provide the computed ETA to the __Data Fetch__ service.
+16. The __Data Fetch__ service can save user's current, drop-off location coordinates and respective ETA to the __user record__ database.
     - This step can be an optional one, because it will be a storage overhead to maintain location coordinates through out the ride path.
-    - You can consider the location coordinates at the start of the ride and at the end of the ride along with their ETA. Also, you can consider this storage if Mark changes his drop-off location.
+    - We can consider the location coordinates at the start of the ride and at the end of the ride along with their ETA. Also, we can consider this storage if Mark changes his drop-off location.
 
 ![API Gateway Response](./Resources/HLDTrackTheRide6.png)
 
-18. The __API Gateway__ can give a response to the __Client__.
+17. The __API Gateway__ can give a response to the __Client__.
     - As we are tracking the ride, responses can be asynchronous i.e: cab sharing servers can keep-on sending responses to client as Mark's or John's current location progresses.
 
-19. The __Client__ can store the information to the __CDN__.
+18. As Mark progressed with his ride, our __backend-system__ responded back with __updated ETA__ along with his __latest location__ details to __Client__ through __API Gateway__.
 
-20. The static information from __CDN__ can be used to render the client's User Interface(UI) until, it receives the response from backend system.
-
-21. As Mark progressed with his ride, our __backend-system__ responded back with __updated ETA__ along with his __latest location__ details to __Client__ through __API Gateway__.
-
-22. The __Client__ can store the information to the __CDN__.
-
-23. The __Client retrieves__ static information that was saved in __CDN__.
-    - And this process of retrieving data from backend system for data population continuous until ride completes
-
-24. The __API Gateway__ can relay the ride completion response to the __client__.
-
-25. The __Client__ can save the ride completion status to the __CDN__.
-    - This can help Mark to view his ride status later on.
+19. The __API Gateway__ can relay the ride completion response to the __client__.
 
 #### Final HLD for Ride Tracking:
 
@@ -964,13 +911,11 @@ How John checked his Ride History? Let's see.
 
 ![Client Request](./Resources/HLDViewRideHistory1.png)
 
-1. John can click __Profile__ option from Client's home page to see an option for his ride history called __Activity__.
+1. John can click __Profile__ option from Client's home page to see an option for his ride history.
 
-2. As John's profile page is static, meaning options won't change often, the Client can take help from CDN to load profile page options.
-    - If John is accessing his profile page for the first time, then Client can request the Cab Sharing Servers for profile page data.
-    - Also, you might be wondering, what will happen if there is a change in profile page options! This case can be handled in two ways-
-        1. The Cab sharing system can notify client via Notification asynchronous communication service and can re-load the page with his approval.
-        2. The Cab sharing system can collect all new features for client and release them as an when application upgrade happens (preferred for hand held devices like mobile applications).
+2. As some of the John's profile page data are static, meaning data won't change often, the Client can take help from the CDN to load profile page options.
+    - The CDN can relay the request to it's edge server within any available zone to get the response.
+    >Note: We can refer to deep dive for more details and can corelate CDN with a generic example [here](../1.%20System%20Design%20Basics/Database%20and%20Storage%20Basics.md)
 
 3. After loading __profile__ page, John can click __Activity__ option to send ride history request.
 
@@ -978,7 +923,7 @@ How John checked his Ride History? Let's see.
 
 ![API-Load balancer](./Resources/HLDViewRideHistory2.png)
 
-5. The __API gateway__ can relay the request to the __load balancer__.
+5. The __API gateway__ can relay the request to the __load balancer__ of any available zone.
 
 6. The __Load balancer__ can direct the same request to the __Data Fetch__ service.
 
@@ -996,8 +941,7 @@ How John checked his Ride History? Let's see.
 
 10. __John can see__ his previous ride history along with payment information through __Client__.
 
-11. The __Client__ can save John's ride history to the __CDN__ until John completes his next ride.
-    - The reason for maintaining John's ride history until his next ride is, the Cab Sharing system can refresh the John's ride history based on his next ride status.
+11. The __Client__ can save static data of John's ride history to the __CDN__'s edge server to accommodate future requests as applicable.
 
 __Final View Ride History HLD__:
 
@@ -1132,25 +1076,22 @@ The table below provides a high-level comparison of when to use __SQL__ vs __NoS
 
 ## DEEP DIVE INSIGHTS: Into Book A Cab Service
 
-### View Map
+### Into Book A Cab Service: View Map
 
 We've seen how the Map service provided services to Mark and John by gathering data from different sources. Now, let's dive deeper into those sources.
 
-#### The process of getting map information
+#### Definition(s):
 
-__Introduction:__
-
-- [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap): OpenStreetMap (OSM) is a free, open map database updated and maintained by a community of volunteers via open collaboration. For more information, you can click on the hyperlink.
-
+- [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap): OpenStreetMap (OSM) is a free, open map database updated and maintained by a community of volunteers via open collaboration. For more information, we can click on the hyperlink.
 - [S2 Library](http://s2geometry.io/): Unlike many geometry libraries, google's S2 is primarily designed to work with spherical geometry, i.e: shapes drawn on a sphere rather than on a planar 2D map.
     - Some of the S2 features:
         - S2 divides the map into grids called cells and gives each cell a unique ID.
         - Flexible support for spatial indexing, including the ability to estimate inconsistent regions as a collection of discrete S2 cells. This feature makes it easy to build distributed spacial indexes.
         - Fast in-memory spacial indexing of collections of points, polylines, and polygons.
-
 - [Amazon DynamoDB](https://en.wikipedia.org/wiki/Amazon_DynamoDB) is a managed NoSQL database service provided by Amazon Web Services (AWS). It supports key-value and document data structures. It is primarily used for scalability and performance.
 
-__Usage:__
+#### The process of getting map information
+
 - We can use OSM for internal map data. It gives a free and editable map of the world.
 - And can use Google’s S2 library on top of OSM to efficiently index and query map data.
 - OSM can store road metadata and road segment sequences in each cell. It helps to understand turn restrictions on the road.
@@ -1159,19 +1100,38 @@ __Usage:__
 
 This is how Mark and John were able to see their map information.
 
-### View ETA
+### Into Book A Cab Service: View ETA
 
 We've seen how the ETA service provided services to Mark and John by following several steps. Now, let's look into into those steps.
 
-__Conceptual Introduction:__
+#### Definition(s):
 
 - [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)): There are two types of graphs: __directed__ and __undirected__.
     - __Directed Graph__: A directed graph G is a pair (V, E), where V is a finite set and E is a binary relation on V. The set V is called vertex set of G, and its elements are called vertices. The set E is called the edge set of G, and its elements are called edges.
     - __Undirected Graph__: In an undirected graph G = (V, E), the edge set E consists of unordered pairs of vertices, rather than ordered pairs.
-
 - __Weighted Graph__: Graphs for which each edge has an associated weight, typically given by a weight function w: E -> R. For example, let G = (V, E) be a weighted graph with weight function w. We simply store the weight w(u, v) of the edge (u, v) ∈ E with vertex v in u's adjacency list.
     - ∈ denotes set membership, and is read "is in", "belongs to", or "is a member of".
 - [Routing Algorithm(Dijkstra)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm): Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a weighted graph, which may represent, for example, a road network.
+
+#### ETA Database
+
+1. Based on the business need, we can limit or extend this storage.
+2. For instance, if we want to limit, then we can save only ETA associated to pick-up and drop-off points to the Ride Estimator Database. Also, we can consider this storage if Mark changes his drop-off location.
+
+##### Caching Strategy
+
+- Internally, we can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations.
+*Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
+- As there is a chance of stale data, we can use [ZooKeeper service](https://en.wikipedia.org/wiki/Apache_ZooKeeper) to maintain synchronization between database and its replica(s).
+
+##### Replication Strategy
+
+- To prevent loss of data, we can replicate user ETA data.
+- User data replication can use master-slave strategy.
+    - In the master-slave strategy-
+        - We can use master database for write operations and slave database for only read operations.
+    - Masters can be more than one in order to avoid single point of failure for write operations.
+    - Slaves can be many to secure user ETA data as per business needs.
 
 #### The process of computing ETA
 
@@ -1187,17 +1147,21 @@ __Conceptual Introduction:__
     - Put another way, the time complexity to find the best path in the San Francisco Bay Area gets reduced from 500 Thousand to 700.
 
 2. Traffic Information:
-
-- The traffic on the road segments must be considered to find the fastest path between 2 points.
-- While traffic is a function of the __time of the day__, __weather__, and __number of vehicles__ on the road.
-- We can __use__ traffic information __to populate__ the __edge weights__ of the graph. Because it can make the ETA more __accurate__.
-- Besides we can combine aggregated __historical speed information__ that was stored in the hash table with real-time speed information. Because extra traversal data makes traffic information __more accurate__.
+    - The traffic on the road segments must be considered to find the fastest path between 2 points.
+    - While traffic is a function of the __time of the day__, __weather__, and __number of vehicles__ on the road.
+    - We can __use__ traffic information __to populate__ the __edge weights__ of the graph. Because it can make the ETA more __accurate__.
+    - Besides we can combine aggregated __historical speed information__ that was stored in the hash table with real-time speed information. Because extra traversal data makes traffic information __more accurate__.
 
 3. Map Matching:
-
-- __GPS signals__ can get noisy especially when the vehicle enters a enclosed areas like tunnel(s).
-- Also the __multi-path effect__ could __worsen__ the GPS signal. The multi-path effect occurs when buildings reflect the GPS signal. A __poor__ GPS signal __decreases__ the ETA accuracy.
-- So they do __map matching__ to find the best ETA. Map matching works by __mapping raw GPS signals__ to __actual road segments__.
+    - __GPS signals__ can get noisy especially when the vehicle enters a enclosed areas like tunnel(s).
+    - Also the __multi-path effect__ could __worsen__ the GPS signal. The multi-path effect occurs when buildings reflect the GPS signal. A __poor__ GPS signal __decreases__ the ETA accuracy.
+    - So they do __map matching__ to find the best ETA. Map matching works by __mapping raw GPS signals__ to __actual road segments__.
+    - We can use the [Kalman filter](https://en.wikipedia.org/wiki/Kalman_filter) for map matching. It takes GPS signals and matches them to road segments.
+        - Imagine the Kalman filter as a __person who makes a correct guess__ about something's location. The __new and old information__ is taken into consideration for __guessing__.
+    - Besides we can use the [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm) to __find the most probable road segments__. It's a dynamic programming approach.
+        - Imagine the Viterbi algorithm as a person who __figures out the correct story__ even if __some words were spelled wrong__. We can do that by __looking at the nearby words__ and __fixing the mistakes__ so that the story makes more sense.
+    - Mark may __avoid__ his future trips if the __actual trip time is higher__ than ETA. Also, __more than 30 million__ trips can be completed daily as per our consideration.
+    - So at our scale, a bad ETA could cost cab sharing company billions of USD in loss. The __current approach__ can allow us to __scale__ to half a million requests per second.
 
 |   GPS Signals     |   Road Segments   |
 |-------------------|-------------------|
@@ -1207,30 +1171,23 @@ __Conceptual Introduction:__
 |   Speed           |                   |
 |                   |   Road Name       |
 |                   |   Segment ID      |
+|                   |                   |
 
-- We can use the [Kalman filter](https://en.wikipedia.org/wiki/Kalman_filter) for map matching. It takes GPS signals and matches them to road segments.
-    - Imagine the Kalman filter as a __person who makes a correct guess__ about something's location. The __new and old information__ is taken into consideration for __guessing__.
-- Besides we can use the [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm) to __find the most probable road segments__. It's a dynamic programming approach.
-    - Imagine the Viterbi algorithm as a person who __figures out the correct story__ even if __some words were spelled wrong__. We can do that by __looking at the nearby words__ and __fixing the mistakes__ so that the story makes more sense.
-- Mark may __avoid__ his future trips if the __actual trip time is higher__ than ETA. Also, __more than 30 million__ trips can be completed daily as per our consideration.
-- So at our scale, a bad ETA could cost cab sharing company billions of USD in loss. The __current approach__ can allow us to __scale__ to half a million requests per second.
-
-### Find A Driver
+### Into Book A Cab Service: Find A Driver
 
 We saw how the Driver Finder service provided services to Mark, to find John by following a process. Now, let's zoom into that sequence.
 
-__Conceptual Introduction:__
+#### Definition(s)
+
 - [Redis](https://redis.io/docs/latest/): Redis is preferred real-time data-driven applications like Cab sharing system. It is fastest, and most feature-rich cache, data structure server, and document and vector query engine.
 
-__The process of finding a driver:__
+#### The process of finding a driver:
 
 - We can __store driver locations__ in a __Redis cluster__ for scalability and low latency. A Redis cluster contains many __Redis instances__ as shown in the HLD image. This means __driver locations__ are __spread__ across many Redis instances. Thus preventing global __write lock__ and __contention__ issues when many rides get __ordered__ at the same time.
-
 - But sharding Redis based on region causes a __hot shard problem__ because of more drivers in big cities.
     - So we can use __Google’s S2 library__ and __divide__ the __map into grids__.
         - And S2 is hierarchical. That means the __cell__ size __varies__ from __square centimeters__ to __square kilometers__.
         - We can choose __Geohash__ (level 5) by default to find nearby drivers. It represents a __square kilometer__, so only a __few cars will fit__ inside a single shard. And the hot shard problem wouldn't occur.
-
 - Redis cluster may contain drivers who __stopped__ driving for the rest of the day. But we __want__ only __active__ drivers. This means drivers who are still driving during the day.
     - A simple approach is to create __in-memory time buckets__ periodically. Then __store__ the __list of active drivers__ in it.
     - And __remove old buckets__ every 20-30 seconds(approx). So only __active drivers will stay__ in the latest bucket.
@@ -1238,7 +1195,66 @@ __The process of finding a driver:__
         - So we can use a Redis __sorted set__ in __each Geohash__ to __find nearby drivers__. And store the __last timestamp__ reported by the drivers in a __sorted__ order. While inactive driver data is expired using the [ZREMRANGEBYSCORE](https://redis.io/docs/latest/commands/zremrangebyscore//) command. That means only data of those drivers who haven’t reported in the last 30 seconds will expire. Simply put, we can __overwrite memory__ __instead of reallocating__ it. Imagine the sorted set as key-value pairs sorted by score.
     - Besides we can store the driver location in a hash data structure. It's also queried to ensure that a driver doesn’t show up in 2 different Geohashes while driving through.
 
+### Into Book A Cab Service: View Ride History
+
+We saw how the Ride History service provided services to John by following a process. Now, let's look into some technicalities.
+
+#### Definition(s)
+
+- [Content Delivery Network (CDN)](https://en.wikipedia.org/wiki/Content_delivery_network): A content delivery network is a geographically distributed group of servers that work together to provide fast delivery of internet content. Generally, static files such as HTML/CSS/JS, photos, and videos are served from CDN.
+
+#### The process of viewing a ride history
+
+- In the context of John requesting CDN: If John is accessing his profile page for the first time, then the CDN's edge server within any available zone can request the origin server for profile page data.
+- What will happen if there is a change in profile page options? This case can be handled in two ways-
+    1. The Cab sharing system can notify client via Notification asynchronous communication service and can re-load the page with his approval.
+    2. The Cab sharing system can collect all new features for client and release them as an when application upgrade happens (preferred for hand held devices like mobile applications).
+
+### Common Functionalities
+
+Now, let us see some common functionalities that helped Mark and John during their cab ride.
+
+#### Definition
+
+- Circuit Breaker Pattern: It's a design pattern used to detect failures and encapsulates the logic of preventing a failure from constantly recurring during maintenance, temporary external system failure, or unexpected system difficulties.
+    - How it works?
+    We wrap a protected function call in a circuit breaker object, which monitors for failures. Once the failures reach a certain threshold, the circuit breaker trips, and all further calls to the circuit breaker return with an error, without the protected call being made at all. Usually, we'll also want some kind of monitor alert if the circuit breaker trips.
+    - Why do we need it?
+    It's common for software systems to make remote calls to software running in different processes, probably on different machines across a network. One of the big differences between in-memory calls and remote calls is that remote calls can fail, or hang without a response until timeout limit is reached. What's worse is if we have many callers on an unresponsive supplier, then we can run out of critical resources leading to cascading failures across multiple systems.
+    - States
+        - Closed: When everything is normal, the circuit breakers remain closed, and all the request passes through to the services as normal.
+        - Open: In this state, the circuit breaker returns an error immediately without even invoking the services.
+        - Half-open: In this state, the circuit breaker allows a limited number of requests from the service to pass through and invoke the operation.
+
+#### Circuit Breaker Pattern:
+
+- The __Data Fetch Service__ of almost all considered functionalities in the design can incorporate with the circuit breaker pattern to detect and prevent failures.
+    - If the circuit breaker is in closed-state, then it can continue with the ongoing operation.
+    - If the circuit breaker is in open-state, then it can redirect the request to next available service through any active load balancer of any available zone.
+
+#### User Record Database
+
+The user record database was used in -
+    - View Map: To store user's map information.
+    - View ETA: To store ETA associated with Mark's pick-up and drop-off points.
+    - Find A Driver: To store John's details associated with Mark's ride.
+    - Track the Ride: To store Mark and John's ride tracking information.
+
+##### Caching Strategy
+
+- Internally, we can implement __Cache Aside Strategy__ for read operations and __Write Aside Strategy__ for write operations as user's data storage has more importance in the cab sharing system.
+*Note:* For more details on caching, refer to our [Caching Basics](../1.%20System%20Design%20Basics/Caching%20Basics.md).
+- As there is a chance of stale data, we can use [ZooKeeper service](https://en.wikipedia.org/wiki/Apache_ZooKeeper) to maintain synchronization between database and its replica(s).
+
+##### Replication Strategy
+
+- To keep user data safe without lose, we can use replication of user record data.
+- User data replication can use master-slave strategy.
+    - In the master-slave strategy-
+        - We can use master database for write operations and slave database for only read operations.
+    - Masters can be more than one in order to avoid single point of failure for write operations.
+    - Slaves can be many to secure user record data as per business needs.
+
 <hr style="border:2px solid gray">
 
->__*Note:*__
->1. The Map and other reference icons are considered just as an example. We can always change them as per our convenience.
+>__*Note:*__ The Map and other reference icons are considered just as an example. We can always change them as per our convenience.
